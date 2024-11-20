@@ -1,0 +1,222 @@
+# Dimensions are aspects of the data that we  think are meaningful in terms of
+# filtering, grouping, etc.
+#
+# Each dimension has a type, and different types have different behaviors in
+# the contexts of grouping, filtering, etc. Not all dimension make sense to
+# filter or group using raw vales. For example, `publish date` dimension may
+# have a type of `Timestamp`, indicating that the values for that dimension
+# represent specific moments in time. Grouping data into infinitely small
+# moments in time likely doesn't provide much value to a user. Grouping data
+# into groups based on the month extracted from pub dates is more beneficial.
+#
+# So these dimensions do not strictly represent data that may be present in any
+# particular database, but instead describe concepts that can be derived from
+# the data available in various databases.
+#
+# The properties of each dimension, like Type, help the app determine how a
+# user should be able to interact with each dimension.
+Dimensions:
+  podcast_id:
+    Type: Token
+    QueryKey: podcast
+    ExhibitProperty: podcast_name
+    StaticProperties:
+      - podcast_name
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: podcasts.id
+      RequiredTables: [podcasts]
+  episode_id:
+    Type: Token
+    QueryKey: episode
+    ExhibitProperty: episode_title_with_pubdate_prefix
+    StaticProperties:
+      - podcast_id
+      - podcast_name
+      - episode_title
+      - episode_publish_timestamp
+      - current_episode_age_in_seconds
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: episodes.id
+      RequiredTables: [episodes]
+  download_timestamp:
+    Type: Timestamp
+    QueryKey: time
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: downloads.timestamp
+      Type: TIMESTAMP
+      RequiredTables: [downloads]
+  episode_publish_timestamp:
+    Type: Timestamp
+    QueryKey: published
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: episodes.published_at
+      RequiredTables: [episodes]
+  current_episode_age_in_seconds:
+    Type: Duration
+    QueryKey: age
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), episodes.published_at, SECOND)
+      RequiredTables: [downloads, episodes]
+  episode_age_at_download_in_seconds:
+    Type: Duration
+    QueryKey: lag
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: TIMESTAMP_DIFF(downloads.timestamp, episodes.published_at, SECOND)
+      RequiredTables: [downloads, episodes]
+  # season:
+  # episode_number:
+  user_agent_id:
+    Type: Token
+    QueryKey: ua
+    ExhibitProperty: user_agent_name
+    StaticProperties:
+      - user_agent_name
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: user_agents.agentname_id
+      Type: INTEGER
+      RequiredTables: [user_agents]
+  device_type_id:
+    Type: Token
+    QueryKey: device
+    ExhibitProperty: device_type_name
+    StaticProperties:
+      - device_type_name
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: device_types.agentname_id
+      Type: INTEGER
+      RequiredTables: [device_types]
+  os_id:
+    Type: Token
+    QueryKey: os
+    ExhibitProperty: os_name
+    StaticProperties:
+      - os_name
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: operating_systems.agentname_id
+      Type: INTEGER
+      RequiredTables: [operating_systems]
+  continent_code:
+    Type: String
+    QueryKey: continent
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: countries.continent_code
+      Type: STRING
+      RequiredTables: [countries]
+  country_id:
+    Type: Token
+    QueryKey: country
+    ExhibitProperty: country_name
+    StaticProperties:
+      - country_name
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: countries.geoname_id
+      Type: INTEGER
+      RequiredTables: [countries]
+  subdivision_iso_code:
+    Type: String
+    QueryKey: subdiv
+    ExhibitProperty: subdivision_name
+    StaticProperties:
+      - subdivision_name
+      - continent_code
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: cities.subdivision_1_iso_code
+      Type: STRING
+      RequiredTables: [cities]
+  city_id:
+    Type: Token
+    QueryKey: city
+    ExhibitProperty: city_name_with_state_abbreviation
+    StaticProperties:
+      - continent_code
+      - country_name
+      - subdivision_iso_code
+      - subdivision_name
+      - city_name
+      - city_name_with_state
+      - city_name_with_state_abbreviation
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: cities.geoname_id
+      RequiredTables: [cities]
+  metro_id:
+    Type: Token
+    QueryKey: metro
+    ExhibitProperty: metro_name
+    StaticProperties:
+      - metro_name
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: metros.code
+      RequiredTables: [metros]
+  time_zone:
+    Type: String
+    QueryKey: tz
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: cities.time_zone
+      RequiredTables: [cities]
+  campaign_id:
+    Type: Token
+    QueryKey: campaign
+    ExhibitProperty: campaign_name
+    StaticProperties:
+      - campaign_name
+    SummableMetrics:
+      - impressions
+    BigQuery:
+      Selector: campaigns.id
+      RequiredTables: [campaigns]
+  advertiser_id:
+    Type: Token
+    QueryKey: advertiser
+    ExhibitProperty: advertiser_name
+    StaticProperties:
+      - advertiser_name
+    SummableMetrics:
+      - impressions
+    BigQuery:
+      Selector: advertisers.id
+      RequiredTables: [advertisers]

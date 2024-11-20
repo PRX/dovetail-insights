@@ -1,0 +1,110 @@
+# Properties are aspects of the data that we do not think are meaningful in
+# terms of filtering, grouping, etc.
+#
+# Anything defined as a property _could_ be, instead, defined as a
+# **dimension**, from a technical standpoint. This is a subjective/opinionated
+# choice that we are making to build the app in a way that best meets the needs
+# of the user.
+#
+# For example, something like `episode name` may be listed as a property. This
+# means that data cannot be filtered or grouped by episode name in the app. It
+# does not mean that data couldn't theoretically be grouped by episode name; it
+# is certainly possible to group all episodes called "Preview" together.
+# Practically, there is very little reason to do this. One could even argue
+# that it may be helpful to filter by episode title (maybe a user wants to
+# include only episodes that have the word "president" in their title). This is
+# a valid argument, but we currently use a unified model for which data aspects
+# are available for filtering and grouping, so some cases like that may not be
+# supported at the moment.
+#
+# Properties are aspects of data that aren't useful for filtering, grouping,
+# etc, but still are helpful or necessary to present meaningful data to the
+# user. For example, when data is grouped by a dimension like `episode ID`, it
+# makes sense to present the episodes' titles to the user, not just an abstract
+# ID.
+#
+# Each property is defined as a key under the `Properties` object. The key is
+# arbitrary and used only within the context of this application. There is
+# generally a relationship between a property and values in databases, but a
+# property's key does not need to, for example, match the name of column in a
+# database.
+#
+# When properties and dimensions reference other values, those references are
+# made using these arbitrary keys. The underlying SQL query (or similar) is
+# then constructed in a way that makes sense for the data store being queried.
+Properties:
+  episode_title:
+    Type: String
+    BigQuery:
+      Selector: episodes.title
+      RequiredTables: [episodes]
+  episode_title_with_pubdate_prefix:
+    Type: String
+    BigQuery:
+      Selector: CONCAT(FORMAT_TIMESTAMP("%Y-%m-%d", ' ', episodes.published_at, "UTC"), episodes.title)
+      RequiredTables: [episodes]
+  podcast_name:
+    Type: String
+    BigQuery:
+      Selector: podcasts.title
+      RequiredTables: [podcasts]
+  user_agent_name:
+    Type: String
+    BigQuery:
+      Selector: user_agents.tag
+      RequiredTables: [user_agents]
+  device_type_name:
+    Type: String
+    BigQuery:
+      Selector: device_types.tag
+      RequiredTables: [device_types]
+  os_name:
+    Type: String
+    BigQuery:
+      Selector: operating_systems.tag
+      RequiredTables: [operating_systems]
+  country_name:
+    Type: String
+    BigQuery:
+      Selector: countries.country_name
+      RequiredTables: [countries]
+  country_iso_code:
+    Type: String
+    BigQuery:
+      Selector: countries.country_iso_code
+      RequiredTables: [countries]
+  subdivision_name:
+    Type: String
+    BigQuery:
+      Selector: cities.subdivision_1_name
+      RequiredTables: [cities]
+  city_name:
+    Type: String
+    BigQuery:
+      Selector: cities.city_name
+      RequiredTables: [cities]
+  city_name_with_full_state:
+    Type: String
+    BigQuery:
+      Selector: CONCAT(cities.city_name, ' (', cities.subdivision_1_name, ')')
+      RequiredTables: [cities]
+  city_name_with_state_abbreviation:
+    Type: String
+    BigQuery:
+      Selector: CONCAT(cities.city_name, ' (', cities.subdivision_1_iso_code, ')')
+      RequiredTables: [cities]
+  metro_name:
+    Type: String
+    BigQuery:
+      Selector: metros.label
+      RequiredTables: [metros]
+  campaign_name:
+    Type: String
+    BigQuery:
+      Selector: campaigns.name
+      RequiredTables: [campaigns]
+  advertiser_name:
+    Type: String
+    BigQuery:
+      Selector: advertisers.name
+      RequiredTables: [advertisers]

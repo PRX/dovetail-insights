@@ -1,0 +1,62 @@
+<table>
+  <%# Header row, with a cell for each metric (first cell is always blank) %>
+  <tr>
+    <td><%# Leave empty %></td>
+
+    <% @composition.metrics.each do |metric| %>
+      <td><%= metric.metric %></td>
+    <% end %>
+  </tr>
+
+  <%# Totals row, a cell for each metric %>
+  <tr>
+    <td class="total"><b>TOTAL</b></td>
+
+    <% @composition.metrics.each do |metric| %>
+      <% if @composition.groups[0].summable?(metric) %>
+        <% total = @composition.results.get_total(metric) %>
+        <td class="total"><%= number_with_delimiter(total) %></td>
+      <% else %>
+        <td class="total"
+          <%= html_attributes(title: "When grouping by #{@composition.groups[0].dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting.") %>>
+          n/a
+        </td>
+      <% end %>
+    <% end %>
+  </tr>
+
+  <%# A row for each group member, with a cell for the member label and cells %>
+  <%# for each metric value for that member %>
+  <% @composition.results.group_1_unique_members.each do |member| %>
+    <tr>
+      <%# Group member label %>
+      <td
+        <%= html_attributes("data-raw-member": member) %>>
+        <%= @composition.results.group_member_label(@composition.groups[0], member) %>
+      </td>
+
+      <%# Group member metric vales %>
+      <% @composition.metrics.each do |metric| %>
+        <% value = @composition.results.get_value(metric, member) %>
+
+        <td <%= html_attributes("data-raw-value": value) %>>
+          <%= number_with_delimiter(value) %>
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
+
+  <%# A row for values where the group dimension is undefined, with cells for %>
+  <%# each metric %>
+  <tr>
+    <td><i>UNKNOWN</i></td>
+
+    <% @composition.metrics.each do |metric| %>
+      <% value = @composition.results.get_value(metric, nil) %>
+
+      <td class="unknown" <%= html_attributes("data-raw-value": value) %>>
+        <%= number_with_delimiter(value) %>
+      </td>
+    <% end %>
+  </tr>
+</table>

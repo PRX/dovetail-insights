@@ -1,0 +1,89 @@
+Tables:
+  impressions:
+    BigQuery:
+      JoinsTo:
+        downloads:
+          Key: request_uuid
+      Join: LEFT
+      Table: impressions_in_range
+      Key: request_uuid
+  podcasts:
+    BigQuery:
+      JoinsTo:
+        downloads:
+          Key: feeder_podcast
+      Join: INNER
+      Table: production.podcasts
+      Key: id
+  episodes:
+    BigQuery:
+      JoinsTo:
+        downloads:
+          Key: feeder_episode
+      Join: INNER
+      Table: production.episodes
+      Key: id
+  countries:
+    BigQuery:
+      JoinsTo:
+        downloads:
+          Key: country_geoname_id
+      Join: LEFT
+      Table: production.geonames
+      Key: geoname_id
+  cities:
+    BigQuery:
+      JoinsTo:
+        downloads:
+          Key: city_geoname_id
+      Join: LEFT
+      Table: production.geonames
+      Key: geoname_id
+  metros:
+    BigQuery:
+      JoinsTo:
+        cities:
+          Key: metro_code
+      Join: LEFT
+      Table: production.metronames
+      Key: code
+  user_agents:
+    BigQuery:
+      JoinsTo:
+        downloads:
+          Key: agent_name_id
+      Join: LEFT
+      Table: production.agentnames
+      Key: agentname_id
+  device_types:
+    BigQuery:
+      JoinsTo:
+        downloads:
+          Key: agent_type_id
+      Join: LEFT
+      Table: production.agentnames
+      Key: agentname_id
+  operating_systems:
+    BigQuery:
+      JoinsTo:
+        downloads:
+          Key: agent_os_id
+      Join: LEFT
+      Table: production.agentnames
+      Key: agentname_id
+  campaigns:
+    BigQuery:
+      JoinsTo:
+        impressions:
+          Key: campaign_id
+      Join: LEFT
+      Table: production.campaigns
+      Key: id
+  advertisers:
+    BigQuery:
+      JoinsTo:
+        campaigns:
+          Key: advertiser_id
+      Join: LEFT
+      Table: production.advertisers
+      Key: id

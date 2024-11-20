@@ -1,0 +1,33 @@
+{
+  "name": "dovetail-insights",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "engines": {
+    "node": ">= 20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PRX/dovetail-insights"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0",
+  "private": "true",
+  "bugs": {
+    "url": "https://github.com/PRX/dovetail-insights/issues"
+  },
+  "homepage": "https://github.com/PRX/dovetail-insights#readme",
+  "devDependencies": {
+    "eslint": "*",
+    "eslint-config-airbnb-base": "*",
+    "eslint-config-prettier": "*",
+    "eslint-plugin-import": "*",
+    "eslint-plugin-jest": "*",
+    "eslint-plugin-prettier": "*",
+    "jsdoc": "*",
+    "prettier": "*",
+    "typescript": "*",
+    "yarn": "*"
+  }
+}

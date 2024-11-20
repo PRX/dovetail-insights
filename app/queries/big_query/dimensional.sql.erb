@@ -1,0 +1,224 @@
+<% podcast_filter = filters.find {|f| f.dimension == :podcast_id } %>
+
+-- Pre calculate joins, so we know all the tables we need as early as possible
+
+-- Need to JOIN on any tables that are needed for SELECTs, GROUP BYs, or WHEREs
+-- figure out how to choose the best one to use given the rest of the query
+-- TODO Needs to handle complex join conditions, like RANGE_CONTAINS
+<%
+  tables = []
+
+  # Collect all the tables that are needed for filters, metrics, and groups.
+  # This only includes the tables tha are *directly* required for each of these;
+  # those tables may have chained dependencies, which are handled below.
+  filters.each { |filter| (DataSchema.dimensions[filter.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
+  metrics.each { |metric| (DataSchema.metrics[metric.metric.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
+  groups.each { |group| (DataSchema.dimensions[group.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
+
+  joins = []
+
+  def all_joins_for_table(table_name)
+    all_joins = []
+
+    unless table_name == "downloads"
+      table_def = DataSchema.tables[table_name]
+      bq = table_def["BigQuery"]
+
+      bq["JoinsTo"].each do |join_table_name, join_def|
+        unless join_table_name == "downloads"
+          all_joins.concat(all_joins_for_table(join_table_name))
+        end
+
+        if join_def["Key"]
+          all_joins << "#{bq["Join"]} JOIN #{bq["Table"]} AS #{table_name} ON #{table_name}.#{bq["Key"]} = #{join_table_name}.#{join_def["Key"]}"
+        elsif join_def["Expression"]
+          # TODO For joins that are not based on keys, like RANGE_CONTAINS
+        end
+      end
+    end
+
+    all_joins
+  end
+
+  tables.uniq.each do |table_name|
+    joins.concat(all_joins_for_table(table_name))
+  end
+%>
+
+DECLARE range_start TIMESTAMP DEFAULT '<%= abs_from.to_s %>';
+DECLARE range_end TIMESTAMP DEFAULT '<%= abs_to.to_s %>';
+
+-- In order to ensure that the time range operates as expected, we make
+-- queries for downloads and impressions before doing any JOINs. These
+-- require a selection of podcast IDs, which is mostly just a safety
+-- valve during development, to make sure I don't accidentally make a lot
+-- of hugely expesnive queries
+-- TODO Apply filters here when possible to make things more efficient
+WITH
+downloads_in_range AS (
+  SELECT *
+
+  FROM production.dt_downloads AS downloads
+
+  WHERE
+    downloads.timestamp >= range_start AND downloads.timestamp < range_end
+    AND downloads.is_duplicate = FALSE
+    AND downloads.feeder_podcast IS NOT NULL
+    AND downloads.feeder_podcast IN (<%= podcast_filter&.values&.join(", ") %>)
+  )
+
+<% if joins.uniq.join(" ").include?("impressions_in_range") %>
+  ,impressions_in_range AS (
+    SELECT *
+
+    FROM production.dt_impressions AS impressions
+
+    WHERE
+      impressions.timestamp >= range_start AND impressions.timestamp < range_end
+      AND impressions.is_duplicate = FALSE
+      AND impressions.feeder_podcast IS NOT NULL
+      AND impressions.feeder_podcast IN (<%= podcast_filter&.values&.join(", ") %>)
+  )
+<% end %>
+
+-- SELECT ----------------------------------------------------------------------
+
+<%
+  selects = []
+
+  # Add SELECTs derived from the group selections and the modes they are
+  # operating in
+  #
+  # All of these SELECTs use a unique, derived AS, so there is no risk of
+  # collision, but they are not otherwise deduped, so it is currently possible
+  # for things to be SELECTed more than once unnecessarily
+  groups.each do |group|
+    dimension_def = DataSchema.dimensions[group.dimension.to_s]
+    selector = dimension_def["BigQuery"]["Selector"]
+
+    if group.extract
+      selects << "EXTRACT(#{group.extract} FROM #{selector}) AS #{group.as}"
+    elsif group.truncate
+      selects << %Q(TIMESTAMP_TRUNC(#{selector}, #{group.truncate}, "UTC") AS #{group.as})
+    elsif group.indices
+      cases = []
+
+      group.indices.each do |i|
+        cases << "WHEN #{selector} < #{i} THEN 'LT #{i}'"
+      end
+
+      cases << "ELSE 'GTE #{group.indices.last}'"
+
+      selects << "CASE \n #{cases.join("\n")} \n END AS #{group.as}"
+    else
+      selects << "#{selector} AS #{group.as}"
+    end
+
+    # Select the exhibit property for this dimension if necessary
+    if dimension_def["ExhibitProperty"]
+      exhibit_property_name = dimension_def["ExhibitProperty"]
+      property_def = DataSchema.dimensions[exhibit_property_name] || DataSchema.properties[exhibit_property_name]
+      exhibit_selector = property_def["BigQuery"]["Selector"]
+      exhibit_as = "#{group.as}_#{exhibit_property_name}"
+
+      selects << "#{exhibit_selector} AS #{exhibit_as}"
+    end
+  end
+
+  # -- TODO Needs to handle variables/uniques
+  # With a valid composition, there should never be any duplication of these
+  metrics.each do |metric|
+    metric_def = DataSchema.metrics[metric.metric.to_s]
+    selector = metric_def["BigQuery"]["Selector"]
+
+    if metric_def["Type"] && metric_def["Type"] == "Variable"
+
+    else
+      selects << "#{selector} AS #{metric.as}"
+    end
+  end
+%>
+
+SELECT <%= selects.join(", ") %>
+
+-- END SELECT ------------------------------------------------------------------
+
+-- FROM ------------------------------------------------------------------------
+
+-- TODO get this AS name from the schema
+FROM downloads_in_range AS downloads
+
+-- END FROM --------------------------------------------------------------------
+
+-- JOINS -----------------------------------------------------------------------
+
+<%= joins.uniq.join("\n") %>
+
+-- END JOINS -------------------------------------------------------------------
+
+-- WHERE -----------------------------------------------------------------------
+
+<%
+  # WHEREs are added from filters, and only from filters. Different types of
+  # filters result in different types of WHERE clauses, to support things like
+  # lists, ranges, etc. Some values in WHEREs need to be quoted.
+  wheres = []
+
+  filters.each do |filter|
+    filter_def = DataSchema.dimensions[filter.dimension.to_s]
+    selector = filter_def["BigQuery"]["Selector"]
+    bq_type = filter_def["BigQuery"]["Type"]
+
+    # Filters with a `from` are ranges
+    if filter.from
+      # Wrap values for timestamp fields in quotes
+      from = bq_type == "TIMESTAMP" ? %Q("#{filter.from}") : filter.from
+      to = bq_type == "TIMESTAMP" ? %Q("#{filter.to}") : filter.to
+
+      if filter.operator == :include
+        wheres << "#{selector} >= #{from} AND #{selector} < #{to}"
+      else
+        wheres << "#{selector} < #{from} OR #{selector} >= #{to}"
+      end
+    else
+      # Filter on a basic list of values
+      op = filter.operator == :include ? "IN" : "NOT IN"
+
+      if bq_type == "STRING"
+        wrapped_values = filter.values.map { |v| %Q("#{v}") }
+        wheres << "#{selector} #{op} (#{wrapped_values.join(", ")})"
+      else
+        wheres << "#{selector} #{op} (#{filter.values.join(", ")})"
+      end
+    end
+  end
+%>
+
+WHERE <%= wheres.join(" AND ") %>
+
+-- END WHERE -------------------------------------------------------------------
+
+-- GROUP BY --------------------------------------------------------------------
+
+<%
+  # Each selected group adds a GROUP BY clause. Groups are the only source of
+  # GROUP BY clauses for dimensional lens, but some dimensions add multiple
+  # GROUP BY clauses, to support exhibit properties
+  group_bys = []
+
+  groups.each do |group|
+    group_bys << group.as
+
+    dimension_def = DataSchema.dimensions[group.dimension.to_s]
+    if dimension_def["ExhibitProperty"]
+      exhibit_property_name = dimension_def["ExhibitProperty"]
+      exhibit_as = "#{group.as}_#{exhibit_property_name}"
+
+      group_bys << exhibit_as
+    end
+  end
+%>
+
+<%= "GROUP BY #{group_bys.join(", ")}" if group_bys.present? %>
+
+-- END GROUP BY ----------------------------------------------------------------

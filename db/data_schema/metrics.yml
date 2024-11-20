@@ -1,0 +1,15 @@
+Metrics:
+  downloads:
+    BigQuery:
+      Selector: COUNT(DISTINCT downloads.request_uuid)
+  impressions:
+    BigQuery:
+      Selector: COUNT(*)
+      RequiredTables:
+        - impressions
+  uniques:
+    # TODO Needs a property to indicate these can't be totaled
+    BigQuery:
+      Selector: COUNT(DISTINCT downloads.listener_id)
+  rolling_uniques:
+    Type: Variable

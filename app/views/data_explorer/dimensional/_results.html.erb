@@ -1,0 +1,7 @@
+<% if !@composition.groups || @composition.groups.empty? %>
+  <%= render "data_explorer/dimensional/results/table/0_groups" %>
+<% elsif @composition.groups.length == 1 %>
+  <%= render "data_explorer/dimensional/results/table/1_groups" %>
+<% else %>
+  <%= render "data_explorer/dimensional/results/table/2_groups" %>
+<% end %>

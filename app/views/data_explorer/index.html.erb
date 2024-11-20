@@ -1,0 +1,260 @@
+<%= form_with model: @composition, url: "/", method: :get, id: "data-explorer" do |form| %>
+  <div id="global-data-parameters">
+    <fieldset>
+      <legend>Composition Errors</legend>
+
+      <%# Force validation TODO must be a better way to do this %>
+      <% @composition.valid? %>
+
+      <ul>
+        <% @composition.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+
+        <% @composition.filters&.each do |filter| %>
+          <% filter.errors.full_messages.each do |msg| %>
+            <li><%= filter.dimension %> filter: <%= msg %></li>
+          <% end %>
+        <% end %>
+      </ul>
+    </fieldset>
+
+    <fieldset id="range">
+      <legend>Time Range</legend>
+
+      <%= form.label :from, "From" %><%= form.text_field :from, name: "from" %>
+      <br>
+      <%= form.label :to, "To" %><%= form.text_field :to, name: "to" %>
+
+      <ul>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = '2023-01-01';document.querySelector('input[name=to]').value = '2023-02-01';">Jan 2023</a></li>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-48h';document.querySelector('input[name=to]').value = 'now';">Last 48 hours</a></li>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-48/h';document.querySelector('input[name=to]').value = 'now-1/h';">Previous 48 hours</a></li>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-1/W';document.querySelector('input[name=to]').value = 'now-1/W';">Previous week</a></li>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-1/W+1D';document.querySelector('input[name=to]').value = 'now-1/W-1D';">M-F Previous week</a></li>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-1/M';document.querySelector('input[name=to]').value = 'now-1/M';">Previous month</a></li>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now/M';document.querySelector('input[name=to]').value = 'now/M';">This month</a></li>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now/M';document.querySelector('input[name=to]').value = 'now';">This month so far</a></li>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-90/D';document.querySelector('input[name=to]').value = 'now-1/D';">Previous 90 days</a></li>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-1/Q';document.querySelector('input[name=to]').value = 'now-1/Q';">Previous quarter</a></li>
+        <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now/Y';document.querySelector('input[name=to]').value = 'now/Y';">This year</a></li>
+      </ul>
+    </fieldset>
+
+    <fieldset>
+      <legend>Current Time Range</legend>
+      <p>From: <%= @composition.abs_from %></p>
+      <p>To: <%= @composition.abs_to %></p>
+    </fieldset>
+
+    <fieldset id="filters">
+      <legend>Filters</legend>
+
+      <ul>
+        <% DataSchema.dimensions.each do |dimension_name, dimension_def| %>
+          <% dim_key = dimension_def["QueryKey"] || dimension_name %>
+
+          <%# Look for an existing Filter instance for this dimension – it may not exist %>
+          <% filter = @composition.filters&.find { |f| f.dimension == dimension_name.to_sym } %>
+          <li>
+            <fieldset
+              data-dimension-type="<%= dimension_def["Type"] %>"
+              <%= html_attributes(class: "active") if filter.try(:valid?) %>>
+
+              <legend><%= dim_key %></legend>
+
+              <select class="operator <%= "field_with_errors" if filter&.errors&.include?(:operator) %>" name="filter.<%= dim_key %>">
+                <option></option>
+                <option value="include" <%= html_attributes(selected: "selected") if params["filter.#{dim_key}"] == "include" %>>Include</option>
+                <option value="exclude" <%= html_attributes(selected: "selected") if params["filter.#{dim_key}"] == "exclude" %>>Exclude</option>
+              </select>
+
+              <% if ["Token", "String"].include? dimension_def["Type"] %>
+                <br>
+                <label for="filter.<%= dim_key %>.values">Values:</label>
+                <input autocomplete="off" class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" type="text" placeholder="Apple, Banana, Cherry" id="filter.<%= dim_key %>.values" name="filter.<%= dim_key %>.values" value="<%= params["filter.#{dim_key}.values"] %>">
+              <% elsif ["Duration"].include? dimension_def["Type"] %>
+                <br>
+                <label for="filter.<%= dim_key %>.from">From:</label>
+                <input autocomplete="off" class="from" type="text" placeholder="42" id="filter.<%= dim_key %>.from" name="filter.<%= dim_key %>.from" value="<%= params["filter.#{dim_key}.from"] %>">
+
+                <br>
+                <label for="filter.<%= dim_key %>.to">To:</label>
+                <input autocomplete="off" class="to" type="text" placeholder="1066" id="filter.<%= dim_key %>.to" name="filter.<%= dim_key %>.to" value="<%= params["filter.#{dim_key}.to"] %>">
+              <% elsif ["Timestamp"].include? dimension_def["Type"] %>
+                <br>
+                <select class="timestamp-mode">
+                  <option value="Range">Range</option>
+                  <option value="Extract">Extract</option>
+                </select>
+
+                <div class="range">
+                  <label for="filter.<%= dim_key %>.from">From:</label>
+                  <input autocomplete="off" class="from" type="text" placeholder="2024-01-01" id="filter.<%= dim_key %>.from" name="filter.<%= dim_key %>.from" value="<%= params["filter.#{dim_key}.from"] %>">
+
+                  <br>
+                  <label for="filter.<%= dim_key %>.to">To:</label>
+                  <input autocomplete="off" class="to" type="text" placeholder="2024-07-01" id="filter.<%= dim_key %>.to" name="filter.<%= dim_key %>.to" value="<%= params["filter.#{dim_key}.to"] %>">
+                </div>
+
+                <div class="extract">
+                  <select name="filter.<%= dim_key %>.extract">
+                    <option>hour</option>
+                    <option>day of week</option>
+                    <option>day</option>
+                    <option>week</option>
+                    <option>month</option>
+                    <option>year</option>
+                  </select>
+
+                  <br>
+                  <label for="filter.<%= dim_key %>.values">Values:</label>
+                  <input autocomplete="off" class="value" type="text" placeholder="Friday, Saturday" id="filter.<%= dim_key %>.values" name="filter.<%= dim_key %>.values" value="<%= params["filter.#{dim_key}.values"] %>">
+                </div>
+              <% end %>
+            </fieldset>
+          </li>
+        <% end %>
+      </ul>
+    </fieldset>
+  </div>
+
+  <div id="lens">
+    <div id="lens-data-parameters">
+      <fieldset id="lens-type" <%= html_attributes(class: "field_with_errors") if @composition.errors.include?(:lens) %>>
+        <legend>Lens Type</legend>
+
+        <% [Compositions::DimensionalComposition, Compositions::TimeSeriesComposition].each do |lens| %>
+          <% lens_type = "#{lens.query_value}" %>
+          <label for="lens-<%= lens_type %>"><%= lens_type %></label>
+          <input type="radio" name="lens" id="lens-<%= lens_type %>" value="<%= lens_type %>" <%= html_attributes(checked: "checked") if params[:lens] == lens_type %>>
+        <% end %>
+      </fieldset>
+
+      <fieldset id="granularity">
+        <legend>Time Series Options</legend>
+
+        <select name="granularity">
+          <% ["daily", "weekly", "monthly", "quarterly", "yearly", "rolling"].each do |g| %>
+            <option <%= html_attributes(selected: "selected") if @composition.try(:granularity).to_s == g %> value="<%= g %>"><%= g %></option>
+          <% end %>
+        </select>
+
+        <fieldset id="window">
+          <%= form.label :window, "Window" %>
+          <%= form.text_field :window, name: "window", class: "foo" %>
+        </fieldset>
+      </fieldset>
+
+      <fieldset
+        <%= html_attributes(class: "field_with_errors") if @composition.errors.include?(:metrics) %>
+        id="metrics">
+        <legend>Metrics</legend>
+
+        <% DataSchema.metrics.each do |metric_name, metric_def| %>
+          <% if metric_def["Type"] == "Variable" %>
+            <% checked = @composition.try(:metrics) && @composition.metrics.find {|m| m.metric == metric_name.to_sym } %>
+            <label><input type="checkbox" value="<%= metric_name %>" <%= html_attributes(checked: "checked") if checked %>> <%= metric_name %></label>
+            <% all_variables = @composition.try(:metrics) && @composition.metrics.filter {|m| m.metric == metric_name } %>
+            <input name="<%= metric_name %>.variables" placeholder="e.g., '7' or '7, 14, 30'" value="<%= (all_variables||[]).map {|m| m.variable}.join(", ") %>">
+          <% else %>
+            <% checked = @composition.try(:metrics) && @composition.metrics.find {|m| m.metric == metric_name.to_sym } %>
+            <label><input type="checkbox" value="<%= metric_name %>" <%= html_attributes(checked: "checked") if checked %>> <%= metric_name %></label>
+          <% end %>
+        <% end %>
+      </fieldset>
+
+      <fieldset id="groups">
+        <legend>Groups</legend>
+
+        <% [1,2].each do |i| %>
+        <% idx = i - 1 %>
+        <fieldset>
+          <legend>Group <%= i %></legend>
+
+          <label for="group.<%= i %>">Group By</label>
+          <select id="group.<%= i %>" name="group.<%= i %>">
+            <option value=""></option>
+
+            <% DataSchema.dimensions.each do |dimension_name, dimension_def| %>
+              <% dim_key = dimension_def["QueryKey"] || dimension_name %>
+              <option data-dimension-type="<%= dimension_def["Type"] %>" value="<%= dim_key %>" <%= html_attributes(selected: "selected") if params["group.#{i}"] == dim_key %>><%= dim_key %></option>
+            <% end %>
+          </select>
+
+          <div class="timestamp">
+            <select class="waffle">
+              <option value="range">Range</option>
+              <option value="truncate" <%= html_attributes(selected: "selected") if @composition.try(:groups)&.values_at(idx)&.first&.truncate %>>Truncate</option>
+              <option value="extract" <%= html_attributes(selected: "selected") if @composition.try(:groups)&.values_at(idx)&.first&.extract %>>Extract</option>
+            </select>
+
+            <div class="range">
+              Ranges: <input name="XXXXgroup.<%= i %>.temp_indexes">
+            </div>
+
+            <select class="extract" name="group.<%= i %>.extract">
+              <option></option>
+
+              <% %w(hour dayofweek day week month year).each do |part| %>
+                <option <%= html_attributes(selected: "selected") if @composition.try(:groups)&.values_at(idx)&.first&.extract == part %>><%= part %></option>
+              <% end %>
+            </select>
+
+            <select class="truncate" name="group.<%= i %>.truncate">
+              <option></option>
+
+              <% %w(week month year).each do |part| %>
+                <option <%= html_attributes(selected: "selected") if @composition.try(:groups)&.values_at(idx)&.first&.truncate == part %>><%= part %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <div class="duration">
+            Ranges: <input name="group.<%= i %>.temp_indexes" <%= html_attributes(value: @composition.try(:groups)&.values_at(idx)&.first&.indices&.join(", ")) %>>
+          </div>
+        </fieldset>
+        <% end %>
+      </fieldset>
+
+      <fieldset id="time-series-compare">
+        <legend>Time Series Compare</legend>
+
+        <% compare = @composition.try(:comparisons)&.first %>
+
+        <select name="compare">
+          <option></option>
+
+          <% [:WoW, :QoQ, :YoY].each do |p| %>
+            <option value="<%= p %>" <%= html_attributes(selected: "selected") if compare.try(:period) == p %>><%= p %></option>
+          <% end %>
+        </select>
+
+        <input name="compare-lookback" value="<%= compare.try(:lookback) %>">
+      </fieldset>
+
+      <fieldset>
+        <legend>Display Options</legend>
+
+        Highlight
+        <select id="highlight">
+          <option></option>
+          <option>Total Range (Linear)</option>
+          <option>Total Range (Log)</option>
+        </select>
+      </fieldset>
+    </div>
+
+    <div id="results">
+      <% if @composition.valid? && @composition.results %>
+        <% if @composition.lens == "dimensional" %>
+          <%= render "data_explorer/dimensional/results" %>
+        <% elsif @composition.lens == "timeSeries" %>
+          <%= render "data_explorer/time_series/results" %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= form.submit "Submit" %>
+<% end %>
