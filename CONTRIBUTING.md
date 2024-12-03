@@ -50,3 +50,13 @@ These steps assume you have followed PRX's [Local Development Environment guide]
     ```shell
     yarn install
     ```
+
+### Running the Application
+
+Once your environment has been setup, you should be able to start the Rails server and load the site in a browser:
+
+```shell
+bin/rails s
+```
+
+The site will be available at [insights.dovetail.prx.test](http://insights.dovetail.prx.test/).
