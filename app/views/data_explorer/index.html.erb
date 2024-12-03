@@ -16,6 +16,18 @@
             <li><%= filter.dimension %> filter: <%= msg %></li>
           <% end %>
         <% end %>
+
+        <% @composition.metrics&.each do |metric| %>
+          <% metric.errors.full_messages.each do |msg| %>
+            <li><%= metric.metric %> metric: <%= msg %></li>
+          <% end %>
+        <% end %>
+
+        <% @composition.groups&.each do |group| %>
+          <% group.errors.full_messages.each do |msg| %>
+            <li><%= group.dimension %> group: <%= msg %></li>
+          <% end %>
+        <% end %>
       </ul>
     </fieldset>
 

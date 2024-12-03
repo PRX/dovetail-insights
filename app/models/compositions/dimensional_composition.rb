@@ -17,8 +17,8 @@ module Compositions
 
     attr_accessor :metrics, :groups
 
-    validate :each_metric_is_valid, :includes_at_least_one_metric
-    validate :group_order_is_correct, :each_group_is_valid, :group_count_is_supported
+    validate :all_metrics_are_valid, :includes_at_least_one_metric
+    validate :group_order_is_correct, :all_groups_are_valid, :group_count_is_supported
 
     def query
       return unless valid?
@@ -38,14 +38,9 @@ module Compositions
 
     private
 
-    def each_metric_is_valid
-      (metrics || []).each do |metric|
-        unless metric.valid?
-          metric.errors.each do |e|
-            # TODO Not sure which attribute to add these to yet
-            errors.add("metric.#{metric.metric}", e.full_message)
-          end
-        end
+    def all_metrics_are_valid
+      if (metrics || []).any? { |m| m.invalid? }
+        errors.add(:metrics, :invalid_metrics, message: "must all be valid")
       end
     end
 
@@ -55,17 +50,9 @@ module Compositions
       end
     end
 
-    def each_group_is_valid
-      # TODO Change this to all_groups_are_valid and just add one error
-      (groups || []).each do |group|
-        next if !group # If group 2 is selected but not group 1, group[0] will be nil
-
-        unless group.valid?
-          group.errors.each do |e|
-            # TODO Not sure which attribute to add these to yet
-            errors.add("group.#{group.dimension}", e.full_message)
-          end
-        end
+    def all_groups_are_valid
+      if (groups || []).compact.any? { |g| g.invalid? }
+        errors.add(:groups, :invalid_groups, message: "must all be valid")
       end
     end
 
