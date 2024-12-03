@@ -9,8 +9,8 @@ module Compositions
     def self.from_params(params)
       composition = super
 
-      composition.groups = Components::Group.from_params(params)
-      composition.metrics = Components::Metric.from_params(params)
+      composition.groups = Components::Group.all_from_params(params)
+      composition.metrics = Components::Metric.all_from_params(params)
 
       composition
     end

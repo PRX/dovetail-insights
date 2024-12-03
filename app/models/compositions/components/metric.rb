@@ -11,7 +11,7 @@ module Compositions
       # invalid. We still want to capture as much of the user input as possible
       # so we can provide errors from validations and things like that.
 
-      def self.from_params(params)
+      def self.all_from_params(params)
         # All metrics are listed in the value of a single param called
         # +metrics+, and are separated by commas.
 
@@ -59,7 +59,7 @@ module Compositions
       ##
       # When constructing parts of SQL queries related to this metric, we need a
       # way to reference this particular
-      # use of, for example, and column in a SELECT, as that column may appear
+      # use of, for example, a column in a SELECT, as that column may appear
       # in the query more than once, for different reasons. This generates an
       # opaque value that we use as that reference anywhere it's needed in the
       # query, rather than just a metric name or something like that.

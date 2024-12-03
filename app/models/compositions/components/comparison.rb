@@ -12,7 +12,7 @@ module Compositions
       # invalid. We still want to capture as much of the user input as possible
       # so we can provide errors from validations and things like that.
 
-      def self.from_params(params)
+      def self.all_from_params(params)
         # Each comparison params starts with +compare.+
         compare_params = params.to_unsafe_h.filter { |k, v| k.match(/^compare\..+/) }
 

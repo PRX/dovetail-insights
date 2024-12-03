@@ -17,7 +17,7 @@ module Compositions
         composition.window = params[:window].to_i if params[:window].present?
       end
 
-      composition.comparisons = Components::Comparison.from_params(params)
+      composition.comparisons = Components::Comparison.all_from_params(params)
 
       composition
     end

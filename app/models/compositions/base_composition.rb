@@ -11,7 +11,7 @@ module Compositions
 
       composition.from = params[:from] if params[:from]
       composition.to = params[:to] if params[:to]
-      composition.filters = Components::Filter.from_params(params)
+      composition.filters = Components::Filter.all_from_params(params)
 
       composition
     end

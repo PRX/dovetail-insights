@@ -12,7 +12,7 @@ module Compositions
       # invalid. We still want to capture as much of the user input as possible
       # so we can provide errors from validations and things like that.
 
-      def self.from_params(params)
+      def self.all_from_params(params)
         # A filter for a single dimension may be defined across multiple params,
         # so we collect the filters in a hash with the dimension as keys, so
         # that as we find more params related to some filter, we can easily find
