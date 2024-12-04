@@ -16,6 +16,10 @@ module Compositions
       composition
     end
 
+    def self.big_query
+      @big_query ||= Google::Cloud::Bigquery.new
+    end
+
     include Ranging
 
     attr_reader :filters

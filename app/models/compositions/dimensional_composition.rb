@@ -32,8 +32,7 @@ module Compositions
     def results
       return unless valid?
 
-      bigquery = Google::Cloud::Bigquery.new
-      @results ||= Results::Dimensional.new(self, bigquery.query(query))
+      @results ||= Results::Dimensional.new(self, self.class.big_query.query(query))
     end
 
     private
