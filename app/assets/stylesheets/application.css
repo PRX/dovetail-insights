@@ -163,10 +163,10 @@ table {
   width: 100%;
   border-collapse: collapse;
 
+  .totals { background-color: palegreen; }
+
   td {
     border: 1px solid #bbb;
     padding: 3px;
-
-    &.total { background-color: palegreen; }
   }
 }

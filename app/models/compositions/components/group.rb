@@ -103,7 +103,7 @@ module Compositions
       def summable?(metric)
         dimension_def = DataSchema.dimensions[dimension.to_s]
 
-        (dimension_def["SummableMetrics"] || []).include?(metric.metric)
+        (dimension_def["SummableMetrics"] || []).include?(metric.metric.to_s)
       end
     end
   end
