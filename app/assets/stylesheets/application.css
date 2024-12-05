@@ -165,8 +165,16 @@ table {
 
   .totals { background-color: palegreen; }
 
+  th {
+    text-align: left;
+  }
+
   td {
     border: 1px solid #bbb;
     padding: 3px;
+  }
+
+  col.data:nth-child(odd) {
+    background: gainsboro
   }
 }

@@ -28,11 +28,11 @@
 
     <%# Group 2 members %>
     <% @composition.results.group_2_unique_members&.each do |group_2_member| %>
-      <col <%= html_attributes(span: @composition.metrics.size) %>>
+      <col class="data" <%= html_attributes(span: @composition.metrics.size) %>>
     <% end %>
 
     <%# Group 2 nulls %>
-    <col <%= html_attributes(span: @composition.metrics.size) %>>
+    <col class="data" <%= html_attributes(span: @composition.metrics.size) %>>
   </colgroup>
 
   <thead>
