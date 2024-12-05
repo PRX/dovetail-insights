@@ -17,13 +17,13 @@
           <% end %>
         <% end %>
 
-        <% @composition.metrics&.each do |metric| %>
+        <% @composition.try(:metrics)&.each do |metric| %>
           <% metric.errors.full_messages.each do |msg| %>
             <li><%= metric.metric %> metric: <%= msg %></li>
           <% end %>
         <% end %>
 
-        <% @composition.groups&.each do |group| %>
+        <% @composition.try(:groups)&.each do |group| %>
           <% group.errors.full_messages.each do |msg| %>
             <li><%= group.dimension %> group: <%= msg %></li>
           <% end %>

@@ -1,0 +1,24 @@
+<tr class="metrics-headers">
+  <%# This +<tr>+ is displayed when zero groups are selected, but other rows %>
+  <%# will not include this first cell, so we exclude it here, too. %>
+  <% if @composition.groups.size > 0 %>
+    <td></td>
+  <% end %>
+
+  <% if @composition.groups.size > 1 %>
+    <% @composition.metrics.each do |metric| %>
+      <th><%= metric.metric %></th>
+    <% end %>
+  <% end %>
+
+  <%# A cell for each metric, for each member of group 2 %>
+  <% @composition.results.group_2_unique_members&.each do |group_2_member| %>
+    <% @composition.metrics.each do |metric| %>
+      <th><%= metric.metric %></th>
+    <% end %>
+  <% end %>
+
+  <% @composition.metrics.each do |metric| %>
+    <th><%= metric.metric %></th>
+  <% end %>
+</tr>

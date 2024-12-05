@@ -1,7 +1,71 @@
-<% if !@composition.groups || @composition.groups.empty? %>
-  <%= render "data_explorer/dimensional/results/table/0_groups" %>
-<% elsif @composition.groups.length == 1 %>
-  <%= render "data_explorer/dimensional/results/table/1_groups" %>
-<% else %>
-  <%= render "data_explorer/dimensional/results/table/2_groups" %>
-<% end %>
+<%#
+# This constructs a table for all the various permutations of dimension
+# analysis results, which supports 0, 1 or 2 groups and 1 or more metrics.
+#
+# A 2-group result with 2+ metrics utilizes all possible components of the
+# table. With fewer groups or fewer metrics, some parts of the table are not
+# included, as the become unnecessary.
+#
+# See the +<table>+ below for details about each table row, and see the
+# associated partials for more details about the specific contents of each row.
+#
+# The general structure of any given row is:
+# 1. A row header cell indicating the group 1 member
+# 2. Cells with the totals for that member for each metric
+# 3. Cells for each group 2 member, for each metric, with the value
+# 4. Cells for each metric where group 2 is NULL
+%>
+
+<table>
+  <colgroup>
+    <%# Group 1 member labels %>
+    <col>
+
+    <%# Group 1 totals %>
+    <% if @composition.groups.size > 1 %>
+      <col <%= html_attributes(span: @composition.metrics.size) %> class="totals">
+    <% end %>
+
+    <%# Group 2 members %>
+    <% @composition.results.group_2_unique_members&.each do |group_2_member| %>
+      <col <%= html_attributes(span: @composition.metrics.size) %>>
+    <% end %>
+
+    <%# Group 2 nulls %>
+    <col <%= html_attributes(span: @composition.metrics.size) %>>
+  </colgroup>
+
+  <thead>
+    <% if @composition.groups.size > 1 %>
+      <%# This row primarily displays the labels for group 2, so if a second %>
+      <%# group isn't selected, it's not displayed. %>
+      <%= render "data_explorer/dimensional/results/table/group_headers" %>
+    <% end %>
+
+    <% if @composition.metrics.size > 1 || @composition.groups.size == 0 %>
+      <%# This row primarily displays the labels for each metric, so if only %>
+      <%# one metric is selected, it's not displayed %>
+      <%= render "data_explorer/dimensional/results/table/metric_headers" %>
+    <% end %>
+  </thead>
+
+  <tbody>
+    <%# This row primarily displays totals for each member of group 2, but %>
+    <%# also includes an overall total for each metric, so it's included  %>
+    <%# even when only one group is selected. If no groups are selected, it %>
+    <%# is excluded. %>
+    <% if @composition.groups.size > 0 %>
+      <%= render "data_explorer/dimensional/results/table/totals_row" %>
+    <% end %>
+
+    <%# Displays a row for each member of group 1. If a first group isn't %>
+    <%# selected, this results in zero rows. %>
+    <%= render "data_explorer/dimensional/results/table/group_rows" %>
+
+    <%# This row is for values where group 1 is NULL. This includes both %>
+    <%# when a first group is selected and some values are not associated %>
+    <%# with any member, and when no first group is selected and the query %>
+    <%# results don't associate any values with a group member. %>
+    <%= render "data_explorer/dimensional/results/table/no_group_row" %>
+  </tbody>
+</table>
