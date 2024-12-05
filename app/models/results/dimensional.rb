@@ -78,7 +78,7 @@ module Results
       elsif group && member
         rows.filter { |row| row[group.as] == member }.map { |row| row[metric.as] }.compact.max
       else
-        rows.map { |row| row[metric.as] }.compact.max
+        rows.map { |row| row[metric.as] }.compact.max.blank?
       end
     end
 
@@ -119,7 +119,7 @@ module Results
     #
     # For example, if the group's dimension is podcast_id, the member will be
     # an ID number like 123. This would look for the podcast_name value
-    # associated with podcast 123, since podcast_name is the exhibiti property
+    # associated with podcast 123, since podcast_name is the exhibit property
     # of podcast_id.
 
     def group_member_label(group, member)
@@ -141,7 +141,11 @@ module Results
 
         # That row will also have the exhibit property value that we're looking
         # for
-        sample_row[prop_as]
+        exhibit_value = sample_row[prop_as]
+
+        # If for some reason the exhibt value did't come back as something
+        # useful, fallback to the member value
+        exhibit_value.blank? ? member : exhibit_value
       else
         member
       end
