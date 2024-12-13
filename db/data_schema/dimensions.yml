@@ -123,7 +123,7 @@ Dimensions:
       Type: INTEGER
       RequiredTables: [operating_systems]
   continent_code:
-    Type: String
+    Type: Token
     QueryKey: continent
     SummableMetrics:
       - downloads
@@ -146,7 +146,7 @@ Dimensions:
       Type: INTEGER
       RequiredTables: [countries]
   subdivision_iso_code:
-    Type: String
+    Type: Token
     QueryKey: subdiv
     ExhibitProperty: subdivision_name
     StaticProperties:
