@@ -199,28 +199,43 @@ function hotkeys(e) {
 function highlight(ev) {
   const tbl = document.querySelector("#results table");
 
-  const cells = tbl.querySelectorAll("td[data-raw-value]");
+  const allCells = tbl.querySelectorAll("td[data-raw-value]");
 
-  let max = 0;
-  let min = 99999999;
+  const uniqHighlightGroups = new Set(
+    Array(...allCells).map((c) => c.dataset.highlightGroup),
+  );
 
-  for (const cell of cells) {
-    const val = +cell.dataset.rawValue;
+  let i = 0;
+  for (const highlightGroup of uniqHighlightGroups) {
+    const cells = tbl.querySelectorAll(
+      `td[data-highlight-group='${highlightGroup}']`,
+    );
 
-    if (val > max) {
-      max = val;
+    let max = 0;
+    let min = 99999999;
+
+    for (const cell of cells) {
+      const val = +cell.dataset.rawValue;
+
+      if (val > max) {
+        max = val;
+      }
+
+      if (val !== 0 && val < min) {
+        min = val;
+      }
     }
 
-    if (val !== 0 && val < min) {
-      min = val;
-    }
-  }
+    const hue = 298 - i * 60;
 
-  for (const cell of cells) {
-    const val = +cell.dataset.rawValue;
-    const scale =
-      (Math.log(val) - Math.log(min)) / (Math.log(max) - Math.log(min));
-    cell.style.background = `hsla(298 100% 68% / ${scale})`;
+    for (const cell of cells) {
+      const val = +cell.dataset.rawValue;
+      const scale =
+        (Math.log(val) - Math.log(min)) / (Math.log(max) - Math.log(min));
+      cell.style.background = `hsla(${hue} 100% 68% / ${scale})`;
+    }
+
+    i += 1;
   }
 }
 
