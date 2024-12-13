@@ -4,7 +4,8 @@
     <%= html_attributes("data-raw-member": group_1_member) %>
     scope="row">
 
-    <%= @composition.results.group_member_label(@composition.groups[0], group_1_member) %>
+    <% label = @composition.results.group_member_label(@composition.groups[0], group_1_member) %>
+    <%= Labeler.label(label, @composition.groups[0]) %>
   </th>
 
   <%# Totals for this member of group 1 (a total for each metric) %>

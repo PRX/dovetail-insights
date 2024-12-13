@@ -11,7 +11,8 @@
       <%= html_attributes(colspan: @composition.metrics.size) %>
       <%= html_attributes("data-raw-member": group_2_member) %>>
 
-      <%= @composition.results.group_member_label(@composition.groups[1], group_2_member) %>
+      <% label = @composition.results.group_member_label(@composition.groups[1], group_2_member) %>
+      <%= Labeler.label(label, @composition.groups[1]) %>
     </th>
   <% end %>
 
