@@ -35,7 +35,8 @@
     <% @composition.metrics.each do |metric| %>
       <% value = @composition.results.get_value(metric, group_1_member, group_2_member) %>
 
-      <td <%= html_attributes("data-raw-value": value) %>>
+      <td <%= html_attributes("data-highlight-group": metric.metric) %>
+        <%= html_attributes("data-raw-value": value) %>>
         <%= number_with_delimiter(value) %>
       </td>
     <% end %>
@@ -46,7 +47,8 @@
   <% @composition.metrics.each do |metric| %>
     <% value = @composition.results.get_value(metric, group_1_member, nil) %>
 
-    <td <%= html_attributes("data-raw-value": value) %>>
+    <td <%= html_attributes("data-highlight-group": metric.metric) %>
+      <%= html_attributes("data-raw-value": value) %>>
       <%= number_with_delimiter(value) %>
     </td>
   <% end %>
