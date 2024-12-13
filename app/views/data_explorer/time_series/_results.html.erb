@@ -1,7 +1,34 @@
-<% if !@composition.groups || @composition.groups.empty? %>
-  <%= render "data_explorer/time_series/results/table/0_groups" %>
-<% elsif @composition.groups.length == 1 %>
-  <%= render "data_explorer/time_series/results/table/1_groups" %>
-<% else %>
-  <%= render "data_explorer/time_series/results/table/2_groups" %>
-<% end %>
+<table>
+  <colgroup>
+    <%# Group 1 member labels %>
+    <col>
+
+    <%# Group 2 member labels %>
+    <col>
+
+    <%# Granularity member labels %>
+    <% @composition.results.granularity_unique_members.each do |granularity_member| %>
+      <% num_metrics = @composition.metrics.size %>
+      <% num_comparisons = @composition.comparisons.reduce(0) { |sum, c| sum + c.lookback } + 1 %>
+      <% colspan = num_metrics * num_comparisons %>
+
+      <col class="data" <%= html_attributes(span: colspan) %>>
+    <% end %>
+  </colgroup>
+
+  <thead>
+    <%= render "data_explorer/time_series/results/table/granularity_headers" %>
+
+    <%= render "data_explorer/time_series/results/table/metric_headers" %>
+
+    <%= render "data_explorer/time_series/results/table/comparison_headers" %>
+  </thead>
+
+  <tbody>
+    <%= render "data_explorer/time_series/results/table/totals_row" %>
+
+    <%= render "data_explorer/time_series/results/table/group_rows" %>
+
+    <%= render "data_explorer/time_series/results/table/no_group_row" %>
+  </tbody>
+</table>

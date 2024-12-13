@@ -1,0 +1,27 @@
+<tr>
+  <th scope="row">UNKNOWN</th>
+  <th scope="row"></th>
+
+  <% @composition.results.granularity_unique_members.each do |granularity_member| %>
+    <% @composition.metrics.each do |metric| %>
+      <% @composition.comparisons.each do |comparison| %>
+        <% comparison.lookback.times do |i| %>
+          <%# if +comparison.lookback+ is 3, +lookback+ should be -3, -2, %>
+          <%# and -1 for the loops. So when i=0, lookback=-3, and i=1 l=-2 %>
+          <% lookback = -(comparison.lookback - i) %>
+          <% value = @composition.results.get_value_comparison(comparison, lookback, metric, granularity_member, nil) %>
+
+          <td <%= html_attributes("data-raw-value": value) %>>
+            <%= number_with_delimiter(value) %>
+          </td>
+        <% end %>
+      <% end %>
+
+      <% value = @composition.results.get_value(metric, granularity_member, nil) %>
+
+      <td <%= html_attributes("data-raw-value": value) %>>
+        <%= number_with_delimiter(value) %>
+      </td>
+    <% end %>
+  <% end %>
+</tr>

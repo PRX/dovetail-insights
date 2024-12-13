@@ -1,0 +1,15 @@
+<tr>
+  <td></td>
+  <td></td>
+
+  <%# A cell for each granularity period, spanning all metrics and comparisons %>
+  <% @composition.results.granularity_unique_members.each do |member| %>
+    <% num_metrics = @composition.metrics.size %>
+    <% num_comparisons = @composition.comparisons.reduce(0) { |sum, c| sum + c.lookback } + 1 %>
+    <% colspan = num_metrics * num_comparisons %>
+
+    <th <%= html_attributes(colspan: colspan) %>>
+      <%= granularity_label(@composition, member) %>
+    </th>
+  <% end %>
+</tr>

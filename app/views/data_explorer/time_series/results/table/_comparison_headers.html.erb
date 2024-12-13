@@ -1,0 +1,20 @@
+<tr>
+  <td></td>
+  <td></td>
+
+  <% @composition.results.granularity_unique_members.each do |_| %>
+    <% @composition.metrics.each do |metric| %>
+      <% @composition.comparisons.each do |comparison| %>
+        <% comparison.lookback.times do |i| %>
+          <%# if +comparison.lookback+ is 3, +lookback+ should be -3, -2, %>
+          <%# and -1 for the loops. So when i=0, lookback=-3, and i=1 l=-2 %>
+          <% lookback = -(comparison.lookback - i) %>
+
+          <th><%= comparison.period %> <%= lookback %></th>
+        <% end %>
+      <% end %>
+
+      <th><%= @composition.comparisons.first.period %> -0</th>
+    <% end %>
+  <% end %>
+</tr>

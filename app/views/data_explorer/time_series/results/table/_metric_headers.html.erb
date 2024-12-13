@@ -1,0 +1,14 @@
+<tr>
+  <td></td>
+  <td></td>
+
+  <% @composition.results.granularity_unique_members.each do |_| %>
+    <% @composition.metrics.each do |metric| %>
+      <% colspan = @composition.comparisons.reduce(0) { |sum, c| sum + c.lookback } + 1 %>
+
+      <th <%= html_attributes(colspan: colspan) %>>
+        <%= metric.metric %>
+      </th>
+    <% end %>
+  <% end %>
+</tr>
