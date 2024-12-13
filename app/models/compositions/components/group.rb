@@ -62,7 +62,7 @@ module Compositions
               # to integers. Make sure we handle those properly, either by
               # looking at the type of the dimension for this group if it's
               # available, or heuristically from the indices if it's not
-              group.indices = param_value.split(",").map { |i| i.strip.to_i }.sort
+              group.indices = param_value.split(",").map { |i| i.strip }.map { |i| i.include?("D") ? i.sub("D", "").to_i * 86400 : i.to_i }.sort
             end
           end
         end
