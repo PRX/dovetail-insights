@@ -43,6 +43,7 @@ Dimensions:
       - impressions
     BigQuery:
       Selector: episodes.id
+      Type: STRING
       RequiredTables: [episodes]
   download_timestamp:
     Type: Timestamp
