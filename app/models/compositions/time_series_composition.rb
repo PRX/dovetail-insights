@@ -38,6 +38,7 @@ module Compositions
     validate :each_comparions_is_valid, :comparisons_are_unique, :comparison_count_is_correct
     validates :granularity, inclusion: {in: [:daily, :weekly, :monthly, :quarterly, :yearly, :rolling], message: "is not a supported value"}
     validate :comparisons_are_supported_granularity
+    validate :rolling_uniques_period_exceeds_interval
 
     # TODO Validate that comparisons are supported for the selected granularity
     # TODO Validate metrics (may be different validations than with dimensional lens)
@@ -232,6 +233,32 @@ module Compositions
       if comparisons
         if comparisons.size > 1
           errors.add(:comparisons, "only support a single comparison")
+        end
+      end
+    end
+
+    ##
+    # The period used for rolling uniques should always be longer than the
+    # time series intervals' size. It wouldn't really make sense to show 7-day
+    # uniques for monthly granularity
+
+    def rolling_uniques_period_exceeds_interval
+      metrics.each do |metric|
+        if metric.metric == :rolling_uniques
+          rolling_period = metric.variable
+
+          interval_size = {
+            daily: 86_400,
+            weekly: 86_400 * 7,
+            monthly: 86_400 * 31,
+            quarterly: 86_400 * 31 * 3,
+            yearly: 86_400 * 365,
+            rolling: window
+          }
+
+          if rolling_period < interval_size[granularity]
+            errors.add(:metrics, "cannot include rolling uniques with a period shorter than the selected granularity")
+          end
         end
       end
     end
