@@ -88,11 +88,11 @@
               <% elsif ["Duration"].include? dimension_def["Type"] %>
                 <br>
                 <label for="filter.<%= dim_key %>.from">From:</label>
-                <input autocomplete="off" class="from" type="text" placeholder="42" id="filter.<%= dim_key %>.from" name="filter.<%= dim_key %>.from" value="<%= params["filter.#{dim_key}.from"] %>">
+                <input autocomplete="off" class="gte" type="text" placeholder="42" id="filter.<%= dim_key %>.gte" name="filter.<%= dim_key %>.gte" value="<%= params["filter.#{dim_key}.gte"] %>">
 
                 <br>
                 <label for="filter.<%= dim_key %>.to">To:</label>
-                <input autocomplete="off" class="to" type="text" placeholder="1066" id="filter.<%= dim_key %>.to" name="filter.<%= dim_key %>.to" value="<%= params["filter.#{dim_key}.to"] %>">
+                <input autocomplete="off" class="lt" type="text" placeholder="1066" id="filter.<%= dim_key %>.lt" name="filter.<%= dim_key %>.lt" value="<%= params["filter.#{dim_key}.lt"] %>">
               <% elsif ["Timestamp"].include? dimension_def["Type"] %>
                 <br>
                 <select class="timestamp-mode">
@@ -167,8 +167,8 @@
           <% if metric_def["Type"] == "Variable" %>
             <% checked = @composition.try(:metrics) && @composition.metrics.find {|m| m.metric == metric_name.to_sym } %>
             <label><input type="checkbox" value="<%= metric_name %>" <%= html_attributes(checked: "checked") if checked %>> <%= metric_name %></label>
-            <% all_variables = @composition.try(:metrics) && @composition.metrics.filter {|m| m.metric == metric_name } %>
-            <input name="<%= metric_name %>.variables" placeholder="e.g., '7' or '7, 14, 30'" value="<%= (all_variables||[]).map {|m| m.variable}.join(", ") %>">
+            <% all_variables = @composition.try(:metrics) && @composition.metrics.filter {|m| m.metric == metric_name.to_sym } %>
+            <input name="<%= metric_name %>.variables" placeholder="e.g., '7' or '7, 14, 30'" <%= html_attributes(value: (all_variables||[]).map {|m| m.variable}.join(", ")) %>>
           <% else %>
             <% checked = @composition.try(:metrics) && @composition.metrics.find {|m| m.metric == metric_name.to_sym } %>
             <label><input type="checkbox" value="<%= metric_name %>" <%= html_attributes(checked: "checked") if checked %>> <%= metric_name %></label>

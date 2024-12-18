@@ -28,6 +28,8 @@ function doGet() {
     const valEl = li.querySelector("input.value");
     const fromEl = li.querySelector("input.from");
     const toEl = li.querySelector("input.to");
+    const gteEl = li.querySelector("input.gte");
+    const ltEl = li.querySelector("input.lt");
 
     const filterType = li.querySelector("fieldset").dataset.dimensionType;
 
@@ -50,11 +52,11 @@ function doGet() {
     }
 
     if (["Duration"].includes(filterType)) {
-      if (fromEl?.value) {
-        params.set(fromEl.name, fromEl.value);
+      if (gteEl?.value) {
+        params.set(gteEl.name, gteEl.value);
       }
-      if (toEl?.value) {
-        params.set(toEl.name, toEl.value);
+      if (ltEl?.value) {
+        params.set(ltEl.name, ltEl.value);
       }
     }
 

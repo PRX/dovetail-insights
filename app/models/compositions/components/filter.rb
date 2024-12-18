@@ -68,6 +68,10 @@ module Compositions
               filter.from = param_value.strip
             elsif param_key.to_s == "filter.#{query_key}.to"
               filter.to = param_value.strip
+            elsif param_key.to_s == "filter.#{query_key}.gte"
+              filter.gte = param_value.strip.to_i
+            elsif param_key.to_s == "filter.#{query_key}.lt"
+              filter.lt = param_value.strip.to_i
             elsif param_key.to_s == "filter.#{query_key}.extract"
               filter.extract = param_value.to_sym
             end
@@ -81,13 +85,15 @@ module Compositions
 
       include Ranging
 
-      attr_reader :dimension, :operator
+      attr_reader :dimension, :operator, :gte, :lt
       attr_accessor :values, :extract
 
       validates :dimension, :operator, presence: true
       validates :operator, inclusion: {in: [:include, :exclude], message: "must be either include or exclude"}
       validate :dimension_is_defined, :uses_supported_options
       validate :token_filter_has_valid_values, :extraction_is_valid, :timestamp_filter_only_uses_one_mode, :timestamp_range_is_complete
+
+      # TODO Validate lt is larger than gte
 
       def initialize(dimension_name)
         raise unless dimension_name.instance_of? Symbol
@@ -98,6 +104,26 @@ module Compositions
       def operator=(operator)
         raise unless operator.instance_of? Symbol
         @operator = operator
+      end
+
+      def gte=(gte)
+        raise unless gte.instance_of? Integer
+
+        # TODO This value should be in seconds for durations, and should support both raw input
+        # in seconds from the form, and more friendly input like "7D" and convert
+        # the days to seconds
+
+        @gte = gte
+      end
+
+      def lt=(lt)
+        raise unless lt.instance_of? Integer
+
+        # TODO This value should be in seconds for durations, and should support both raw input
+        # in seconds from the form, and more friendly input like "7D" and convert
+        # the days to seconds
+
+        @lt = lt
       end
 
       private

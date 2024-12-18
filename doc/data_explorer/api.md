@@ -15,8 +15,10 @@ This format was chosen over cramming a bunch of encoded JSON into a URL. There a
 - `to`: The exclusive end of the time range. Supports the same formats as `from`.
 - `filter.<dimension>`: For the given dimension, indicates whether the filter operate as an `include` or `exclude`.
 - `filter.<dimension>.values`: A comma-seperated list of values that impact the behavior of the filter
-- `filter.<dimension>.from`: An inclusive range start value for the filter. Supports the same formats as `from`, as well as integers.
-- `filter.<dimension>.to`: An exclusive range end value for the filter. Supports the same formats as `to`, as well as integers.
+- `filter.<dimension>.from`: An inclusive range start value for the filter. Supports the same formats as `from`.
+- `filter.<dimension>.gte`: An inclusive range start value for the filter. Supports integers.
+- `filter.<dimension>.to`: An exclusive range end value for the filter. Supports the same formats as `to`.
+- `filter.<dimension>.lt`: An exclusive range end value for the filter. Supports integers.
 - `filter.<name>.extract`: A comma-separated list of values from the set of values for some date part. For example, if the date part in question were _day of week_, this may be `2,3,4,5,6`, or if the date part were _month_, this may be `10,11,12`.
 - `filter.<name>.disabled`: When present, the filter is treated as disabled, the value does not matter.
 - `granularity`: A value like `daily`, `weekly`, `monthly`,.
