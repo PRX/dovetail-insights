@@ -1,4 +1,13 @@
 module Compositions
+  ##
+  # The Time Series lens allows users to analyze 1 or more metrics, aggregated
+  # by some temporal buckets (daily, monthly, etc), and then by 0, 1 or 2
+  # dimension groups.
+  #
+  # Additionally, comparisons to related historical data can be included in the
+  # results. See +#results+ for information about how comparisons affect the
+  # number of queries being made.
+
   class TimeSeriesComposition < DimensionalComposition
     def self.query_value
       "timeSeries"
@@ -40,6 +49,9 @@ module Compositions
     end
 
     def window=(window)
+      # TODO This value should be in seconds, and should support both raw input
+      # in seconds from the form, and more friendly input like "7D" and convert
+      # the days to seconds
       raise unless window.instance_of? Integer
 
       @window = window
@@ -66,6 +78,18 @@ module Compositions
       erb.result(a_binding)
     end
 
+    ##
+    # When the composition includes comparisons, each comparision is made up of
+    # a +period+ (like, week-over-week or year-over-year) and a +lookback+ (the
+    # number of previous weeks or years to compare). A query is made to
+    # BigQuery for _each lookback_.
+    #
+    # For example, if the composition includes a YoY comparison and a WoW
+    # comparison, and the YoY comparison has a lookback of 5 and the WoW
+    # comparison has a lookback of 10, that would resultin 16 total queries
+    # being made to BigQuery: one for the standard results, and an additional
+    # query for each lookback interval.
+
     def results
       return unless valid?
 
@@ -82,6 +106,7 @@ module Compositions
       # position as the comparison in #comparisons
       # TODO Putting all the row sets into single array won't really work if
       # there are multiple comparions, which isn't currently supported
+      # TODO Make these BigQuery requests concurrently
       (comparisons || []).each_with_index do |comparison, i|
         base_results.comparison_row_sets[i] = [] if base_results.comparison_row_sets[i].nil?
 

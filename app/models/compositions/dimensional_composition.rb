@@ -1,6 +1,9 @@
 require "google/cloud/bigquery"
 
 module Compositions
+  # The Dimensional lens allows a user to analyze 1 or more metrics, with 0, 1
+  # or 2 dimension groups.
+
   class DimensionalComposition < BaseComposition
     def self.query_value
       "dimensional"
@@ -28,6 +31,10 @@ module Compositions
 
       @query ||= sql
     end
+
+    ##
+    # A single query to BigQuery can generate the results for a Dimension
+    # analysis.
 
     def results
       return unless valid?

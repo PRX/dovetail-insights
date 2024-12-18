@@ -9,8 +9,8 @@
   tables = []
 
   # Collect all the tables that are needed for filters, metrics, and groups.
-  # This only includes the tables tha are *directly* required for each of these;
-  # those tables may have chained dependencies, which are handled below.
+  # This only includes the tables that are *directly* required for each of
+  # these; those tables may have chained dependencies, which are handled below.
   filters.each { |filter| (DataSchema.dimensions[filter.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
   metrics.each { |metric| (DataSchema.metrics[metric.metric.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
   groups.each { |group| (DataSchema.dimensions[group.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }

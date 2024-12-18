@@ -51,6 +51,9 @@ module Compositions
       end
 
       def variable=(variable)
+        # TODO This value should be in seconds, and should support both raw input
+        # in seconds from the form, and more friendly input like "7D" and convert
+        # the days to seconds
         raise unless variable.instance_of? Integer
 
         @variable = variable

@@ -1,4 +1,10 @@
 module Compositions
+  ##
+  # An abstract class that provides common functionality for Data Explorer
+  # compositions.
+  #
+  # All lenses support: range (from and to) and filters.
+
   class BaseComposition
     include ActiveModel::Model
 
@@ -25,6 +31,7 @@ module Compositions
     attr_reader :filters
 
     # All lenses support and require a time range define by +from+ and +to+.
+    # These values are mostly handled by +Ranging+.
     validates :from, :to, presence: true
 
     validate :lens_must_not_be_base_class, :all_filters_are_valid
