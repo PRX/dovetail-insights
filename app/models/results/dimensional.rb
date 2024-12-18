@@ -8,6 +8,36 @@ module Results
       @rows = rows
     end
 
+    def as_csv
+      CSV.generate(headers: true) do |csv|
+        headers = []
+
+        headers << (@composition.groups[0] ? @composition.groups[0].dimension : "")
+        headers << (@composition.groups[1] ? @composition.groups[1].dimension : "")
+
+        @composition.metrics.each do |metric|
+          headers << metric.metric
+        end
+
+        csv << headers
+
+        (group_1_unique_members || [nil]).each do |group_1_member|
+          (group_2_unique_members || [nil]).each do |group_2_member|
+            row = []
+
+            (row << group_1_member) ? group_member_label(@composition.groups[0], group_1_member) : ""
+            (row << group_2_member) ? group_member_label(@composition.groups[1], group_2_member) : ""
+
+            @composition.metrics.each do |metric|
+              row << get_value(metric, group_1_member, group_2_member)
+            end
+
+            csv << row
+          end
+        end
+      end
+    end
+
     ##
     # Get a single, raw data point value from the results for a given tuple of
     # metric and group members. Every data point is associated with a metric,
