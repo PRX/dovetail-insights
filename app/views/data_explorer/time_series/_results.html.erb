@@ -21,7 +21,9 @@
 
     <%= render "data_explorer/time_series/results/table/metric_headers" %>
 
-    <%= render "data_explorer/time_series/results/table/comparison_headers" %>
+    <% if @composition.comparisons.size > 0 %>
+      <%= render "data_explorer/time_series/results/table/comparison_headers" %>
+    <% end %>
   </thead>
 
   <tbody>
