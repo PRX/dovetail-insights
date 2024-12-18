@@ -51,8 +51,8 @@ module Results
         g1_test = row[@composition.groups[0].as] == group1_member if group1_member
         g2_test = row[@composition.groups[1].as] == group2_member if group2_member
 
-        g1_test = row[@composition.groups[0].as].nil? if group1_member.nil?
-        g2_test = row[@composition.groups[1].as].nil? if group2_member.nil?
+        g1_test = row[@composition.groups[0].as].nil? if group1_member.nil? && @composition.groups[0]
+        g2_test = row[@composition.groups[1].as].nil? if group2_member.nil? && @composition.groups[1]
 
         granularity_test && g1_test && g2_test
       end
