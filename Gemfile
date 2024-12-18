@@ -45,6 +45,12 @@ gem "google-cloud-bigquery"
 # Rails integration for PRX authorization system [https://github.com/PRX/prx_auth-rails]
 gem "prx_auth-rails", github: "prx/prx_auth-rails", branch: "routes-fix"
 
+# CSV Reading and Writing [https://github.com/ruby/csv]
+gem "csv"
+
+# OpenStruct implementation [https://github.com/ruby/ostruct]
+gem "ostruct"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
