@@ -14,7 +14,7 @@
         <% end %>
       <% end %>
 
-      <th><%= @composition.comparisons.first.period %> -0</th>
+      <th><%= @composition.comparisons.first&.period || "Now" %> -0</th>
     <% end %>
   <% end %>
 </tr>
