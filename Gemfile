@@ -33,9 +33,6 @@ gem "solid_cable"
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
-# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem "kamal", ">= 2.3.0", require: false
-
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 
@@ -44,6 +41,9 @@ gem "thruster", require: false
 
 # Make requests to BigQuery [https://cloud.google.com/ruby/docs/reference/google-cloud-bigquery/latest/index.html]
 gem "google-cloud-bigquery"
+
+# Rails integration for PRX authorization system [https://github.com/PRX/prx_auth-rails]
+gem "prx_auth-rails", github: "prx/prx_auth-rails", branch: "routes-fix"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
