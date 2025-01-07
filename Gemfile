@@ -51,6 +51,9 @@ gem "csv"
 # OpenStruct implementation [https://github.com/ruby/ostruct]
 gem "ostruct"
 
+# Better HTML for Rails [https://github.com/Shopify/better-html]
+gem "better_html"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
@@ -63,9 +66,6 @@ group :development, :test do
 
   # Shim to load environment variables from .env into ENV [https://github.com/bkeepers/dotenv]
   gem "dotenv"
-
-  # Better HTML for Rails [https://github.com/Shopify/better-html]
-  gem "better_html"
 end
 
 group :development do
