@@ -51,7 +51,7 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 FROM base
 
 LABEL maintainer="PRX <sysadmin@prx.org>"
-LABEL org.prx.spire.publish.ecr="WEB_SERVER"
+LABEL org.prx.spire.publish.ecr="RAILS_APP"
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
