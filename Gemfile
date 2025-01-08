@@ -54,6 +54,9 @@ gem "ostruct"
 # Better HTML for Rails [https://github.com/Shopify/better-html]
 gem "better_html"
 
+# The New Relic Ruby agent monitors your applications [https://docs.newrelic.com/docs/agents/ruby-agent]
+gem "newrelic_rpm"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
