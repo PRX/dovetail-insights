@@ -43,7 +43,7 @@ gem "thruster", require: false
 gem "google-cloud-bigquery"
 
 # Rails integration for PRX authorization system [https://github.com/PRX/prx_auth-rails]
-gem "prx_auth-rails", github: "prx/prx_auth-rails", branch: "routes-fix"
+gem "prx_auth-rails", github: "prx/prx_auth-rails"
 
 # CSV Reading and Writing [https://github.com/ruby/csv]
 gem "csv"
