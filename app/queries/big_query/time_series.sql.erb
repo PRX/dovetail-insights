@@ -240,6 +240,8 @@ FROM downloads_in_range AS downloads
     bq_type = filter_def["BigQuery"]["Type"]
 
     # Filters with a `from` are ranges
+    # TODO `from` is now only used for dates, I think. gte/lt would be used
+    # numbers, so the TIMESTAMP check is probably not necessary
     if filter.from
       # Wrap values for timestamp fields in quotes
       from = bq_type == "TIMESTAMP" ? %Q("#{filter.from}") : filter.from
@@ -249,6 +251,16 @@ FROM downloads_in_range AS downloads
         wheres << "#{selector} >= #{from} AND #{selector} < #{to}"
       else
         wheres << "#{selector} < #{from} OR #{selector} >= #{to}"
+      end
+    elsif filter.gte
+      # Wrap values for timestamp fields in quotes
+      gte = bq_type == "TIMESTAMP" ? %Q("#{filter.gte}") : filter.gte
+      lt = bq_type == "TIMESTAMP" ? %Q("#{filter.lt}") : filter.lt
+
+      if filter.operator == :include
+        wheres << "#{selector} >= #{gte} AND #{selector} < #{lt}"
+      else
+        wheres << "#{selector} < #{gte} OR #{selector} >= #{lt}"
       end
     else
       # Filter on a basic list of values
