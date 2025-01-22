@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= content_for?(:title) ? content_for(:title) : "Dovetail Inventory" %></title>
+    <title><%= content_for?(:title) ? content_for(:title) : "Dovetail Insights" %></title>
     <%= favicon_link_tag asset_path("favicon.ico") %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -12,7 +12,28 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-turbo="false">
-    <%= yield %>
+  <body data-controller="blank-field popover">
+    <%= render "layouts/nav" %>
+    <%= render "layouts/subnav" %>
+    <%= render "layouts/alerts" %>
+
+    <% if content_for? :tabs %>
+      <div class="prx-main container-fluid flex-grow-1">
+        <div class="row">
+          <aside class="prx-tabs d-flex flex-column justify-content-between col-sm-12 col-md-3 col-xl-2">
+            <nav class="prx-tabs-nav nav nav-tabs flex-column sticky-md-top">
+              <%= yield :tabs %>
+            </nav>
+          </aside>
+          <main class="prx-tab-content col-sm-12 col-md-9 col-xl-10 bg-white"><%= yield %></main>
+        </div>
+      </div>
+    <% else %>
+      <main class="container-fluid gy-4 gx-5 p-4">
+        <%= yield %>
+      </main>
+    <% end %>
+
+    <%= yield :modals %>
   </body>
 </html>

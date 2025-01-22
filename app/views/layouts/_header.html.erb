@@ -1,0 +1,102 @@
+<prx-header>
+  <header class="d-flex align-items-center justify-content-start">
+    <%# NOTE: in prx_auth-rails engine views, need main app paths %>
+    <button class="btn btn-dark align-self-center ms-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#prxmenu" aria-controls="prxmenu">
+      <span class="material-icons align-middle">menu</span>
+    </button>
+    <h1 class="flex-grow-1 align-self-start ms-2"><%= link_to "PRX", main_app.root_path %></h1>
+    <% if current_user %>
+    <prx-navitem class="align-self-end me-2">
+      <div class="nav-holder nav-user">
+        <a href="#" aria-label="Account">
+          <% if current_user_image_url.present? %>
+            <div class="nav-avatar" style="background-image: url(<%= current_user_image_url %>)"></div>
+          <% else %>
+            <div class="nav-avatar"></div>
+          <% end %>
+        </a>
+        <div class="nav-menu">
+          <h4><%= current_user_name %></h4>
+          <ul>
+            <% current_user_apps.each do |name, url| %>
+              <li><%= link_to name, url %></li>
+            <% end %>
+          </ul>
+          <div class="d-flex justify-content-between">
+            <%= link_to "Reload", main_app.refresh_path, data: {turbo: false} %>
+            <%= link_to "Logout", main_app.logout_path, data: {turbo: false} %>
+          </div>
+        </div>
+      </div>
+    </prx-navitem>
+    <% end %>
+  </header>
+</prx-header>
+
+<aside class="prxoffcanvas offcanvas offcanvas-start" tabindex="-1" id="prxmenu" aria-labelledby="prxmenuLabel" data-turbo="false">
+  <div class="offcanvas-header m-0 p-0">
+    <button type="button" class="btn btn-light text-reset" data-bs-dismiss="offcanvas" aria-label="Close">
+      <span class="material-icons align-middle">close</span>
+    </button>
+  </div>
+  <div class="offcanvas-body m-0 p-0">
+    <nav>
+      <% unless defined?(hide_nav) && hide_nav %>
+        <h2>Reports</h2>
+        <ul class="list-group list-group-flush bg-dark mb-3">
+          <li class="list-group-item">
+            <%= link_to "Availability Search", main_app.availability_path %>
+          </li>
+          <li class="list-group-item">
+            <%= link_to "Report Builder", main_app.reports_builder_path %>
+          </li>
+          <li class="list-group-item">
+            <%= link_to "All Reports", main_app.reports_path %>
+          </li>
+        </ul>
+        <h2>Campaigns</h2>
+        <ul class="list-group list-group-flush bg-dark mb-3">
+          <li class="list-group-item">
+            <%= link_to "Flights", default_flights_path %>
+          </li>
+        </ul>
+        <h2>Assets</h2>
+        <ul class="list-group list-group-flush bg-dark mb-3">
+          <li class="list-group-item">
+            <%= link_to "Series", main_app.inventory_index_path %>
+          </li>
+          <li class="list-group-item">
+            <%= link_to "Advertisers", main_app.advertisers_path %>
+          </li>
+          <li class="list-group-item">
+            <%= link_to "Creatives", main_app.creatives_path %>
+          </li>
+          <!--
+          *Feature not usable until #671 (Collection Flights wizard)
+          <li class="list-group-item">
+            <%= link_to "Collections", main_app.collections_path %>
+          </li>
+          -->
+        </ul>
+      <% end %>
+      <h2>Support</h2>
+      <ul class="list-group list-group-flush bg-dark mb-3">
+        <li class="list-group-item">
+          <a href="https://help.prx.org/">Help</a>
+        </li>
+        <li class="list-group-item">
+          <a href="http://status.prx.org/">Status</a>
+        </li>
+        <li class="list-group-item">
+          <a href="https://exchange.prx.org/terms-of-use">Terms</a>
+        </li>
+        <li class="list-group-item">
+          <a href="https://dovetail.prx.org/attribution">Attribution</a>
+        </li>
+        <li class="list-group-item">
+          <a href="https://exchange.prx.org/privacy-policy">Privacy</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>

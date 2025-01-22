@@ -1,6 +1,6 @@
 <%= form_with model: @composition, url: "/", method: :get, id: "data-explorer", class: "row" do |form| %>
   <div id="global-data-parameters" class="col-2">
-    <fieldset>
+    <fieldset class="form-group">
       <legend>Composition Errors</legend>
 
       <%# Force validation TODO must be a better way to do this %>
@@ -53,7 +53,7 @@
       </ul>
     </fieldset>
 
-    <fieldset>
+    <fieldset class="form-group">
       <legend>Current Time Range</legend>
       <p>From: <%= @composition.abs_from %></p>
       <p>To: <%= @composition.abs_to %></p>
@@ -181,7 +181,7 @@
 
         <% [1,2].each do |i| %>
         <% idx = i - 1 %>
-        <fieldset>
+        <fieldset class="form-group">
           <legend>Group <%= i %></legend>
 
           <label for="group.<%= i %>">Group By</label>
@@ -245,7 +245,7 @@
         <input name="compare-lookback" value="<%= compare.try(:lookback) %>">
       </fieldset>
 
-      <fieldset>
+      <fieldset class="form-group">
         <legend>Display Options</legend>
 
         Highlight
@@ -268,5 +268,5 @@
     </div>
   </div>
 
-  <%= form.submit "Submit", class: "fixed-bottom" %>
+  <%= form.submit "Submit", class: "fixed-bottom btn btn-primary" %>
 <% end %>
