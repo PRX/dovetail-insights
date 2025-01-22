@@ -1,0 +1,18 @@
+.toaster {
+  z-index: $zindex-toast;
+
+  .bg-success,
+  .bg-danger {
+    .toast-body,
+    .btn-close {
+      color: white;
+    }
+  }
+
+  .bg-warning {
+    .toast-body,
+    .btn-close {
+      color: black;
+    }
+  }
+}

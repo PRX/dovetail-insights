@@ -1,0 +1,135 @@
+:root {
+  --prx-tabs-nav-gap: 1px;
+  --prx-tab-bg-rgb: #{to-rgb($gray-200)};
+  --prx-tab-bg-opacity: 1;
+}
+
+.prx-tabs {
+  --#{$prefix}gutter-x: 0;
+}
+
+.prx-tabs-nav {
+  --#{$prefix}nav-link-padding-x: #{map-get($spacers, 3)};
+  --#{$prefix}nav-link-padding-y: #{map-get($spacers, 2)};
+  --#{$prefix}nav-link-hover-color: #{$link-color};
+  --#{$prefix}nav-tabs-link-active-color: #{$link-color};
+  --#{$prefix}nav-tabs-link-hover-border-color: #{$blue-light};
+  --#{$prefix}nav-tabs-link-active-border-color: #{$primary};
+  --#{$prefix}nav-tabs-border-width: 0;
+  --#{$prefix}nav-tabs-border-radius: 0;
+
+  gap: var(--prx-tabs-nav-gap);
+
+  .context-menu {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0;
+    z-index: 10;
+
+    .btn {
+      padding: 0;
+      border-radius: 0;
+
+      .material-icons {
+        vertical-align: middle;
+      }
+    }
+
+    .dropdown-menu .material-icons {
+      vertical-align: middle;
+    }
+  }
+
+  .nav-link.active + .context-menu {
+    display: block;
+  }
+}
+
+.prx-tab {
+  &:is(.nav-link, .nav-link.disable) {
+    border-inline-start-width: map-get($spacers, 1);
+    background-color: rgba(var(--prx-tab-bg-rgb), var(--prx-tab-bg-opacity));
+  }
+
+  &:is(.nav-link.active) {
+    border-inline-start-width: map-get($spacers, 1);
+    background-color: $white;
+  }
+
+  &.active {
+    background-color: $white;
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:hover:not(.active) {
+    --prx-tab-bg-opacity: 1;
+  }
+
+  .badge {
+    margin-left: 0.25rem;
+    vertical-align: text-bottom;
+
+    .spinner-border {
+      height: 0.75rem;
+      width: 0.75rem;
+    }
+  }
+}
+
+.prx-tabs-actions {
+  [class*="btn-outline"] {
+    --#{$prefix}btn-padding-x: #{map-get($spacers, 2)};
+    --#{$prefix}btn-padding-y: #{map-get($spacers, 2)};
+    --#{$prefix}btn-bg: #{$white};
+    --#{$prefix}btn-disabled-bg: #{$white};
+
+    border-style: dashed;
+  }
+}
+
+.prx-tab-wrapper {
+  position: relative;
+}
+
+.tab-content {
+  padding: 1.5rem;
+}
+
+.prx-nav-tabs {
+  border: none;
+
+  .nav-link {
+    background: none;
+    font-weight: bold;
+    color: black;
+
+    border: none;
+    border-bottom: 3px solid $gray-300;
+
+    height: 48px;
+    padding: 0 24px;
+    cursor: pointer;
+    box-sizing: border-box;
+    opacity: 1;
+    min-width: 160px;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    vertical-align: top;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+
+    &.active {
+      border-color: $orange;
+    }
+  }
+}
