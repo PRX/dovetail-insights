@@ -31,7 +31,7 @@
       </ul>
     </fieldset>
 
-    <fieldset id="range">
+    <fieldset id="range" class="form-group">
       <legend>Time Range</legend>
 
       <%= form.label :from, "From" %><%= form.text_field :from, name: "from" %>
@@ -59,7 +59,7 @@
       <p>To: <%= @composition.abs_to %></p>
     </fieldset>
 
-    <fieldset id="filters">
+    <fieldset id="filters" class="form-group">
       <legend>Filters</legend>
 
       <ul>
@@ -71,7 +71,7 @@
           <li>
             <fieldset
               data-dimension-type="<%= dimension_def["Type"] %>"
-              <%= html_attributes(class: "active") if filter.try(:valid?) %>>
+              <%= html_attributes(class: "active") if filter.try(:valid?) %> class="form-group">
 
               <legend><%= dim_key %></legend>
 
@@ -160,7 +160,7 @@
 
       <fieldset
         <%= html_attributes(class: "field_with_errors") if @composition.errors.include?(:metrics) %>
-        id="metrics">
+        id="metrics" class="form-group">
         <legend>Metrics</legend>
 
         <% DataSchema.metrics.each do |metric_name, metric_def| %>
@@ -176,7 +176,7 @@
         <% end %>
       </fieldset>
 
-      <fieldset id="groups">
+      <fieldset id="groups" class="form-group">
         <legend>Groups</legend>
 
         <% [1,2].each do |i| %>
@@ -229,7 +229,7 @@
         <% end %>
       </fieldset>
 
-      <fieldset id="time-series-compare">
+      <fieldset id="time-series-compare" class="form-group">
         <legend>Time Series Compare</legend>
 
         <% compare = @composition.try(:comparisons)&.first %>
