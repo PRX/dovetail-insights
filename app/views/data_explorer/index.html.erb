@@ -34,9 +34,15 @@
     <fieldset id="range" class="form-group">
       <legend>Time Range</legend>
 
-      <%= form.label :from, "From" %><%= form.text_field :from, name: "from" %>
+      <div class="form-floating input-group">
+        <%= form.text_field :from, name: "from", class: "form-control flatpickr-input", "data-controller" => "flatpickr" %>
+        <%= form.label :from, "From" %>
+      </div>
       <br>
-      <%= form.label :to, "To" %><%= form.text_field :to, name: "to" %>
+      <div class="form-floating input-group">
+        <%= form.text_field :to, name: "to", class: "form-control flatpickr-input", "data-controller" => "flatpickr" %>
+        <%= form.label :to, "To" %>
+      </div>
 
       <ul>
         <li><a href="#" onclick="document.querySelector('input[name=from]').value = '2023-01-01';document.querySelector('input[name=to]').value = '2023-02-01';">Jan 2023</a></li>
@@ -75,16 +81,23 @@
 
               <legend><%= dim_key %></legend>
 
-              <select class="operator <%= "field_with_errors" if filter&.errors&.include?(:operator) %>" name="filter.<%= dim_key %>">
+
+
+
+            <div class="form-floating input-group">
+              <select class="form-select operator <%= "field_with_errors" if filter&.errors&.include?(:operator) %>" data-controller="slim-select" role="listbox" name="filter.<%= dim_key %>">
                 <option></option>
                 <option value="include" <%= html_attributes(selected: "selected") if params["filter.#{dim_key}"] == "include" %>>Include</option>
                 <option value="exclude" <%= html_attributes(selected: "selected") if params["filter.#{dim_key}"] == "exclude" %>>Exclude</option>
               </select>
+            </div>
 
               <% if ["Token", "String"].include? dimension_def["Type"] %>
                 <br>
-                <label for="filter.<%= dim_key %>.values">Values:</label>
-                <input autocomplete="off" class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" type="text" placeholder="Apple, Banana, Cherry" id="filter.<%= dim_key %>.values" name="filter.<%= dim_key %>.values" value="<%= params["filter.#{dim_key}.values"] %>">
+                <div class="form-floating input-group">
+                  <input class="form-control" autocomplete="off" class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" type="text" placeholder="Apple, Banana, Cherry" id="filter.<%= dim_key %>.values" name="filter.<%= dim_key %>.values" value="<%= params["filter.#{dim_key}.values"] %>">
+                  <label for="filter.<%= dim_key %>.values">Values:</label>
+                </div>
               <% elsif ["Duration"].include? dimension_def["Type"] %>
                 <br>
                 <label for="filter.<%= dim_key %>.from">From:</label>
@@ -268,5 +281,7 @@
     </div>
   </div>
 
-  <%= form.submit "Submit", class: "fixed-bottom btn btn-primary" %>
+  <div class="fixed-bottom p-2">
+    <%= form.submit "Submit", class: "btn btn-primary" %>
+  </div>
 <% end %>
