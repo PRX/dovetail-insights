@@ -35,3 +35,5 @@
 /config/bigquery-keyfile.json
 
 /node_modules
+
+.DS_Store

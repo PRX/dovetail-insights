@@ -1,0 +1,103 @@
+//
+// Button style overrides.
+//
+
+.btn {
+  --#{$prefix}btn-padding-y: #{map-get($spacers, 1)};
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: #{map-get($spacers, 2)};
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.prx-fixed-btn-container {
+  margin-bottom: 5rem;
+}
+
+.btn-icon {
+  @include button-size($btn-icon-padding, $btn-icon-padding, $btn-icon-font-size, $btn-border-radius);
+
+  display: inline-grid;
+  place-items: center;
+  aspect-ratio: 1;
+
+  .material-icons {
+    font-size: inherit;
+  }
+}
+
+.btn-icon-sm {
+  @include button-size($btn-icon-padding-sm, $btn-icon-padding-sm, $btn-icon-font-size-sm, $btn-border-radius-sm);
+}
+
+.btn-icon-lg {
+  @include button-size($btn-icon-padding-lg, $btn-icon-padding-lg, $btn-icon-font-size-lg, $btn-border-radius-lg);
+}
+
+.btn-icon-round {
+  --#{$prefix}btn-border-radius: 50%;
+}
+
+.btn-icon-borderless {
+  --#{$prefix}btn-bg: transparent;
+  --#{$prefix}btn-border-color: transparent;
+  --#{$prefix}btn-border-width: 0;
+  --#{$prefix}btn-hover-bg: transparent;
+  --#{$prefix}btn-hover-border-color: transparent;
+  --#{$prefix}btn-active-bg: transparent;
+  --#{$prefix}btn-active-border-color: transparent;
+  --#{$prefix}btn-active-shadow: none;
+  --#{$prefix}btn-disabled-bg: transparent;
+  --#{$prefix}btn-disabled-border-color: transparent;
+
+  @each $color, $value in $theme-colors {
+    &.btn-#{$color} {
+      @include button-borderless-variant($value);
+    }
+  }
+}
+
+.btn-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: $white;
+  text-transform: uppercase;
+  z-index: $zindex-fixed;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+
+  span {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .material-icons {
+    font-size: 24px;
+  }
+}
+
+.btn-outline-light {
+  --#{$prefix}btn-bg: #{$white};
+  --#{$prefix}btn-border-color: #eee;
+  --#{$prefix}btn-color: #{color-contrast($white)};
+  --#{$prefix}btn-hover-bg: #{tint-color($border-color, 50%)};
+  --#{$prefix}btn-hover-border-color: #{$border-color};
+  --#{$prefix}btn-active-bg: #{$border-color};
+  --#{$prefix}btn-active-border-color: #{$border-color};
+  --#{$prefix}btn-padding-y: 1rem;
+}
+
+.btn-discard-changed {
+  border-color: $orange;
+  &:hover {
+    border-color: $orange;
+  }
+}

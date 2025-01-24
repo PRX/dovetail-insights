@@ -1,0 +1,49 @@
+//
+// Cards style overrides.
+//
+
+.card-header {
+  --#{$prefix}card-title-spacer-y: #{map-get($spacers, 0)};
+
+  .card-title {
+    text-transform: uppercase;
+  }
+}
+
+.card-footer {
+  padding: 1rem;
+}
+
+.status-text {
+  line-height: 1.5;
+  margin-bottom: 0;
+  font-size: 0.875rem;
+}
+
+// Create theme colored card header classes.
+@each $color, $value in $theme-colors {
+  .card-header-#{$color} {
+    @extend .card-header;
+
+    --#{$prefix}card-border-width: 0;
+    --#{$prefix}card-cap-bg: #{$value};
+    --#{$prefix}card-cap-color: #{color-contrast($value)};
+
+    .prx-btn-help {
+      color: #{color-contrast($value)};
+      margin-right: 0;
+
+      &:hover {
+        color: #{color-contrast($value)};
+      }
+    }
+  }
+}
+
+// Add to link within card body to make whole card clickable.
+.card-link {
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  text-indent: -2000vw;
+}

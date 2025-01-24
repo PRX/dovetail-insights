@@ -1,0 +1,453 @@
+.prx-input-group {
+  @extend .input-group;
+  flex-shrink: 1;
+  align-items: center;
+
+  @include border-radius($input-border-radius);
+  border: $input-border-width solid $input-border-color;
+
+  &:focus-within {
+    box-shadow: $input-focus-box-shadow;
+  }
+
+  &.js-is-changed {
+    border-color: $orange;
+
+    &:focus-within {
+      box-shadow: 0 0 $input-btn-focus-blur $input-btn-focus-width rgba($orange, $input-btn-focus-color-opacity);
+    }
+  }
+
+  & > :is(.form-control, .input-group-text, .btn) {
+    border: none;
+
+    &:is(:focus) {
+      box-shadow: none;
+    }
+
+    &:is(:first-child) {
+      border-inline-start: none;
+    }
+
+    &:is(:last-child) {
+      border-inline-end: none;
+    }
+  }
+
+  & > .btn-icon {
+    @include font-size(1.75rem);
+  }
+
+  &.input-group-sm {
+    @include border-radius($input-border-radius-sm);
+
+    & > .btn-icon {
+      @include font-size(1.5rem);
+      padding-inline: map-get($spacers, 1);
+    }
+  }
+
+  &.input-group-lg {
+    @include border-radius($input-border-radius-lg);
+
+    & > .btn-icon {
+      @include font-size(2rem);
+    }
+  }
+
+  & > :is(.form-control:placeholder-shown) ~ .prx-input-confirm {
+    display: none;
+  }
+
+  & > :is(.form-control:not(:placeholder-shown)) ~ .prx-input-confirm-hidden {
+    display: none;
+  }
+}
+
+.input-group {
+  .invalid-feedback {
+    order: 10;
+  }
+  input[type="hidden"] + .invalid-feedback {
+    display: none;
+  }
+}
+
+label[required="required"],
+label[required="true"] {
+  &::after {
+    content: "*";
+    color: $danger;
+    display: inline;
+    vertical-align: middle;
+    margin-left: 0.25rem;
+  }
+}
+
+// material style floating form labels
+.form-floating {
+  > label {
+    color: $gray-600;
+    height: auto;
+    font-size: 1rem;
+    width: auto;
+    z-index: 6;
+
+    &.is-invalid {
+      color: $form-feedback-invalid-color;
+    }
+  }
+
+  // cover up the input border in back of the label text
+  > label::before {
+    content: "";
+    z-index: -1;
+    background: $input-bg;
+    position: absolute;
+    inset: 35% 0.25rem 1rem;
+    border-radius: $input-border-radius;
+  }
+
+  [disabled="disabled"],
+  .ss-disabled {
+    ~ label:before {
+      background: $input-disabled-bg;
+    }
+  }
+
+  .form-control {
+    color: #000;
+    border: $input-border-width $border-style $input-border-color;
+
+    &.is-invalid {
+      border-color: $red;
+    }
+
+    &.prx-dragndrop {
+      border-width: 2px;
+      border-style: dashed;
+    }
+
+    /*&:focus {
+      box-shadow: none;
+      border-color: transparent;
+    }*/
+  }
+
+  // changed field stylez
+  .form-check-input.is-changed:not(.is-invalid),
+  .form-control.is-changed:not(.is-invalid),
+  .form-select.is-changed:not(.is-invalid) {
+    border-color: $orange;
+
+    &:focus,
+    &.form-control-focus {
+      box-shadow: 0 0 $input-btn-focus-blur $input-btn-focus-width rgba($orange, $input-btn-focus-color-opacity);
+    }
+
+    ~ label {
+      color: $orange;
+    }
+  }
+
+  // bootstrap5-tags need help
+  .form-tag-select {
+    // tag field doesn't end up being first - so re-add radius
+    border-top-left-radius: $border-radius !important;
+    border-bottom-left-radius: $border-radius !important;
+
+    // no dropdown carat
+    background-image: none;
+
+    // re-implement focus styling
+    &.form-control-focus {
+      color: $input-focus-color;
+      background-color: $input-focus-bg;
+      border-color: $input-focus-border-color;
+      outline: 0;
+      box-shadow: $input-focus-box-shadow;
+      ~ label {
+        transform: $form-floating-label-transform !important;
+      }
+    }
+
+    // inner input has no css classes, so height is wrong
+    input {
+      line-height: $line-height-base;
+    }
+  }
+
+  .form-control[type="file"] {
+    line-height: $line-height-base;
+  }
+
+  // manually applied "blank" class (when the placeholder trick won't work)
+  > .form-control-blank:not(:focus) ~ label {
+    opacity: 1;
+    transform: none;
+  }
+
+  // hide 'mm/dd/yyyy' placeholder on date fields
+  > .form-control-blank[type="date"]:not(:focus) {
+    color: transparent;
+  }
+
+  > textarea.form-control {
+    height: 100%;
+  }
+}
+
+// slightly different layout for checkboxes with help text
+.form-check {
+  .form-check-input.is-changed:not(.is-invalid) {
+    border-color: $orange;
+
+    &:focus {
+      box-shadow: 0 0 $input-btn-focus-blur $input-btn-focus-width rgba($orange, $input-btn-focus-color-opacity);
+    }
+
+    &:checked {
+      background-color: $orange;
+    }
+
+    ~ div > label {
+      color: $orange;
+    }
+  }
+}
+
+// These styles work with Slim Select v2, not tested with v1
+.ss-main {
+  &.form-select {
+    padding: 0.75rem;
+    min-height: $input-height;
+    height: auto;
+    border-color: $input-border-color;
+    // border: none;
+  }
+
+  &.ss-disabled {
+    background-color: $input-disabled-bg;
+  }
+
+  .ss-values .ss-single {
+    margin-left: 0;
+  }
+
+  // selection colors
+  .ss-values .ss-value {
+    animation: none;
+    background-color: $primary;
+    margin: 2px 5px 0 0;
+
+    .ss-value-delete,
+    .ss-value-delete svg {
+      width: 16px;
+      height: 16px;
+      border-left: none;
+    }
+  }
+
+  .ss-multi-selected .ss-add {
+    margin-top: 12px;
+    margin-right: 8px;
+  }
+}
+
+.ss-single-selected,
+.ss-multi-selected {
+  padding: $input-btn-padding-y $input-btn-padding-x;
+  line-height: $line-height-base;
+  border: 0;
+  border-radius: $input-border-radius;
+  color: $input-color;
+
+  &.ss-disabled {
+    background: $input-disabled-bg;
+    border-color: $input-disabled-border-color;
+    cursor: default;
+  }
+}
+
+.ss-single-selected {
+  height: 3.5rem;
+  background: transparent;
+}
+
+.ss-arrow {
+  visibility: hidden;
+}
+
+.ss-main.form-select.is-invalid:not([multiple]):not([size]) {
+  padding-right: $form-select-feedback-icon-padding-end;
+  background-image: $form-select-indicator, $form-feedback-icon-invalid;
+  background-position: $form-select-bg-position, $form-select-feedback-icon-position;
+  background-size: $form-select-bg-size, $form-select-feedback-icon-size;
+  border-color: $danger;
+}
+
+.form-select.is-invalid:not([multiple]):not([size]) {
+  padding-right: 0;
+  background-image: none;
+}
+
+.ss-search input {
+  border-radius: $input-border-radius;
+  padding: $input-btn-padding-y $input-btn-padding-x;
+  height: 3rem;
+}
+
+// more x-ish deselect
+.ss-single-selected .ss-deselect {
+  color: transparent;
+  position: relative;
+  transform: rotate(45deg);
+
+  &::before {
+    background: #666;
+    content: "";
+    position: absolute;
+    height: 10px;
+    width: 2px;
+    left: 4px;
+    top: 12px;
+  }
+
+  &::after {
+    background: #666;
+    content: "";
+    position: absolute;
+    height: 2px;
+    width: 10px;
+    left: 0px;
+    top: 16px;
+  }
+}
+
+.ss-values {
+  color: #000;
+}
+
+// faster!
+.ss-content {
+  transition-duration: 0.1s;
+
+  &.form-select {
+    padding: 0;
+    border-radius: 0;
+    box-shadow: $box-shadow;
+    background-image: none;
+  }
+
+  .ss-list {
+    .ss-option,
+    .ss-optgroup-label {
+      line-height: 2;
+    }
+
+    .ss-option.ss-selected:not(.ss-disabled),
+    .ss-option.ss-highlighted,
+    .ss-option:hover,
+    .ss-optgroup-label.ss-highlighted,
+    .ss-optgroup-label:hover {
+      background-color: $primary;
+    }
+  }
+}
+
+// undo bootstrap placeholder class
+.placeholder {
+  display: flex;
+  min-height: auto;
+  vertical-align: baseline;
+  cursor: pointer;
+  background-color: transparent;
+  opacity: 1;
+}
+
+// maybe a bad idea ... but hide options on multiselects, so things don't
+// flicker as simpleselect is init-ing them
+select[multiple] option {
+  visibility: hidden;
+}
+
+// help text
+small {
+  &.invalid-feedback,
+  &.form-text {
+    font-size: 0.75em;
+    line-height: $line-height-sm;
+  }
+}
+
+.form-check-label,
+.form-check > label {
+  color: black;
+  white-space: nowrap;
+}
+
+.form-check.label-wrap > label {
+  white-space: pre-wrap;
+}
+
+.table .form-check-input {
+  font-size: 1rem;
+}
+
+/* TODO: Apply prx prefix */
+
+.prx-field-group {
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  grid-template-rows: $input-height;
+  grid-auto-rows: auto;
+  align-items: center;
+
+  .form-floating {
+    grid-row: 1 / span 2;
+  }
+}
+
+.prx-btn-help {
+  display: flex;
+  color: $gray-600;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0 0 0 0.5rem;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+    color: $primary;
+  }
+}
+
+.prx-input-group-text {
+  background: $white;
+  color: $gray-600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+    color: $primary;
+  }
+}
+
+/*.input-group {
+  .form-control,
+  .form-select {
+    border-right: none;
+  }
+}*/
+
+.tags-badge {
+  padding: 0.65rem;
+  font-size: 0.875rem;
+}
+
+// Thanks for this Bootstrap :eyeroll:.
+.input-group:not(.has-validation) > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu):not(.form-floating) {
+  border-top-right-radius: $input-border-radius;
+  border-bottom-right-radius: $input-border-radius;
+}

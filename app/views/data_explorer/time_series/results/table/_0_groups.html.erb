@@ -1,4 +1,4 @@
-<table>
+<table class="table">
   <tr>
     <% @composition.results.granularity_unique_members.each do |member| %>
       <% colspan = @composition.metrics.size * (@composition.comparisons.reduce(0) { |sum, c| sum + c.lookback } + 1) %>

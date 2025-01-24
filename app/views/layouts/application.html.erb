@@ -1,28 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title><%= content_for(:title) || "Insights" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= content_for?(:title) ? content_for(:title) : "Dovetail Insights" %></title>
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <link rel="icon" href="https://media.prx.org/favicon/icon-32.ico" sizes="any">
+    <link rel="icon" href="https://media.prx.org/favicon/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="https://media.prx.org/favicon/icon-180.png">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/views/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-turbo="false">
-    <%= yield %>
+  <body data-controller="blank-field popover">
+    <%= render "layouts/nav" %>
+    <%= render "layouts/subnav" %>
+    <%= render "layouts/alerts" %>
+
+    <% if content_for? :tabs %>
+      <div class="prx-main container-fluid flex-grow-1">
+        <div class="row">
+          <aside class="prx-tabs d-flex flex-column justify-content-between col-sm-12 col-md-3 col-xl-2">
+            <nav class="prx-tabs-nav nav nav-tabs flex-column sticky-md-top">
+              <%= yield :tabs %>
+            </nav>
+          </aside>
+          <main class="prx-tab-content col-sm-12 col-md-9 col-xl-10 bg-white"><%= yield %></main>
+        </div>
+      </div>
+    <% else %>
+      <main class="container-fluid gy-4 gx-5 p-4">
+        <%= yield %>
+      </main>
+    <% end %>
+
+    <%= yield :modals %>
   </body>
 </html>
