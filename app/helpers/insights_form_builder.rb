@@ -1,30 +1,30 @@
 class InsightsFormBuilder < ActionView::Helpers::FormBuilder
   alias super_select select
 
-  INPUT_CLASS = 'form-control'
-  CHECK_CLASS = 'form-check-input'
-  SELECT_CLASS = 'form-select'
-  BLANK_CLASS = 'form-control-blank'
-  BLANK_ACTION = 'blur->blank-field#blur'
-  CHANGED_CLASS = 'is-changed'
-  CHANGED_ACTION = 'change->unsaved#change keyup->unsaved#change'
+  INPUT_CLASS = "form-control"
+  CHECK_CLASS = "form-check-input"
+  SELECT_CLASS = "form-select"
+  BLANK_CLASS = "form-control-blank"
+  BLANK_ACTION = "blur->blank-field#blur"
+  CHANGED_CLASS = "is-changed"
+  CHANGED_ACTION = "change->unsaved#change keyup->unsaved#change"
   CHANGED_DATA_VALUE_WAS = :value_was
-  SEARCH_ACTION = 'search#submit'
-  SLIM_SELECT_CONTROLLER = 'slim-select'
-  TAG_SELECT_CONTROLLER = 'tag-select'
-  FLATPICKR_CONTROLLER = 'flatpickr'
-  FLATPICKR_ACTION = 'flatpickr#change'
-  SELECT_BY_GROUP = 'slim-select-group-select-value'
-  TIME_ZONE_CONTROLLER = 'time-zone'
+  SEARCH_ACTION = "search#submit"
+  SLIM_SELECT_CONTROLLER = "slim-select"
+  TAG_SELECT_CONTROLLER = "tag-select"
+  FLATPICKR_CONTROLLER = "flatpickr"
+  FLATPICKR_ACTION = "flatpickr#change"
+  SELECT_BY_GROUP = "slim-select-group-select-value"
+  TIME_ZONE_CONTROLLER = "time-zone"
 
   IMPORTANT_ZONES = [
-    'Hawaii',
-    'Alaska',
-    'Pacific Time (US & Canada)',
-    'Mountain Time (US & Canada)',
-    'Central Time (US & Canada)',
-    'Eastern Time (US & Canada)',
-    'UTC'
+    "Hawaii",
+    "Alaska",
+    "Pacific Time (US & Canada)",
+    "Mountain Time (US & Canada)",
+    "Central Time (US & Canada)",
+    "Eastern Time (US & Canada)",
+    "UTC"
   ]
 
   def text_field(method, options = {})
@@ -68,7 +68,7 @@ class InsightsFormBuilder < ActionView::Helpers::FormBuilder
 
   def time_zone_field(method, options = {})
     add_data(options, :controller, TIME_ZONE_CONTROLLER)
-    select method, IMPORTANT_ZONES, { selected: 'UTC' }, options
+    select method, IMPORTANT_ZONES, { selected: "UTC" }, options
   end
 
   def select(method, choices, options = {}, html_options = {}, &block)
@@ -104,7 +104,7 @@ class InsightsFormBuilder < ActionView::Helpers::FormBuilder
   end
 
   def search_check_box(method, params, options = {})
-    checked = options[:checked] || params[method] == '1'
+    checked = options[:checked] || params[method] == "1"
     check_box(method, add_search_action(options.merge(checked: checked)))
   end
 
@@ -161,7 +161,7 @@ class InsightsFormBuilder < ActionView::Helpers::FormBuilder
     # add changed class to changed fields
     if changed
       # but ignore nils being set to blanks by text fields
-      return if has_value_was && value_was.nil? && value_is == ''
+      return if has_value_was && value_was.nil? && value_is == ""
 
       add_class(opts, CHANGED_CLASS)
 
@@ -201,13 +201,13 @@ class InsightsFormBuilder < ActionView::Helpers::FormBuilder
   end
 
   def add_class(opts, cls)
-    opts[:class] = [opts[:class], cls].compact.join(' ').strip
+    opts[:class] = [opts[:class], cls].compact.join(" ").strip
   end
 
   def add_data(opts, key, val)
     opts ||= {}
     opts[:data] ||= {}
-    opts[:data][key] = [val, opts[:data][key]].compact.join(' ').strip.html_safe
+    opts[:data][key] = [val, opts[:data][key]].compact.join(" ").strip.html_safe
     opts
   end
 end
