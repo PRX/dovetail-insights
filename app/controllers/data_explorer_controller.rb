@@ -2,7 +2,7 @@ require "ostruct"
 require "csv"
 
 class DataExplorerController < ApplicationController
-  rate_limit to: 4, within: 1.minute
+  rate_limit to: 4, within: 1.minute unless Rails.env.development?
 
   def index
     @composition = case params[:lens]
