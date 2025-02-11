@@ -191,7 +191,7 @@ Dimensions:
       Selector: metros.code
       RequiredTables: [metros]
   time_zone:
-    Type: String
+    Type: Token
     QueryKey: tz
     SummableMetrics:
       - downloads
