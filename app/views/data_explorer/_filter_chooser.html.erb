@@ -1,0 +1,92 @@
+<% dim_key = dimension_def["QueryKey"] || dimension_name %>
+
+<%# Look for an existing Filter instance for this dimension – it may not exist %>
+<% filter = @composition.filters&.find { |f| f.dimension == dimension_name.to_sym } %>
+<li>
+  <fieldset
+    data-data-explorer--composition-url-target="filterChooser"
+    <%= html_attributes("data-dimension-key": dim_key, "data-dimension-type": dimension_def["Type"]) %>
+    <%= html_attributes(class: "field_with_errors") if filter.try(:invalid?) %>
+    <%= html_attributes(class: "active") if filter.try(:valid?) %>>
+
+    <legend><%= dim_key %></legend>
+
+    <p><%= t "filters.hints.#{dim_key}" %></p>
+
+    <select class="<%= "field_with_errors" if filter&.errors&.include?(:operator) %>" <%= html_attributes(name: "filter.#{dim_key}") %>>
+      <option></option>
+      <option value="include" <%= html_attributes(selected: "selected") if filter&.operator == :include %>>Include</option>
+      <option value="exclude" <%= html_attributes(selected: "selected") if filter&.operator == :exclude %>>Exclude</option>
+    </select>
+
+    <% if ["Token", "String"].include? dimension_def["Type"] %>
+      <% if Lists.list_for(dim_key) %>
+        <br>
+        <label for="filter.<%= dim_key %>.values">Values:</label>
+        <select class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" <%= html_attributes(name: "filter.#{dim_key}.values", id: "filter.#{dim_key}.values") %> multiple>
+          <% Lists.list_for(dim_key).each do |item| %>
+            <option <%= html_attributes(value: item[item.keys[0]]) %> <%= html_attributes(selected: "selected") if filter&.values&.include?(item[item.keys[0]].to_s) %>><%= item[item.keys[1]] %></option>
+          <% end %>
+        </select>
+      <% else %>
+        <br>
+        <label for="filter.<%= dim_key %>.values">Values:</label>
+        <input autocomplete="off" class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" type="text" placeholder="Apple, Banana, Cherry" id="filter.<%= dim_key %>.values" name="filter.<%= dim_key %>.values" value="<%= params["filter.#{dim_key}.values"] %>">
+      <% end %>
+    <% elsif ["Duration"].include? dimension_def["Type"] %>
+      <br>
+      <label for="filter.<%= dim_key %>.from">From:</label>
+      <%# TODO Get value from `filter`, not params %>
+      <input autocomplete="off" class="gte" type="text" placeholder="42" <%= html_attributes(id: "filter.#{dim_key}.gte", name: "filter.#{dim_key}.gte", value: to_duration_shorthand(filter&.gte)) %>>
+
+      <br>
+      <label for="filter.<%= dim_key %>.to">To:</label>
+      <%# TODO Get value from `filter`, not params %>
+      <input autocomplete="off" class="lt" type="text" placeholder="1066" <%= html_attributes(id: "filter.#{dim_key}.lt", name: "filter.#{dim_key}.lt", value: to_duration_shorthand(filter&.lt)) %>>
+    <% elsif ["Timestamp"].include? dimension_def["Type"] %>
+      <br>
+      <select class="timestamp-mode" <%= html_attributes(name: "filter.#{dim_key}.timestamp-mode") %>>
+        <option value="Range">Range</option>
+        <option value="Extract">Extract</option>
+      </select>
+
+      <div class="range">
+        <label for="filter.<%= dim_key %>.from">From:</label>
+        <input autocomplete="off" class="from" type="text" placeholder="2024-01-01" <%= html_attributes(name: "filter.#{dim_key}.from", id: "filter.#{dim_key}.from", value: filter&.from) %>>
+
+        <br>
+        <label for="filter.<%= dim_key %>.to">To:</label>
+        <input autocomplete="off" class="to" type="text" placeholder="2024-07-01" <%= html_attributes(name: "filter.#{dim_key}.to", id: "filter.#{dim_key}.to", value: filter&.to) %>>
+
+        <small>
+          <p>From: <%= filter&.abs_from %></p>
+          <p>To: <%= filter&.abs_to %></p>
+        </small>
+      </div>
+
+      <div class="extract" data-controller="data-explorer--filter-chooser">
+        <select
+          data-data-explorer--filter-chooser-target="extractBy"
+          data-action="data-explorer--filter-chooser#setExtract"
+          <%= html_attributes(name: "filter.#{dim_key}.extract") %>>
+          <option></option>
+          <option>hour</option>
+          <option>day of week</option>
+          <option>day</option>
+          <option>week</option>
+          <option>month</option>
+          <option>year</option>
+        </select>
+
+        <br>
+        <label <%= html_attributes(name: "filter.#{dim_key}.values") %>>Values:</label>
+        <select
+          multiple
+          data-data-explorer--filter-chooser-target="values"
+          <%= html_attributes(name: "filter.#{dim_key}.values", id: "filter.#{dim_key}.values") %>>
+          <option></option>
+        </select>
+      </div>
+    <% end %>
+  </fieldset>
+</li>

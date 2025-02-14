@@ -246,23 +246,23 @@ function highlight(ev) {
 // This takes over handling the submission of the form for the data explorer.
 // We want the URL that is produced to be as minimal/clean/readable as possible,
 // and using the browser's native GET request for the form is not sufficient.
-(async function () {
-  document.addEventListener("DOMContentLoaded", async (_) => {
-    const form = document.getElementById("data-explorer");
+// (async function () {
+//   document.addEventListener("DOMContentLoaded", async (_) => {
+//     const form = document.getElementById("data-explorer");
 
-    if (form) {
-      form.addEventListener("submit", (ev) => {
-        // Don't let the browser submit the form
-        ev.preventDefault();
+//     if (form) {
+//       form.addEventListener("submit", (ev) => {
+//         // Don't let the browser submit the form
+//         ev.preventDefault();
 
-        doGet();
-      });
-    }
+//         doGet();
+//       });
+//     }
 
-    document.getElementById("highlight").addEventListener("change", highlight);
+//     document.getElementById("highlight").addEventListener("change", highlight);
 
-    highlight();
+//     highlight();
 
-    document.onkeydown = hotkeys;
-  });
-})();
+//     document.onkeydown = hotkeys;
+//   });
+// })();

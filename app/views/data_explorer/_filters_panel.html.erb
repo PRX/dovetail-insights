@@ -1,0 +1,9 @@
+<fieldset id="filters">
+  <legend>Filters</legend>
+
+  <ul>
+    <% DataSchema.dimensions.each do |dimension_name, dimension_def| %>
+      <%= render partial: "data_explorer/filter_chooser", locals: {dimension_name: dimension_name, dimension_def: dimension_def } %>
+    <% end %>
+  </ul>
+</fieldset>

@@ -86,7 +86,9 @@
             <% lookback = -(comparison.lookback - i) %>
             <% value = @composition.results.get_value_comparison(comparison, lookback, metric, granularity_member, group_1_member, nil) %>
 
-            <td <%= html_attributes("data-raw-value": value) %>>
+            <td
+              <%= html_attributes("data-highlight-group": "tktk") %>
+              <%= html_attributes("data-raw-value": value) %>>
               <%= number_with_delimiter(value) %>
             </td>
           <% end %>
@@ -94,7 +96,8 @@
 
         <% value = @composition.results.get_value(metric, granularity_member, group_1_member, nil) %>
 
-        <td <%= html_attributes("data-raw-value": value) %>>
+        <td <%= html_attributes("data-raw-value": value) %>
+          <%= html_attributes("data-highlight-group": "tktk") %>>
           <%= number_with_delimiter(value) %>
         </td>
       <% end %>
