@@ -23,24 +23,36 @@ class Labeler
       if input.starts_with? "LT"
         val = input.sub("LT ", "").to_f
 
-        if val % 86400 == 0
-          val = val / 86400
-          return "Under #{val.to_i} days"
+        if val % (86400 * 365) == 0
+          val /= (86400 * 365)
+          return "Under #{val.to_i} #{"year".pluralize(val)}"
+        elsif val % (86400 * 7) == 0 && val > (86400 * 28)
+          val /= (86400 * 7)
+          return "Under #{val.to_i} #{"week".pluralize(val)}"
+        elsif val % 86400 == 0
+          val /= 86400
+          return "Under #{val.to_i} #{"day".pluralize(val)}"
         else
-          return "Under #{number_with_delimiter val} seconds"
+          return "Under #{ActionController::Base.helpers.number_with_delimiter val.to_i} #{"second".pluralize(val)}"
         end
       else
         val = input.sub("GTE ", "").to_f
 
-        if val % 86400 == 0
-          val = val / 86400
-          return "#{val.to_i} days or more"
+        if val % (86400 * 365) == 0
+          val /= (86400 * 365)
+          return "#{val.to_i} #{"year".pluralize(val)} or more"
+        elsif val % (86400 * 7) == 0 && val > (86400 * 28)
+          val /= (86400 * 7)
+          return "#{val.to_i} #{"week".pluralize(val)} or more"
+        elsif val % 86400 == 0
+          val /= 86400
+          return "#{val.to_i} #{"day".pluralize(val)} or more"
         else
-          return "#{number_with_delimiter val} seconds or more"
+          return "#{ActionController::Base.helpers.number_with_delimiter val} #{"second".pluralize(val)} or more"
         end
       end
     end
 
-    return input
+    input
   end
 end
