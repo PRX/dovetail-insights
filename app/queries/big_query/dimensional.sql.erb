@@ -182,6 +182,7 @@ FROM downloads_in_range AS downloads
       end
     elsif filter.gte
       # Wrap values for timestamp fields in quotes
+      # TODO gte is never used with timestamps, this check can go away
       gte = bq_type == "TIMESTAMP" ? %Q("#{filter.gte}") : filter.gte
       lt = bq_type == "TIMESTAMP" ? %Q("#{filter.lt}") : filter.lt
 
