@@ -3,8 +3,6 @@
     <fieldset>
       <legend>Composition Errors</legend>
 
-      <%# Force validation TODO must be a better way to do this %>
-      <% @composition.valid? %>
 
       <ul>
         <% @composition.errors.full_messages.each do |msg| %>
