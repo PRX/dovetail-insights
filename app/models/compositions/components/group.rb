@@ -87,14 +87,16 @@ module Compositions
       attr_reader :dimension
       attr_accessor :truncate, :extract, :indices
 
-      # TODO Validate that the dimension exists
-      # TODO Validate that the options provided are supported by the dimension type
-      # TODO Validate that the options don't conflict, even if they are all supported
-      # TODO Validate that the values for an option (like extract or truncate) are valid
-      # TODO Validate indices are valid for dimension type
+      # TODO Validate indices for Duration are numbers or shorthands
+      # TODO Validate indices for Timestamps are dates, date+times, or relatimes
       validates :dimension, presence: true
       validate :dimension_is_real
       validate :no_missing_indices, :indices_order_is_correct
+      validates :extract, inclusion: {in: EXTRACT_OPTS, message: "by %{value} is not a supported operation"}, if: -> { extract }
+      validates :truncate, inclusion: {in: TRUNCATE_OPTS, message: "by %{value} is not a supported operation"}, if: -> { truncate }
+      validate :no_options_for_token_type
+      validate :duration_type_has_only_indices
+      validate :timestamp_type_has_single_option
 
       def initialize(dimension_name)
         raise unless dimension_name.instance_of? Symbol
@@ -127,8 +129,49 @@ module Compositions
       private
 
       def dimension_is_real
-        unless DataSchema.dimensions.keys.include?(dimension.to_s)
+        unless DataSchema.dimensions.key?(dimension.to_s)
           errors.add(:dimension, :invalid, message: "#{dimension} is not a valid group dimension")
+        end
+      end
+
+      ##
+      # Dimensions with a Token type don't support any group options
+
+      def no_options_for_token_type
+        dimension_def = DataSchema.dimensions[dimension.to_s]
+
+        if dimension_def && dimension_def["Type"] == "Token"
+          errors.add(:extract, :option_mismatch, message: "option is not valid with dimenson #{dimension}") if extract
+          errors.add(:truncate, :option_mismatch, message: "option is not valid with dimenson #{dimension}") if truncate
+          errors.add(:indices, :option_mismatch, message: "option is not valid with dimenson #{dimension}") if indices
+        end
+      end
+
+      ##
+      # Dimensions with a Duration type don't support any group options besides
+      # indices, and that option is required
+
+      def duration_type_has_only_indices
+        dimension_def = DataSchema.dimensions[dimension.to_s]
+
+        if dimension_def && dimension_def["Type"] == "Duration"
+          errors.add(:indices, :option_mismatch, message: "are required with dimenson #{dimension}") unless indices
+          errors.add(:extract, :option_mismatch, message: "option is not valid with dimenson #{dimension}") if extract
+          errors.add(:truncate, :option_mismatch, message: "option is not valid with dimenson #{dimension}") if truncate
+        end
+      end
+
+      ##
+      # Dimensions with a Timestamp type support several group options, but
+      # only one can be used at a time.
+
+      def timestamp_type_has_single_option
+        dimension_def = DataSchema.dimensions[dimension.to_s]
+
+        if dimension_def && dimension_def["Type"] == "Timestamp"
+          errors.add(:extract, :option_conflict, message: "option cannot be used with other options") if extract && (truncate || indices)
+          errors.add(:truncate, :option_conflict, message: "option cannot be used with other options") if truncate && (extract || indices)
+          errors.add(:indices, :option_conflict, message: "option cannot be used with other options") if indices && (extract || truncate)
         end
       end
 
