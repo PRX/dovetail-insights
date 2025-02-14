@@ -62,6 +62,10 @@ form {
       margin-right: 5px;
     }
 
+    select[multiple] {
+      max-width: 240px;
+    }
+
     fieldset {
       padding: 2px 5px 4px;
 
