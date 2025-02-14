@@ -55,6 +55,29 @@ Dimensions:
       Selector: downloads.timestamp
       Type: TIMESTAMP
       RequiredTables: [downloads]
+  download_local_timestamp:
+    Type: Timestamp
+    QueryKey: localTime
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      # Queries treat all timestamps as UTC values. In order to allow users to
+      # deal with some timestamps in their local time zone, we use
+      # FORMAT_TIMESTAMP with a time zone provided, which will output a string
+      # with the date and time honoring the offset, but we override the time
+      # zone represented in that string to be UTC. We then parse that string,
+      # to end up with a new UTC timestamp, but where the date and time match
+      # the wall clock date and time from the time zone associated with the
+      # record.
+      #
+      # For example, a request made at midnight ET would be stored as a
+      # timestamp like: 2025-01-01T04:00:00+00. This will convert value to
+      # 2025-01-01T00:00:00+00, which is useful, even though it is factually
+      # incorrect.
+      Selector: PARSE_TIMESTAMP("%FT%T%z", FORMAT_TIMESTAMP("%FT%T+00", downloads.timestamp, COALESCE(cities.time_zone, countries.time_zone)), "UTC")
+      Type: TIMESTAMP
+      RequiredTables: [downloads, countries, cities]
   episode_publish_timestamp:
     Type: Timestamp
     QueryKey: published
