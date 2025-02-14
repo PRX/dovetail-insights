@@ -16,7 +16,7 @@ module Compositions
     def self.from_params(params)
       composition = super
 
-      composition.granularity = params[:granularity].to_sym
+      composition.granularity = params[:granularity].to_sym if params[:granularity]
 
       # TODO This converts the value to seconds in the form, which is a hostile
       if /^[0-9]+D$/.match?(params[:window])
