@@ -11,10 +11,11 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  get "/data-explorer", to: "data_explorer#index"
   get "/export", to: "data_explorer#export"
 
   get "/.well-known/change-password", to: redirect("https://#{ENV["ID_HOST"]}/.well-known/change-password", status: 302)
 
   # Defines the root path route ("/")
-  root "data_explorer#index"
+  root "data_explorer#bookmarks"
 end
