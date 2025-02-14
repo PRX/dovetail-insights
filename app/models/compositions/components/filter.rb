@@ -69,9 +69,9 @@ module Compositions
             elsif param_key.to_s == "filter.#{query_key}.to"
               filter.to = param_value.strip
             elsif param_key.to_s == "filter.#{query_key}.gte"
-              filter.gte = param_value.strip.to_i
+              filter.gte = DurationShorthand.expand(param_value.strip)
             elsif param_key.to_s == "filter.#{query_key}.lt"
-              filter.lt = param_value.strip.to_i
+              filter.lt = DurationShorthand.expand(param_value.strip)
             elsif param_key.to_s == "filter.#{query_key}.extract"
               filter.extract = param_value.to_sym
             end
@@ -109,19 +109,11 @@ module Compositions
       def gte=(gte)
         raise unless gte.instance_of? Integer
 
-        # TODO This value should be in seconds for durations, and should support both raw input
-        # in seconds from the form, and more friendly input like "7D" and convert
-        # the days to seconds
-
         @gte = gte
       end
 
       def lt=(lt)
         raise unless lt.instance_of? Integer
-
-        # TODO This value should be in seconds for durations, and should support both raw input
-        # in seconds from the form, and more friendly input like "7D" and convert
-        # the days to seconds
 
         @lt = lt
       end
