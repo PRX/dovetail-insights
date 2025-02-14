@@ -1,6 +1,13 @@
 module Compositions
   module Components
     class Group
+      # When changing these, be sure to also change the view helpers that
+      # transform these values into database engine specific arguments.
+      #
+      # In BigQuery, DAYOFWEEK returns values 1-7, 1=Sunday
+      EXTRACT_OPTS = %i[hour day_of_week day week month year]
+      TRUNCATE_OPTS = %i[week month year]
+
       include ActiveModel::Model
 
       ##
@@ -55,9 +62,9 @@ module Compositions
             # +Group+ instance.
 
             if param_key == "group.#{group_number}.extract"
-              group.extract = param_value
+              group.extract = param_value.to_sym
             elsif param_key == "group.#{group_number}.truncate"
-              group.truncate = param_value
+              group.truncate = param_value.to_sym
             elsif param_key == "group.#{group_number}.indices"
               # +indicies+ are used when grouping by ranges. This is supported
               # for both Timestamp and Duration dimensions. With Timestamp

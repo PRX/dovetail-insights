@@ -97,9 +97,9 @@ downloads_in_range AS (
     selector = dimension_def["BigQuery"]["Selector"]
 
     if group.extract
-      selects << "EXTRACT(#{group.extract} FROM #{selector}) AS #{group.as}"
+      selects << "EXTRACT(#{bigquery_extract_argument(group.extract)} FROM #{selector}) AS #{group.as}"
     elsif group.truncate
-      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S %Ez", TIMESTAMP_TRUNC(#{selector}, #{group.truncate}, "UTC"), "UTC") AS #{group.as})
+      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S %Ez", TIMESTAMP_TRUNC(#{selector}, #{bigquery_truncate_argument(group.truncate)}, "UTC"), "UTC") AS #{group.as})
     elsif group.indices
       cases = []
 

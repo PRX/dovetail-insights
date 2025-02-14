@@ -70,12 +70,10 @@
           data-action="data-explorer--filter-chooser#setExtract"
           <%= html_attributes(name: "filter.#{dim_key}.extract") %>>
           <option></option>
-          <option>hour</option>
-          <option>day of week</option>
-          <option>day</option>
-          <option>week</option>
-          <option>month</option>
-          <option>year</option>
+
+          <% Compositions::Components::Group::EXTRACT_OPTS.each do |part| %>
+            <option <%= html_attributes(value: part) %> <%= html_attributes(selected: "selected") if filter&.extract == part %>><%= part.to_s.humanize %></option>
+          <% end %>
         </select>
 
         <br>

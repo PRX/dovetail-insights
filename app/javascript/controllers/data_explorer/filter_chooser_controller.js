@@ -26,7 +26,8 @@ const months = [
   [11, "November"],
   [12, "December"],
 ];
-const years = Array.from({ length: 11 }, (v, idx) => 2015 + idx);
+// TODO Always include up to the current year
+const years = Array.from({ length: 16 }, (v, idx) => 2010 + idx);
 
 export default class extends Controller {
   static targets = ["extractBy", "values"];
@@ -39,7 +40,7 @@ export default class extends Controller {
     if (extractBy === "hour") {
       const htmlString = hours.map((h) => `<option>${h}</option>`);
       this.valuesTarget.innerHTML = htmlString;
-    } else if (extractBy === "day of week") {
+    } else if (extractBy === "day_of_week") {
       const htmlString = dow.map(
         (v) => `<option value="${v[0]}">${v[1]}</option>`,
       );
