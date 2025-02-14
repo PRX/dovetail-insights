@@ -181,15 +181,10 @@ FROM downloads_in_range AS downloads
         wheres << "#{selector} < #{from} OR #{selector} >= #{to}"
       end
     elsif filter.gte
-      # Wrap values for timestamp fields in quotes
-      # TODO gte is never used with timestamps, this check can go away
-      gte = bq_type == "TIMESTAMP" ? %Q("#{filter.gte}") : filter.gte
-      lt = bq_type == "TIMESTAMP" ? %Q("#{filter.lt}") : filter.lt
-
       if filter.operator == :include
-        wheres << "#{selector} >= #{gte} AND #{selector} < #{lt}"
+        wheres << "#{selector} >= #{filter.gte} AND #{selector} < #{filter.lt}"
       else
-        wheres << "#{selector} < #{gte} OR #{selector} >= #{lt}"
+        wheres << "#{selector} < #{filter.gte} OR #{selector} >= #{filter.lt}"
       end
     else
       # Filter on a basic list of values
