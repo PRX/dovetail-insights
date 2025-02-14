@@ -143,8 +143,10 @@ Dimensions:
       - downloads
       - impressions
     BigQuery:
-      Selector: countries.geoname_id
-      Type: INTEGER
+      # Selector: countries.geoname_id
+      # Type: INTEGER
+      Selector: countries.country_iso_code
+      Type: STRING
       RequiredTables: [countries]
   subdivision_iso_code:
     Type: Token
