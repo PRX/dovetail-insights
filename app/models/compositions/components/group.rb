@@ -67,6 +67,7 @@ module Compositions
           end
         end
 
+        # We may end up with zero or more groups in this array being returned
         groups
       end
 
@@ -76,7 +77,11 @@ module Compositions
       # TODO Validate that the dimension exists
       # TODO Validate that the options provided are supported by the dimension type
       # TODO Validate that the options don't conflict, even if they are all supported
+      # TODO Validate that the values for an option (like extract or truncate) are valid
+      # TODO Validate indices are valid for dimension type
       validates :dimension, presence: true
+      validate :dimension_is_real
+      validate :no_missing_indices, :indices_order_is_correct
 
       def initialize(dimension_name)
         raise unless dimension_name.instance_of? Symbol
@@ -104,6 +109,30 @@ module Compositions
         dimension_def = DataSchema.dimensions[dimension.to_s]
 
         (dimension_def["SummableMetrics"] || []).include?(metric.metric.to_s)
+      end
+
+      private
+
+      def dimension_is_real
+        unless DataSchema.dimensions.keys.include?(dimension.to_s)
+          errors.add(:dimension, :invalid, message: "#{dimension} is not a valid group dimension")
+        end
+      end
+
+      def no_missing_indices
+        if indices && indices.empty?
+          errors.add(:indices, :missing_indices, message: "cannot be empty")
+        end
+
+        if indices&.any? { |i| i.nil? }
+          errors.add(:indices, :missing_indices, message: "cannot include empty values")
+        end
+      end
+
+      def indices_order_is_correct
+        if indices && indices != indices.compact.sort
+          errors.add(:indices, :out_of_order, message: "must be in increasing order")
+        end
       end
     end
   end
