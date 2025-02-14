@@ -1,4 +1,4 @@
-# Dimensions are aspects of the data that we  think are meaningful in terms of
+# Dimensions are aspects of the data that we think are meaningful in terms of
 # filtering, grouping, etc.
 #
 # Each dimension has a type, and different types have different behaviors in
@@ -159,7 +159,8 @@ Dimensions:
       - downloads
       - impressions
     BigQuery:
-      Selector: cities.subdivision_1_iso_code
+      # Selector: cities.subdivision_1_iso_code
+      Selector: CONCAT(cities.country_iso_code, '-', cities.subdivision_1_iso_code)
       Type: STRING
       RequiredTables: [cities]
   city_id:
