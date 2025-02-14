@@ -11,5 +11,5 @@ Metrics:
     # TODO Needs a property to indicate these can't be totaled
     BigQuery:
       Selector: COUNT(DISTINCT downloads.listener_id)
-  rolling_uniques:
-    Type: Variable
+  # rolling_uniques:
+  #   Type: Variable
