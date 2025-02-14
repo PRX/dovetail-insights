@@ -38,7 +38,8 @@ module Compositions
             else
               # The dimension key used in the params may be an alias for an
               # actual dimension defined in the schema. We want to use the true
-              # dimension name, so look it up if necessary.
+              # dimension name, so look it up if necessary. If there's no match,
+              # use the key as given.
               dimension_name = DataSchema.dimensions.find { |k, v| v["QueryKey"] == param_value }&.dig(0) || param_value
 
               groups[group_index] = new(dimension_name.to_sym)
@@ -58,11 +59,23 @@ module Compositions
             elsif param_key == "group.#{group_number}.truncate"
               group.truncate = param_value
             elsif param_key == "group.#{group_number}.indices"
-              # TODO If the indicies are datetime string, we can't coerce them
-              # to integers. Make sure we handle those properly, either by
-              # looking at the type of the dimension for this group if it's
-              # available, or heuristically from the indices if it's not
-              group.indices = param_value.split(",").map { |i| i.strip }.map { |i| i.include?("D") ? i.sub("D", "").to_i * 86400 : i.to_i }.sort
+              # +indicies+ are used when grouping by ranges. This is supported
+              # for both Timestamp and Duration dimensions. With Timestamp
+              # dimensions, each index is a time (e.g., YYYY-MM-DDTHH:MM:SSZ),
+              # and with Duration dimensions, each index is a number (of
+              # seconds) like 86400 or a shorthand like "7D", which should be
+              # expanded into seconds.
+              raw_values = param_value.split(",", -1).map { |i| i.strip }
+              group.indices = raw_values.map do |v|
+                if /^[0-9]{4}-[0-9]{1,2}/.match?(v)
+                  # TODO
+                  v
+                elsif /^[0-9]+[a-zA-Z]$/.match?(v)
+                  DurationShorthand.expand(v)
+                else
+                  v.present? ? v.to_i : nil
+                end
+              end
             end
           end
         end
