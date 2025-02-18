@@ -86,6 +86,7 @@ Dimensions:
       - impressions
     BigQuery:
       Selector: episodes.published_at
+      Type: TIMESTAMP
       RequiredTables: [episodes]
   current_episode_age_in_seconds:
     Type: Duration
