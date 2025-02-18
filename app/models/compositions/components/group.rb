@@ -68,14 +68,14 @@ module Compositions
             elsif param_key == "group.#{group_number}.indices"
               # +indicies+ are used when grouping by ranges. This is supported
               # for both Timestamp and Duration dimensions. With Timestamp
-              # dimensions, each index is a time (e.g., YYYY-MM-DDTHH:MM:SSZ),
+              # dimensions, each index is a time (e.g., YYYY-MM-DD or
+              # YYYY-MM-DDTHH:MM:SSZ) or a relatime expression (e.g., now/Y),
               # and with Duration dimensions, each index is a number (of
               # seconds) like 86400 or a shorthand like "7D", which should be
               # expanded into seconds.
               raw_values = param_value.split(",", -1).map { |i| i.strip }
               group.indices = raw_values.map do |v|
-                if /^[0-9]{4}-[0-9]{1,2}/.match?(v)
-                  # TODO
+                if /[a-zA-Z\-]/.match?(v)
                   v
                 elsif /^[0-9]+[a-zA-Z]$/.match?(v)
                   DurationShorthand.expand(v)
@@ -134,6 +134,21 @@ module Compositions
         dimension_def = DataSchema.dimensions[dimension.to_s]
 
         (dimension_def["SummableMetrics"] || []).include?(metric.metric.to_s)
+      end
+
+      ##
+      # Returns an array of the current indicies, where any values in the set
+      # that appear to be relatime expressions have been resolved to their
+      # current absolute time
+
+      def abs_indices
+        indices&.map do |i|
+          if i.to_s.match Relatime::EXPRESSION_REGEXP
+            Relatime.rel2abs(i.to_s, :front, DateTime.now.new_offset(0))
+          else
+            i
+          end
+        end
       end
 
       private
@@ -196,7 +211,7 @@ module Compositions
       end
 
       def indices_order_is_correct
-        if indices && indices != indices.compact.sort
+        if abs_indices && abs_indices != abs_indices.compact.sort
           errors.add(:indices, :out_of_order, message: "must be in increasing order")
         end
       end

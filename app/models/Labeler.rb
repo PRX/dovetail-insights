@@ -7,17 +7,25 @@ class Labeler
     dimension_def = DataSchema.dimensions[group.dimension.to_s]
 
     if dimension_def["Type"] == "Timestamp"
-      case group.extract
-      when "month"
-        return Date::ABBR_MONTHNAMES[input.to_i]
-      when "week"
-        return "Week #{input}"
-      when "day"
-        return input.to_i.ordinalize
-      when "dayofweek"
-        return ["", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][input.to_i]
-      when "hour"
-        return "#{input}:00"
+      if group.extract
+        case group.extract
+        when "month"
+          return Date::ABBR_MONTHNAMES[input.to_i]
+        when "week"
+          return "Week #{input}"
+        when "day"
+          return input.to_i.ordinalize
+        when "dayofweek"
+          return ["", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][input.to_i]
+        when "hour"
+          return "#{input}:00"
+        end
+      elsif group.indices
+        if input.starts_with? "LT"
+          return input.sub("LT", "Before")
+        elsif input.starts_with? "GTE"
+          return input.sub("GTE", "After")
+        end
       end
     elsif dimension_def["Type"] == "Duration"
       if input.starts_with? "LT"

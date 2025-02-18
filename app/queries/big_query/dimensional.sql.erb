@@ -99,12 +99,18 @@ downloads_in_range AS (
     if group.extract
       selects << "EXTRACT(#{bigquery_extract_argument(group.extract)} FROM #{selector}) AS #{group.as}"
     elsif group.truncate
+      # Format after truncating to get a format we are anticipating
       selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S %Ez", TIMESTAMP_TRUNC(#{selector}, #{bigquery_truncate_argument(group.truncate)}, "UTC"), "UTC") AS #{group.as})
     elsif group.indices
       cases = []
 
-      group.indices.each do |i|
-        cases << "WHEN #{selector} < #{i} THEN 'LT #{i}'"
+      group.abs_indices.each_with_index do |i, idx|
+        if dimension_def["BigQuery"]["Type"] == "TIMESTAMP"
+          # Wrap TIMESTAMPS in quotes
+          cases << "WHEN #{selector} < '#{i}' THEN 'LT #{group.indices[idx]}'"
+        else
+          cases << "WHEN #{selector} < #{i} THEN 'LT #{group.indices[idx]}'"
+        end
       end
 
       cases << "ELSE 'GTE #{group.indices.last}'"
