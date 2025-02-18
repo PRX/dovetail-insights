@@ -253,6 +253,16 @@ export default class extends Controller {
           // If the mode is Range, add a param with the values needed to define
           // the chosen ranges. There could be any number of ranges specified.
           if (modeEl.value === "range") {
+            // TODO The way these indices are collected will changed based on the
+            // structure of the form elements, which is likely to change during
+            // early app development
+
+            const cont = document.querySelector(".timestamp .range ul");
+            const indexInputs = Array.from(
+              cont.querySelectorAll("input:not(:disabled)"),
+            );
+            const indices = indexInputs.map((i) => i.value || "");
+            groupsParams.set(`${dimensionEl.id}.indices`, indices.join(","));
           }
         }
 
@@ -261,7 +271,8 @@ export default class extends Controller {
         // param with a comma delimited list of all those indices.
         if (selectedDimensionOptionEl.dataset.dimensionType === "Duration") {
           // TODO The way these indices are collected will changed based on the
-          // structure of the form elements.
+          // structure of the form elements, which is likely to change during
+          // early app development
           const cont = groupChooserTarget.querySelector(".duration-ranges");
           const indexInputs = Array.from(
             cont.querySelectorAll("input:not(:disabled)"),
