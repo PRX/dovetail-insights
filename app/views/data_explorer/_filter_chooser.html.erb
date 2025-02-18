@@ -47,7 +47,7 @@
       <br>
       <select class="timestamp-mode" <%= html_attributes(name: "filter.#{dim_key}.timestamp-mode") %>>
         <option value="Range">Range</option>
-        <option value="Extract">Extract</option>
+        <option value="Extract" <%= html_attributes(selected: "selected") if filter&.extract %>>Extract</option>
       </select>
 
       <div class="range">
