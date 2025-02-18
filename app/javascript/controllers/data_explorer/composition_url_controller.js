@@ -170,8 +170,20 @@ export default class extends Controller {
           const extractEl = filterChooser.querySelector(
             `*[name="filter.${dimensionKey}.extract"]`,
           );
+          filtersParams.set(extractEl.name, extractEl.value);
 
-          // TODO
+          const valuesSelect = filterChooser.querySelector(
+            `*[name="filter.${dimensionKey}.values"]`,
+          );
+          if (valuesSelect?.selectedOptions.length) {
+            const selectedOptions = valuesSelect.selectedOptions;
+            filtersParams.set(
+              valuesSelect.name,
+              Array.from(selectedOptions)
+                .map((o) => o.value)
+                .join(","),
+            );
+          }
         }
       }
     }
@@ -252,6 +264,8 @@ export default class extends Controller {
 
           // If the mode is Range, add a param with the values needed to define
           // the chosen ranges. There could be any number of ranges specified.
+          // Add a group.N.values param with a comma delimited list of all
+          // those indices.
           if (modeEl.value === "range") {
             // TODO The way these indices are collected will changed based on the
             // structure of the form elements, which is likely to change during
