@@ -254,13 +254,13 @@ FROM downloads_in_range AS downloads
       if filter.operator == :include
         wheres << "#{selector} >= #{from} AND #{selector} < #{to}"
       else
-        wheres << "#{selector} < #{from} OR #{selector} >= #{to}"
+        wheres << "(#{selector} < #{from} OR #{selector} >= #{to})"
       end
     elsif filter.gte
       if filter.operator == :include
         wheres << "#{selector} >= #{filter.gte} AND #{selector} < #{filter.lt}"
       else
-        wheres << "#{selector} < #{filter.gte} OR #{selector} >= #{filter.lt}"
+        wheres << "(#{selector} < #{filter.gte} OR #{selector} >= #{filter.lt})"
       end
     else
       # Filter on a basic list of values
