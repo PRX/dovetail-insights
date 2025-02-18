@@ -3,8 +3,8 @@
     <p><a href="/">Home</a></p>
     <p><a href="/data-explorer"><%= current_user_name %></a></p>
 
-    <%= render "data_explorer/composition_errors" %>
     <%= render "data_explorer/composition_warnings" unless @composition.safe? %>
+    <%= render "data_explorer/composition_errors" unless @composition.valid? %>
 
     <%= render partial: "data_explorer/range_chooser", locals: {form: form} %>
 
