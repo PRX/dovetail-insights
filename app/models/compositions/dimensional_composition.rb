@@ -22,6 +22,7 @@ module Compositions
 
     validate :all_metrics_are_valid, :includes_at_least_one_metric
     validate :group_order_is_correct, :all_groups_are_valid, :group_count_is_supported
+    caution :all_groups_are_safe
 
     def query
       return unless valid?
@@ -59,6 +60,12 @@ module Compositions
     def all_groups_are_valid
       if (groups || []).compact.any? { |g| g.invalid? }
         errors.add(:groups, :invalid_groups, message: "must all be valid")
+      end
+    end
+
+    def all_groups_are_safe
+      if (groups || []).compact.any? { |g| g.unsafe? }
+        warnings.add(:groups, :unsafe_groups, message: "include configuration that may be unsafe")
       end
     end
 

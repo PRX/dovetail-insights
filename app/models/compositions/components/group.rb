@@ -106,6 +106,7 @@ module Compositions
       validate :no_options_for_token_type
       validate :duration_type_has_only_indices
       validate :timestamp_type_has_single_option
+      caution :local_time_distortion
 
       def initialize(dimension_name)
         raise unless dimension_name.instance_of? Symbol
@@ -198,6 +199,10 @@ module Compositions
         if indices && indices != indices.compact.sort
           errors.add(:indices, :out_of_order, message: "must be in increasing order")
         end
+      end
+
+      def local_time_distortion
+        warnings.add(:dimension, :distortion, message: "creates data groupings that may not reflect reality") if dimension == :download_local_timestamp
       end
     end
   end

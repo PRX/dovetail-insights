@@ -4,7 +4,7 @@ module Compositions
       include ActiveModel::Model
 
       ##
-      # Returns an array of **all** comparions that are present in the given
+      # Returns an array of **all** comparisons that are present in the given
       # params.
       #
       # This should attempt to construct +Comparison+ instances as best as it can,
@@ -18,7 +18,7 @@ module Compositions
 
         # Each compare param looks like: +compare.XoX=3+, where +XoX+ is something
         # like YoY or QoQ, representing a year-over-year or quarter-over-quarter
-        # comparison, and the value is the number of years or quaters to include
+        # comparison, and the value is the number of years/quaters/etc to include
         # in the comparison.
         compare_params.map do |param_key, param_value|
           new(param_key.split(".")[1].to_sym, param_value.to_i)

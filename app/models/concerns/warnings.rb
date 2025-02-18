@@ -10,7 +10,8 @@
 # Be aware that this does not change the default behavior of validations, which
 # will continue to operate only on +errors+. You can add warnings through
 # +validate+ if you want, though, just realize that you will introduce some
-# discontinuity between +validate+ and +valid?+.
+# discontinuity between +validate+ and +valid?+. You'll also need to trigger
+# the validations in order for the warnings to be added.
 
 module Warnings
   extend ActiveSupport::Concern
@@ -22,6 +23,16 @@ module Warnings
 
     def safe?
       warnings.empty?
+    end
+
+    def unsafe?
+      !safe?
+    end
+  end
+
+  class_methods do
+    def caution(*args)
+      validate(*args)
     end
   end
 end
