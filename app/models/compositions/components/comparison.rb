@@ -25,6 +25,8 @@ module Compositions
         end
       end
 
+      include Warnings
+
       attr_reader :period, :lookback
 
       validate :period_is_supported, :lookback_is_supported

@@ -36,6 +36,8 @@ module Compositions
         end
       end
 
+      include Warnings
+
       # TODO Validate that variable metrics have values
       # TODO Validate variable values
       # TODO Validate metric allows variable

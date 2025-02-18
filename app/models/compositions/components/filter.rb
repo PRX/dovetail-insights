@@ -84,6 +84,7 @@ module Compositions
       end
 
       include Ranging
+      include Warnings
 
       attr_reader :dimension, :operator, :gte, :lt
       attr_accessor :values, :extract

@@ -91,6 +91,8 @@ module Compositions
         groups
       end
 
+      include Warnings
+
       attr_reader :dimension
       attr_accessor :truncate, :extract, :indices
 
