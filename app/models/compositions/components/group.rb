@@ -76,10 +76,14 @@ module Compositions
               raw_values = param_value.split(",", -1).map { |i| i.strip }
               group.indices = raw_values.map do |v|
                 if /[a-zA-Z\-]/.match?(v)
+                  # Anything that looks like a date or relatime expression,
+                  # keep as-is
                   v
                 elsif /^[0-9]+[a-zA-Z]$/.match?(v)
+                  # If it looks like a duration shorthand, expand it to seconds
                   DurationShorthand.expand(v)
                 else
+                  # Everything else assume it's seconds and cast to integer
                   v.present? ? v.to_i : nil
                 end
               end
