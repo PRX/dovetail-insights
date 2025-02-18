@@ -32,13 +32,19 @@ const years = Array.from({ length: 16 }, (v, idx) => 2010 + idx);
 export default class extends Controller {
   static targets = ["extractBy", "values"];
 
+  connect() {
+    this.setExtract();
+  }
+
   setExtract() {
+    // TODO Right now this is responsible for all rendering of this element.
+    // At least the initial loading should be moved into the Rails view.
     const extractBy = this.extractByTarget.value;
 
     this.valuesTarget.innerHTML = "";
 
     if (extractBy === "hour") {
-      const htmlString = hours.map((h) => `<option>${h}</option>`);
+      const htmlString = hours.map((h) => `<option value="${h}">${h}</option>`);
       this.valuesTarget.innerHTML = htmlString;
     } else if (extractBy === "day_of_week") {
       const htmlString = dow.map(
@@ -46,10 +52,10 @@ export default class extends Controller {
       );
       this.valuesTarget.innerHTML = htmlString;
     } else if (extractBy === "day") {
-      const htmlString = days.map((d) => `<option>${d}</option>`);
+      const htmlString = days.map((d) => `<option value="${d}">${d}</option>`);
       this.valuesTarget.innerHTML = htmlString;
     } else if (extractBy === "week") {
-      const htmlString = weeks.map((w) => `<option>${w}</option>`);
+      const htmlString = weeks.map((w) => `<option value="${w}">${w}</option>`);
       this.valuesTarget.innerHTML = htmlString;
     } else if (extractBy === "month") {
       const htmlString = months.map(
@@ -57,8 +63,25 @@ export default class extends Controller {
       );
       this.valuesTarget.innerHTML = htmlString;
     } else if (extractBy === "year") {
-      const htmlString = years.map((y) => `<option>${y}</option>`);
+      const htmlString = years.map((y) => `<option value="${y}">${y}</option>`);
       this.valuesTarget.innerHTML = htmlString;
+    }
+
+    // TODO Hack until rendering is moved to Rails view, to set chosen values
+    // from the URL as selected
+    const dimKey = this.element.closest("li > fieldset").dataset.dimensionKey;
+    const val = new URL(window.location.toString()).searchParams.get(
+      `filter.${dimKey}.values`,
+    );
+    if (val) {
+      const vals = val.split(",").map((v) => v.trim());
+
+      const optionEls = this.valuesTarget.querySelectorAll("option");
+      for (const optionEl of optionEls) {
+        if (vals.includes(optionEl.value)) {
+          optionEl.selected = true;
+        }
+      }
     }
   }
 }
