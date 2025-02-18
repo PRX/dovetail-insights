@@ -77,7 +77,7 @@
         </select>
 
         <br>
-        <label <%= html_attributes(name: "filter.#{dim_key}.values") %>>Values:</label>
+        <label <%= html_attributes(for: "filter.#{dim_key}.values") %>>Values:</label>
         <select
           multiple
           data-data-explorer--filter-chooser-target="values"
