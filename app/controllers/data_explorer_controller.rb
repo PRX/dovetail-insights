@@ -13,9 +13,6 @@ class DataExplorerController < ApplicationController
     else
       Compositions::BaseComposition.from_params(params)
     end
-
-    # Force validation
-    @composition.valid?
   end
 
   def export
