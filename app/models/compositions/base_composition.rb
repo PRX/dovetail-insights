@@ -27,6 +27,7 @@ module Compositions
     end
 
     include Ranging
+    include Warnings
 
     attr_reader :filters
 

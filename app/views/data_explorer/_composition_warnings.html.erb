@@ -1,0 +1,27 @@
+<fieldset>
+  <legend>Composition Warnings</legend>
+
+  <ul>
+    <% @composition.warnings.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+
+    <% @composition.filters&.each do |filter| %>
+      <% filter.warnings.full_messages.each do |msg| %>
+        <li><%= filter.dimension %> filter: <%= msg %></li>
+      <% end %>
+    <% end %>
+
+    <% @composition.try(:metrics)&.each do |metric| %>
+      <% metric.warnings.full_messages.each do |msg| %>
+        <li><%= metric.metric %> metric: <%= msg %></li>
+      <% end %>
+    <% end %>
+
+    <% @composition.try(:groups)&.each do |group| %>
+      <% group.warnings.full_messages.each do |msg| %>
+        <li><%= group.dimension %> group: <%= msg %></li>
+      <% end %>
+    <% end %>
+  </ul>
+</fieldset>
