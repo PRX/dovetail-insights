@@ -16,5 +16,7 @@
     </th>
   <% end %>
 
-  <th colspan="<%= @composition.metrics.size %>">UNKNOWN</th>
+  <% if @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
+    <th colspan="<%= @composition.metrics.size %>">UNKNOWN</th>
+  <% end %>
 </tr>

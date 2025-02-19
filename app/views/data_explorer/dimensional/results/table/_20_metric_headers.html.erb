@@ -18,7 +18,10 @@
     <% end %>
   <% end %>
 
-  <% @composition.metrics.each do |metric| %>
-    <th><%= metric.metric %></th>
+  <%# Unknown group 2 %>
+  <% if @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
+    <% @composition.metrics.each do |metric| %>
+      <th><%= metric.metric %></th>
+    <% end %>
   <% end %>
 </tr>

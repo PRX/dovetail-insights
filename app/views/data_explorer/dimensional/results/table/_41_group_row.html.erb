@@ -46,13 +46,15 @@
 
   <%# Metrics values for the current group 1 member where group 2 is NULL %>
   <%# One cell for each metric %>
-  <% @composition.metrics.each do |metric| %>
-    <% value = @composition.results.get_value(metric, group_1_member, nil) %>
+  <% if @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
+    <% @composition.metrics.each do |metric| %>
+      <% value = @composition.results.get_value(metric, group_1_member, nil) %>
 
-    <td
-      <%= html_attributes("data-highlight-metric": metric.metric, "data-highlight-group-1": group_1_member, "data-highlight-group-2": "__nil__") %>
-      <%= html_attributes("data-raw-value": value) %>>
-      <%= number_with_delimiter(value) %>
-    </td>
+      <td
+        <%= html_attributes("data-highlight-metric": metric.metric, "data-highlight-group-1": group_1_member, "data-highlight-group-2": "__nil__") %>
+        <%= html_attributes("data-raw-value": value) %>>
+        <%= number_with_delimiter(value) %>
+      </td>
+    <% end %>
   <% end %>
 </tr>
