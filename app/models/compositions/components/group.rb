@@ -107,11 +107,10 @@ module Compositions
       attr_reader :dimension
       attr_accessor :truncate, :extract, :indices
 
-      # TODO Validate indices for Duration are numbers or shorthands
-      # TODO Validate indices for Timestamps are dates, date+times, or relatimes
       validates :dimension, presence: true
       validate :dimension_is_real
-      validate :no_missing_indices, :indices_order_is_correct
+      validate :no_missing_indices, :indices_order_is_correct, :indices_are_not_repeated
+      validate :timestamp_indices_are_valid, :duration_indices_are_valid
       validates :extract, inclusion: {in: EXTRACT_OPTS, message: "by %{value} is not a supported operation"}, if: -> { extract }
       validates :truncate, inclusion: {in: TRUNCATE_OPTS, message: "by %{value} is not a supported operation"}, if: -> { truncate }
       validate :no_options_for_token_type
@@ -222,9 +221,45 @@ module Compositions
       end
 
       def indices_order_is_correct
-        p abs_indices
         if abs_indices && abs_indices != abs_indices.compact.sort
           errors.add(:indices, :out_of_order, message: "must be in increasing order")
+        end
+      end
+
+      def indices_are_not_repeated
+        if indices && abs_indices.uniq.length != abs_indices.length
+          errors.add(:indices, :duplicates, message: "cannot contain duplicates")
+        end
+      end
+
+      def duration_indices_are_valid
+        dimension_def = DataSchema.dimensions[dimension.to_s]
+
+        if dimension_def && dimension_def["Type"] == "Duration" && indices
+          indices.each do |i|
+            if i.is_a?(Integer)
+            elsif /^[0-9]+[a-zA-Z]$/.match?(i)
+            else
+              errors.add(:indices, :invalid, message: "#{i} is not a valid index")
+            end
+          end
+        end
+      end
+
+      def timestamp_indices_are_valid
+        dimension_def = DataSchema.dimensions[dimension.to_s]
+
+        if dimension_def && dimension_def["Type"] == "Timestamp" && indices
+          indices.each do |i|
+            if !i.is_a?(String)
+              errors.add(:indices, :invalid, message: "#{i} is not a valid index")
+            elsif i.match Relatime::EXPRESSION_REGEXP
+            elsif i.match?(/^\d{4}-[01]\d-[0-3]\d$/)
+            elsif i.match?(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ$/)
+            else
+              errors.add(:indices, :invalid, message: "#{i} is not a valid index")
+            end
+          end
         end
       end
 
