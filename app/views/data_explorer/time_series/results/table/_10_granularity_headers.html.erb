@@ -1,6 +1,6 @@
 <tr>
   <td></td>
-  <td></td>
+  <% if @composition.groups.size > 1 %><td></td><% end %>
 
   <%# A cell for each granularity period, spanning all metrics and comparisons %>
   <% @composition.results.granularity_unique_members.each do |member| %>

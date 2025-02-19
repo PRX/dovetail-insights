@@ -33,11 +33,14 @@
             <% label_displayed = true %>
           <% end %>
         </th>
-        <th <%= html_attributes("data-raw-member": group_2_member) %>
-          scope="row">
 
-          <%= @composition.results.group_member_label(@composition.groups[1], group_2_member) %>
-        </th>
+        <% if @composition.groups.size > 1 %>
+          <th <%= html_attributes("data-raw-member": group_2_member) %>
+            scope="row">
+
+            <%= @composition.results.group_member_label(@composition.groups[1], group_2_member) %>
+          </th>
+        <% end %>
 
         <% @composition.results.granularity_unique_members.each do |granularity_member| %>
           <% @composition.metrics.each do |metric| %>
@@ -76,7 +79,7 @@
       <% label = @composition.results.group_member_label(@composition.groups[0], group_1_member) %>
       <%= Labeler.label(label, @composition.groups[0]) %>
     </th>
-    <th>UNKNOWN</th>
+    <% if @composition.groups.size > 1 %><th>UNKNOWN</th><% end %>
 
     <% @composition.results.granularity_unique_members.each do |granularity_member| %>
       <% @composition.metrics.each do |metric| %>

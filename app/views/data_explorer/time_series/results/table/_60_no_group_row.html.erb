@@ -1,6 +1,6 @@
 <tr>
   <th scope="row">UNKNOWN</th>
-  <th scope="row"></th>
+  <% if @composition.groups.size > 1 %><th scope="row"></th><% end %>
 
   <% @composition.results.granularity_unique_members.each do |granularity_member| %>
     <% @composition.metrics.each do |metric| %>

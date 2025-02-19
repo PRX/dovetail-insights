@@ -17,20 +17,20 @@
   </colgroup>
 
   <thead>
-    <%= render "data_explorer/time_series/results/table/granularity_headers" %>
+    <%= render "data_explorer/time_series/results/table/10_granularity_headers" %>
 
-    <%= render "data_explorer/time_series/results/table/metric_headers" %>
+    <%= render "data_explorer/time_series/results/table/20_metric_headers" %>
 
     <% if @composition.comparisons.size > 0 %>
-      <%= render "data_explorer/time_series/results/table/comparison_headers" %>
+      <%= render "data_explorer/time_series/results/table/30_comparison_headers" %>
     <% end %>
   </thead>
 
   <tbody>
-    <%= render "data_explorer/time_series/results/table/totals_row" %>
+    <%= render "data_explorer/time_series/results/table/40_totals_row" %>
 
-    <%= render "data_explorer/time_series/results/table/group_rows" %>
+    <%= render "data_explorer/time_series/results/table/50_group_rows" %>
 
-    <%= render "data_explorer/time_series/results/table/no_group_row" %>
+    <%= render "data_explorer/time_series/results/table/60_no_group_row" %>
   </tbody>
 </table>
