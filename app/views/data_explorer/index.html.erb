@@ -113,6 +113,8 @@
 
     <div id="results">
       <% if @composition.valid? && @composition.results %>
+        <a id="export-btn" download href="<%= request.original_url.sub("/data-explorer", "/data-explorer/export") %>">Export to CSV</a>
+
         <% if @composition.lens == "dimensional" %>
           <%= render "data_explorer/dimensional/results" %>
         <% elsif @composition.lens == "timeSeries" %>
