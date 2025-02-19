@@ -24,7 +24,8 @@ function mergeSearchParams(...paramsList) {
 function cleanStringForSearchParamsString(paramsString) {
   const cleanedString = paramsString
     .replaceAll("%2F", "/")
-    .replaceAll("%2C", ",");
+    .replaceAll("%2C", ",")
+    .replaceAll("%3A", ":");
   return cleanedString;
 }
 
