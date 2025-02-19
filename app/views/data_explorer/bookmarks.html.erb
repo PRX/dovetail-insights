@@ -1,8 +1,8 @@
 <a href="/data-explorer">Data Explorer</a>
 
 <ul>
-  <li><a href="/data-explorer?lens=dimensional&from=now-1/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&metrics=downloads&group.1=time&group.1.extract=hour&group.2=time&group.2.extract=dayofweek">Heatmap by hour and day of the week</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-1/M&to=now-1/M&filter.podcast=include&filter.podcast.values=3492&filter.lag=exclude&filter.lag.gte=0&filter.lag.lt=36h&metrics=downloads&group.1=time&group.1.extract=hour&group.2=time&group.2.extract=dayofweek">Heatmap by hour and day of week, excluding drop spikes (first 36 hours)</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-1/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&metrics=downloads&group.1=time&group.1.extract=hour&group.2=time&group.2.extract=day_of_week">Heatmap by hour and day of the week</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-1/M&to=now-1/M&filter.podcast=include&filter.podcast.values=3492&filter.lag=exclude&filter.lag.gte=0&filter.lag.lt=36h&metrics=downloads&group.1=time&group.1.extract=hour&group.2=time&group.2.extract=day_of_week">Heatmap by hour and day of week, excluding drop spikes (first 36 hours)</a></li>
   <li><a href="/data-explorer?lens=dimensional&from=now-1/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&filter.country=include&filter.country.values=CA,MX,US&metrics=downloads&group.1=country&group.2=os">Country vs. OS, continental North America</a></li>
   <li><a href="/data-explorer?lens=timeSeries&from=now-4/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3492&granularity=weekly&metrics=downloads&group.1=lag&group.1.indices=7D,28D,90D,180D,365D">Freshness by week</a></li>
   <li><a href="/data-explorer?lens=timeSeries&from=now-6/M&to=now-1/M&filter.podcast=include&filter.podcast.values=59,93,3&granularity=monthly&metrics=downloads&group.1=podcast&compare.YoY=2">Multiple shows, monthly downloads with YoY comparison</a></li>
