@@ -9,15 +9,15 @@ class Labeler
     if dimension_def["Type"] == "Timestamp"
       if group.extract
         case group.extract
-        when "month"
+        when :month
           return Date::ABBR_MONTHNAMES[input.to_i]
-        when "week"
+        when :week
           return "Week #{input}"
-        when "day"
+        when :day
           return input.to_i.ordinalize
-        when "dayofweek"
+        when :day_of_week
           return ["", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][input.to_i]
-        when "hour"
+        when :hour
           return "#{input}:00"
         end
       elsif group.indices
