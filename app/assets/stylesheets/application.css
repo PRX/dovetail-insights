@@ -37,10 +37,23 @@ form {
     "global-data-parameters lens"
 }
 
+form.nochrome {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    "lens"
+}
+
 #global-data-parameters {
   grid-area: global-data-parameters;
   background-color: #f3f3f3;
   padding: 8px;
+}
+
+.nochrome #global-data-parameters,
+.nochrome #lens-data-parameters {
+  display: none;
 }
 
 #range label {

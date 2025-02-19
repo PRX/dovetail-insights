@@ -1,4 +1,4 @@
-<%= form_with model: @composition, url: "/", method: :get, id: "data-explorer", data: { controller: "data-explorer--composition-url data-explorer--results-table-highlight", action: "data-explorer--composition-url#goto" } do |form| %>
+<%= form_with model: @composition, url: "/", method: :get, id: "data-explorer", data: { controller: "data-explorer--composition-url data-explorer--results-table-highlight data-explorer--chrome", action: "data-explorer--composition-url#goto keydown.meta+enter@document->data-explorer--composition-url#goto keydown.esc@document->data-explorer--chrome#toggle", "data-explorer--chrome-target": "root" } do |form| %>
   <div id="global-data-parameters">
     <p><a href="/">Home</a></p>
     <p><a href="/data-explorer"><%= current_user_name %></a></p>
