@@ -59,31 +59,4 @@ module DataExplorerHelper
       value
     end
   end
-
-  ##
-  # Converts a value from Compositions::Components::EXTRACT_OPTS to the
-  # matching argument used by BigQuery EXTRACT()
-
-  def bigquery_extract_argument(opt)
-    {
-      hour: "HOUR",
-      day_of_week: "DAYOFWEEK",
-      day: "DAY",
-      week: "WEEK",
-      month: "MONTH",
-      year: "YEAR"
-    }[opt]
-  end
-
-  ##
-  # Converts a value from Compositions::Components::TRUNCATE_OPTS to the
-  # matching argument used by BigQuery TIMESTAMP_TRUNC()
-
-  def bigquery_truncate_argument(opt)
-    {
-      week: "WEEK",
-      month: "MONTH",
-      year: "YEAR"
-    }[opt]
-  end
 end

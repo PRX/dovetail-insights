@@ -167,10 +167,23 @@ downloads_in_range AS (
     selector = dimension_def["BigQuery"]["Selector"]
 
     if group.extract
-      selects << "EXTRACT(#{bigquery_extract_argument(group.extract)} FROM #{selector}) AS #{group.as}"
+      extract_arg = {
+        hour: "HOUR",
+        day_of_week: "DAYOFWEEK",
+        day: "DAY",
+        week: "WEEK",
+        month: "MONTH",
+        year: "YEAR"
+      }[group.extract]
+      selects << "EXTRACT(#{extract_arg} FROM #{selector}) AS #{group.as}"
     elsif group.truncate
+      truncate_arg = {
+        week: "WEEK",
+        month: "MONTH",
+        year: "YEAR"
+      }[group.truncate]
       # Format after truncating to get a format we are anticipating
-      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S %Ez", TIMESTAMP_TRUNC(#{selector}, #{bigquery_truncate_argument(group.truncate)}, "UTC"), "UTC") AS #{group.as})
+      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S %Ez", TIMESTAMP_TRUNC(#{selector}, #{truncate_arg}, "UTC"), "UTC") AS #{group.as})
     elsif group.indices
       cases = []
 
