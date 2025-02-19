@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/PRX/dovetail-insights#readme",
   "devDependencies": {
-    "eslint": "*",
+    "eslint": "^8",
     "eslint-config-airbnb-base": "*",
     "eslint-config-prettier": "*",
     "eslint-plugin-import": "*",
