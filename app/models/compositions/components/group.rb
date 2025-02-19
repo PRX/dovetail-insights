@@ -75,7 +75,7 @@ module Compositions
               # expanded into seconds.
               raw_values = param_value.split(",", -1).map { |i| i.strip }
               group.indices = raw_values.map do |v|
-                if /^[0-9]{4}-[0-9]{2}]/.match?(v)
+                if /^[0-9]{4}-[0-9]{2}/.match?(v)
                   # Anything that looks like a date, keep as-is
                   v
                 elsif Relatime::EXPRESSION_REGEXP.match?(v)
