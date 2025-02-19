@@ -75,9 +75,11 @@ module Compositions
               # expanded into seconds.
               raw_values = param_value.split(",", -1).map { |i| i.strip }
               group.indices = raw_values.map do |v|
-                if /[a-zA-Z\-]/.match?(v)
-                  # Anything that looks like a date or relatime expression,
-                  # keep as-is
+                if /^[0-9]{4}-[0-9]{2}]/.match?(v)
+                  # Anything that looks like a date, keep as-is
+                  v
+                elsif Relatime::EXPRESSION_REGEXP.match?(v)
+                  # Anything that looks like a relatime expression keep as-is
                   v
                 elsif /^[0-9]+[a-zA-Z]$/.match?(v)
                   # If it looks like a duration shorthand, expand it to seconds
@@ -215,6 +217,7 @@ module Compositions
       end
 
       def indices_order_is_correct
+        p abs_indices
         if abs_indices && abs_indices != abs_indices.compact.sort
           errors.add(:indices, :out_of_order, message: "must be in increasing order")
         end
