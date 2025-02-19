@@ -8,32 +8,95 @@ module Results
       @rows = rows
     end
 
+    ##
+    # Generates a CSV for the results.
+    # TODO Refactor this
+
     def as_csv
       CSV.generate(headers: true) do |csv|
         headers = []
 
-        headers << (@composition.groups[0] ? @composition.groups[0].dimension : "")
-        headers << (@composition.groups[1] ? @composition.groups[1].dimension : "")
+        # Add a column for each group (zero or more)
+        # TODO dimension is not meaningful enough on its own. Needs to include
+        # more info like "extract" and "HOUR" if necesasry
+        @composition.groups.each do |group|
+          headers << group.dimension
+        end
 
+        # Add a column for each metric (1 or more)
         @composition.metrics.each do |metric|
           headers << metric.metric
         end
 
+        # Add row of headers
         csv << headers
 
-        (group_1_unique_members || [nil]).each do |group_1_member|
-          (group_2_unique_members || [nil]).each do |group_2_member|
-            row = []
+        if @composition.groups.size == 0
+          row = []
 
-            (row << group_1_member) ? group_member_label(@composition.groups[0], group_1_member) : ""
-            (row << group_2_member) ? group_member_label(@composition.groups[1], group_2_member) : ""
+          @composition.metrics.each do |metric|
+            row << get_value(metric, nil, nil)
+          end
 
+          csv << row
+        elsif @composition.groups.size == 1
+          group_1_unique_members.each do |member|
+            row = [group_member_label(@composition.groups[0], member)]
+
+            # Add values for each metric for this group
             @composition.metrics.each do |metric|
-              row << get_value(metric, group_1_member, group_2_member)
+              row << get_value(metric, member, nil)
             end
 
             csv << row
           end
+
+          # Add values for each metric for groupless values
+          row = ["UNKNOWN"]
+          @composition.metrics.each do |metric|
+            row << get_value(metric, nil, nil)
+          end
+          csv << row
+        elsif @composition.groups.size == 2
+          group_1_unique_members.each do |group_1_member|
+            group_2_unique_members.each do |group_2_member|
+              row = []
+              row << group_member_label(@composition.groups[0], group_1_member)
+              row << group_member_label(@composition.groups[1], group_2_member)
+
+              @composition.metrics.each do |metric|
+                row << get_value(metric, group_1_member, group_2_member)
+              end
+
+              csv << row
+            end
+
+            row = []
+            row << group_member_label(@composition.groups[0], group_1_member)
+            row << nil
+            @composition.metrics.each do |metric|
+              row << get_value(metric, group_1_member, nil)
+            end
+            csv << row
+          end
+
+          group_2_unique_members.each do |group_2_member|
+            row = []
+            row << nil
+            row << group_member_label(@composition.groups[1], group_2_member)
+            @composition.metrics.each do |metric|
+              row << get_value(metric, nil, group_2_member)
+            end
+            csv << row
+          end
+
+          row = []
+          row << nil
+          row << nil
+          @composition.metrics.each do |metric|
+            row << get_value(metric, nil, nil)
+          end
+          csv << row
         end
       end
     end
