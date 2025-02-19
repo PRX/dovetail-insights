@@ -43,6 +43,7 @@ export default class extends Controller {
     "metric",
     "groupChooser",
     "granularity",
+    "granularityWindow",
     "compare",
   ];
 
@@ -307,6 +308,12 @@ export default class extends Controller {
     if (selectedLens?.value === "timeSeries") {
       if (this.granularityTarget.value) {
         granularityParams.set("granularity", this.granularityTarget.value);
+      }
+    }
+
+    if (this.granularityTarget.value === "rolling") {
+      if (this.granularityWindowTarget.value) {
+        granularityParams.set("window", this.granularityWindowTarget.value);
       }
     }
 
