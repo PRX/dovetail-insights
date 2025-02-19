@@ -41,7 +41,7 @@ Properties:
   episode_title_with_pubdate_prefix:
     Type: String
     BigQuery:
-      Selector: CONCAT(FORMAT_TIMESTAMP("%Y-%m-%d", episodes.published_at, "UTC"), ' ', episodes.title)
+      Selector: CONCAT(COALESCE(FORMAT_TIMESTAMP("%Y-%m-%d", episodes.published_at, "UTC"), "Date n/a"), ' ', episodes.title)
       RequiredTables: [episodes]
   podcast_name:
     Type: String
