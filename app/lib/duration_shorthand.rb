@@ -1,5 +1,7 @@
 ##
 # TODO Docs
+# This intentionally does not support _months_ because of the ambiguity that
+# introduces
 
 class DurationShorthand
   def self.expand(value)
