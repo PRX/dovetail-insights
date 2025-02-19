@@ -134,17 +134,17 @@ body:has(#time-series-granularity option:last-child:checked) #time-series-granul
   display: block;
 }
 
-#groups fieldset .timestamp { display: none; }
-#groups fieldset:has(select[id^="group."] option[data-dimension-type="Timestamp"]:checked) .timestamp { display: block; }
-#groups fieldset .timestamp .range,
-#groups fieldset .timestamp .truncate,
-#groups fieldset .timestamp .extract { display: none; }
-#groups fieldset:has(select.waffle option[value=range]:checked) .range { display: block; }
-#groups fieldset:has(select.waffle option[value=extract]:checked) .extract { display: block; }
-#groups fieldset:has(select.waffle option[value=truncate]:checked) .truncate { display: block; }
+#groups fieldset .timestamp-options { display: none; }
+#groups fieldset:has(select[id^="group."] option[data-dimension-type="Timestamp"]:checked) .timestamp-options { display: block; }
+#groups fieldset .timestamp-options .timestamp-ranges,
+#groups fieldset .timestamp-options .truncate-options,
+#groups fieldset .timestamp-options .extract-options { display: none; }
+#groups fieldset:has(select.mode-chooser option[value=range]:checked) .timestamp-ranges { display: block; }
+#groups fieldset:has(select.mode-chooser option[value=extract]:checked) .extract-options { display: block; }
+#groups fieldset:has(select.mode-chooser option[value=truncate]:checked) .truncate-options { display: block; }
 
-#groups fieldset .duration { display: none; }
-#groups fieldset:has(select[id^="group."] option[data-dimension-type="Duration"]:checked) .duration { display: block; }
+#groups fieldset .duration-options { display: none; }
+#groups fieldset:has(select[id^="group."] option[data-dimension-type="Duration"]:checked) .duration-options { display: block; }
 
 #time-series-compare { display: none; }
 #lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #time-series-compare {

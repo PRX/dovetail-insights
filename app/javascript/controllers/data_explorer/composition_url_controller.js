@@ -273,7 +273,7 @@ export default class extends Controller {
             // structure of the form elements, which is likely to change during
             // early app development
 
-            const cont = document.querySelector(".timestamp .range ul");
+            const cont = document.querySelector(".timestamp-ranges");
             const indexInputs = Array.from(
               cont.querySelectorAll("input:not(:disabled)"),
             );

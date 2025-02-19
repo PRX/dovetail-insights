@@ -5,7 +5,6 @@
 
 <fieldset
   <%= html_attributes(class: "field_with_errors") if group&.errors.present? %>
-  data-controller="data-explorer--group-chooser"
   data-data-explorer--composition-url-target="groupChooser">
   <legend>Group <%= i %></legend>
 
@@ -24,14 +23,38 @@
     <% end %>
   </select>
 
-  <div class="timestamp" data-data-explorer--composition-url-target="rangesBuilder">
-    <select class="waffle" <%= html_attributes(name: "group.#{i}.timestamp-mode") %>>
+  <div class="timestamp-options">
+    <select class="mode-chooser" <%= html_attributes(name: "group.#{i}.timestamp-mode") %>>
       <option value="range">Range</option>
       <option value="truncate" <%= html_attributes(selected: "selected") if group&.truncate %>>Truncate</option>
       <option value="extract" <%= html_attributes(selected: "selected") if group&.extract %>>Extract</option>
     </select>
 
-    <div class="range duration-ranges" data-data-explorer--group-chooser-target="durationRangesBuilder">
+    <select class="extract-options" <%= html_attributes(name: "group.#{i}.extract") %>>
+      <option></option>
+
+      <% unless Compositions::Components::Group::EXTRACT_OPTS.include?(group&.extract) %>
+        <option selected><%= group&.extract %></option>
+      <% end %>
+
+      <% Compositions::Components::Group::EXTRACT_OPTS.each do |part| %>
+        <option <%= html_attributes(value: part) %> <%= html_attributes(selected: "selected") if group&.extract == part %>><%= part.to_s.humanize %></option>
+      <% end %>
+    </select>
+
+    <select class="truncate-options" <%= html_attributes(name: "group.#{i}.truncate") %>>
+      <option></option>
+
+      <% unless Compositions::Components::Group::TRUNCATE_OPTS.include?(group&.truncate) %>
+        <option selected><%= group&.truncate %></option>
+      <% end %>
+
+      <% Compositions::Components::Group::TRUNCATE_OPTS.each do |part| %>
+        <option <%= html_attributes(value: part) %> <%= html_attributes(selected: "selected") if group&.truncate == part %>><%= part.to_s.humanize %></option>
+      <% end %>
+    </select>
+
+    <div class="timestamp-ranges" data-controller="data-explorer--group-chooser">
       Ranges:
       <a href="#" data-action="data-explorer--group-chooser#addRange">Add range</a>
 
@@ -51,50 +74,28 @@
         <li>Greater than or equal to: <input type="text" disabled autocomplete="off" <%= html_attributes(value: indices.last) if indices.try(:last) %>></li>
       </ul>
     </div>
-
-    <select class="extract" <%= html_attributes(name: "group.#{i}.extract") %>>
-      <option></option>
-
-      <% unless Compositions::Components::Group::EXTRACT_OPTS.include?(group&.extract) %>
-        <option selected><%= group&.extract %></option>
-      <% end %>
-
-      <% Compositions::Components::Group::EXTRACT_OPTS.each do |part| %>
-        <option <%= html_attributes(value: part) %> <%= html_attributes(selected: "selected") if group&.extract == part %>><%= part.to_s.humanize %></option>
-      <% end %>
-    </select>
-
-    <select class="truncate" <%= html_attributes(name: "group.#{i}.truncate") %>>
-      <option></option>
-
-      <% unless Compositions::Components::Group::TRUNCATE_OPTS.include?(group&.truncate) %>
-        <option selected><%= group&.truncate %></option>
-      <% end %>
-
-      <% Compositions::Components::Group::TRUNCATE_OPTS.each do |part| %>
-        <option <%= html_attributes(value: part) %> <%= html_attributes(selected: "selected") if group&.truncate == part %>><%= part.to_s.humanize %></option>
-      <% end %>
-    </select>
   </div>
 
-  <div class="duration duration-ranges" data-data-explorer--group-chooser-target="durationRangesBuilder">
-    Ranges:
-    <a href="#" data-action="data-explorer--group-chooser#addRange">Add range</a>
+  <div class="duration-options">
+    <div class="duration-ranges" data-controller="data-explorer--group-chooser">
+      Ranges:
+      <a href="#" data-action="data-explorer--group-chooser#addRange">Add range</a>
 
-    <% indices = group&.indices %>
+      <% indices = group&.indices %>
 
-    <ul>
-      <li>Less than: <input type="text" autocomplete="off" data-action="data-explorer--group-chooser#changeRangeIndex" <%= html_attributes(value: to_duration_shorthand(indices.first)) if indices.try(:first) %>></li>
+      <ul>
+        <li>Less than: <input type="text" autocomplete="off" data-action="data-explorer--group-chooser#changeRangeIndex" <%= html_attributes(value: to_duration_shorthand(indices.first)) if indices.try(:first) %>></li>
 
-      <% if indices && indices.size > 1 %>
-        <% i = 0 %>
-        <% while i < indices.size - 1 do %>
-          <li>Greater Than Or Equal To: <input disabled <%= html_attributes(value: to_duration_shorthand(indices[i])) %>> and less than <input data-action="data-explorer--group-chooser#changeRangeIndex" <%= html_attributes(value: to_duration_shorthand(indices[i+1])) %>> <a href="#" data-action="data-explorer--group-chooser#removeRange">X</a></li>
-          <% i += 1 %>
+        <% if indices && indices.size > 1 %>
+          <% i = 0 %>
+          <% while i < indices.size - 1 do %>
+            <li>Greater Than Or Equal To: <input disabled <%= html_attributes(value: to_duration_shorthand(indices[i])) %>> and less than <input data-action="data-explorer--group-chooser#changeRangeIndex" <%= html_attributes(value: to_duration_shorthand(indices[i+1])) %>> <a href="#" data-action="data-explorer--group-chooser#removeRange">X</a></li>
+            <% i += 1 %>
+          <% end %>
         <% end %>
-      <% end %>
 
-      <li>Greater than or equal to: <input type="text" disabled autocomplete="off" <%= html_attributes(value: to_duration_shorthand(indices.last)) if indices.try(:last) %>></li>
-    </ul>
+        <li>Greater than or equal to: <input type="text" disabled autocomplete="off" <%= html_attributes(value: to_duration_shorthand(indices.last)) if indices.try(:last) %>></li>
+      </ul>
+    </div>
   </div>
 </fieldset>

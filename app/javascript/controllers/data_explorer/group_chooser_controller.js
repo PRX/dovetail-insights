@@ -9,7 +9,7 @@ export default class extends Controller {
     // There's a list where each list item represents a range. There's always
     // one more range than defined indices (e.g., if there's 1 index, there
     // are 2 ranges).
-    const list = this.durationRangesBuilderTarget.querySelector("ul");
+    const list = this.element.querySelector("ul");
 
     const lastItem = list.querySelector("li:last-child");
 
@@ -37,14 +37,14 @@ export default class extends Controller {
     // Collect all the indices. Find all inputs that aren't disabled and get
     // their values
     const indexInputs = Array.from(
-      this.durationRangesBuilderTarget.querySelectorAll("input:not(:disabled)"),
+      this.element.querySelectorAll("input:not(:disabled)"),
     );
     const indices = indexInputs.map((i) => i.value || "");
 
     // Each range uses the previous index as the displayed lower bound, so
     // fill in those inputs with the indices from the input boxes.
     const indexOuputs = Array.from(
-      this.durationRangesBuilderTarget.querySelectorAll("input:disabled"),
+      this.element.querySelectorAll("input:disabled"),
     );
 
     let i = 0;
