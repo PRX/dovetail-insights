@@ -43,3 +43,12 @@
 - Finalize dimension names
   - These need to be consistent because changing them would break saved URLs, reports, etc
 - If the user adds an exclude filter on an impression dimension (like advertiser), but only selects downloads as a metric, ensure that all downloads associated with that advertiser are excluded, even if there are other impression rows for that download for other advertisers.
+- When using EXTRACT on timestamps, it may be helpful to be able to decide if the extract should use the timezone or not. If a user is extracting, for example, on download time, they likely would expect a download at 5 PM ET and 5 PM PT to be treated the same way, but when using EXTRACT without a timezone, they would get treated more like midnight at 2 AM.
+  - Need to verify what happens with downloads that don't have a timezone
+- Document how these cases are handled:
+  - episode pubDate changes
+  - episode RSS guid changes (i.e., multiple drop spikes)
+  - episode is deleted
+  - episode is unpublished
+  - episode is dropped with a backdated pubDate
+  - episode is imported (i.e., missing historical data)
