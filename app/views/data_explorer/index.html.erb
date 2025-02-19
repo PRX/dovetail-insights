@@ -1,4 +1,4 @@
-<%= form_with model: @composition, url: "/", method: :get, id: "data-explorer", data: { controller: "data-explorer--composition-url", action: "data-explorer--composition-url#goto" } do |form| %>
+<%= form_with model: @composition, url: "/", method: :get, id: "data-explorer", data: { controller: "data-explorer--composition-url data-explorer--results-table-highlight", action: "data-explorer--composition-url#goto" } do |form| %>
   <div id="global-data-parameters">
     <p><a href="/">Home</a></p>
     <p><a href="/data-explorer"><%= current_user_name %></a></p>
@@ -84,14 +84,29 @@
         <input name="compare-lookback" value="<%= compare.try(:lookback) %>">
       </fieldset>
 
-      <fieldset>
-        <legend>Display Options</legend>
+      <fieldset data-data-explorer--results-table-highlight-target="chooser">
+        <legend>Highlight Options</legend>
 
-        Highlight
-        <select id="highlight">
-          <option></option>
-          <option>Total Range (Linear)</option>
-          <option>Total Range (Log)</option>
+        <label for="hi-scale">Scale</label>
+        <select id="hi-scale" data-data-explorer--results-table-highlight-target="scale" data-action="data-explorer--results-table-highlight#highlight">
+          <option value="log">Log</option>
+          <option value="linear">Linear</option>
+        </select>
+
+        <label for="hi-palette">Palette</label>
+        <select id="hi-palette" data-data-explorer--results-table-highlight-target="palette" data-action="data-explorer--results-table-highlight#highlight">
+          <option value="rainbow">Rainbow</option>
+          <option value="monochrome">Monochrome</option>
+        </select>
+
+        <label for="hi-spectrums">Spectrums</label>
+        <select id="hi-spectrums" data-data-explorer--results-table-highlight-target="spectrums" data-action="data-explorer--results-table-highlight#highlight">
+          <option value="all_values">All values</option>
+          <option value="per_metric">Per metric</option>
+          <option value="per_metric_group_1">Amongst group 1</option>
+          <option value="per_metric_group_2">Amongst group 2</option>
+          <option value="per_metric_granularity">Amongst granularity</option>
+          <option value="per_metric_group_1_delta">Group 1 over time</option>
         </select>
       </fieldset>
     </div>

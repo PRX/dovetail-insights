@@ -19,7 +19,9 @@
 
       <% value = @composition.results.get_value(metric, granularity_member, nil) %>
 
-      <td <%= html_attributes("data-raw-value": value) %>>
+      <td
+        <%= html_attributes("data-highlight-metric": metric.metric, "data-highlight-granularity": granularity_member, "data-highlight-group-1": "__nil__", "data-highlight-group-2": "__nil__") %>
+        <%= html_attributes("data-raw-value": value) %>>
         <%= number_with_delimiter(value) %>
       </td>
     <% end %>
