@@ -84,9 +84,14 @@ module Compositions
                 elsif /^[0-9]+[a-zA-Z]$/.match?(v)
                   # If it looks like a duration shorthand, expand it to seconds
                   DurationShorthand.expand(v)
+                elsif /^[0-9]+$/.match?(v)
+                  # If it looks like an integer, assume it's seconds and cast
+                  # to integer
+                  v.to_i
                 else
-                  # Everything else assume it's seconds and cast to integer
-                  v.present? ? v.to_i : nil
+                  # Everything else keep as is; validations will catch any
+                  # issues with these strings
+                  v.present? ? v : nil
                 end
               end
             end
