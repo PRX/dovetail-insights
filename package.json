@@ -29,5 +29,9 @@
     "prettier": "*",
     "typescript": "*",
     "yarn": "*"
+  },
+  "dependencies": {
+    "@hotwired/stimulus": "*",
+    "@hotwired/turbo-rails": "*"
   }
 }

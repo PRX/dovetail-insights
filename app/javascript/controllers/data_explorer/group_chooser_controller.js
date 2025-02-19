@@ -48,10 +48,10 @@ export default class extends Controller {
     );
 
     let i = 0;
-    for (const el of indexOuputs) {
+    indexOuputs.forEach((el) => {
       el.value = indices[i];
 
       i += 1;
-    }
+    });
   }
 }

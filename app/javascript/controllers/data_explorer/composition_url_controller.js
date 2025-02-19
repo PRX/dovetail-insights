@@ -1,16 +1,16 @@
 import { Controller } from "@hotwired/stimulus";
 
-function mergeSearchParams(...paramsList) {
-  const mergedParams = new URLSearchParams();
+// function mergeSearchParams(...paramsList) {
+//   const mergedParams = new URLSearchParams();
 
-  paramsList.forEach((params) => {
-    params.forEach((value, key) => {
-      mergedParams.append(key, value);
-    });
-  });
+//   paramsList.forEach((params) => {
+//     params.forEach((value, key) => {
+//       mergedParams.append(key, value);
+//     });
+//   });
 
-  return mergedParams;
-}
+//   return mergedParams;
+// }
 
 // URLSearchParams.toString() encodes some characters that don't need to be,
 // and these are meaningful characters in our URLs, which are beneficial to
@@ -29,11 +29,11 @@ function cleanStringForSearchParamsString(paramsString) {
   return cleanedString;
 }
 
-function cleanStringForSearchParams(searchParams) {
-  const paramsString = searchParams.toString();
+// function cleanStringForSearchParams(searchParams) {
+//   const paramsString = searchParams.toString();
 
-  return cleanStringForSearchParamsString(paramsString);
-}
+//   return cleanStringForSearchParamsString(paramsString);
+// }
 
 export default class extends Controller {
   static targets = [
@@ -62,12 +62,12 @@ export default class extends Controller {
   rangeParamsString() {
     const rangeParams = new URLSearchParams();
 
-    let from = this.fromTarget?.value.trim();
+    const from = this.fromTarget?.value.trim();
     if (from) {
       rangeParams.set("from", from);
     }
 
-    let to = this.toTarget?.value.trim();
+    const to = this.toTarget?.value.trim();
     if (to) {
       rangeParams.set("to", to);
     }
@@ -86,9 +86,9 @@ export default class extends Controller {
     const filtersParams = new URLSearchParams();
 
     // For each filter chooser
-    for (const filterChooser of this.filterChooserTargets) {
+    this.filterChooserTargets.forEach((filterChooser) => {
       // Get the dimension key for the associated dimension
-      const dimensionKey = filterChooser.dataset.dimensionKey;
+      const { dimensionKey } = filterChooser.dataset;
 
       // The operator (include/exclude) is its own parameter; set the param if
       // an the user has made a selection.
@@ -105,7 +105,7 @@ export default class extends Controller {
       if (filterChooser.dataset.dimensionType === "Token") {
         const valuesSelect = filterChooser.querySelector("select.value");
         if (valuesSelect?.selectedOptions.length) {
-          const selectedOptions = valuesSelect.selectedOptions;
+          const { selectedOptions } = valuesSelect;
           filtersParams.set(
             valuesSelect.name,
             Array.from(selectedOptions)
@@ -178,7 +178,7 @@ export default class extends Controller {
             `*[name="filter.${dimensionKey}.values"]`,
           );
           if (valuesSelect?.selectedOptions.length) {
-            const selectedOptions = valuesSelect.selectedOptions;
+            const { selectedOptions } = valuesSelect;
             filtersParams.set(
               valuesSelect.name,
               Array.from(selectedOptions)
@@ -188,7 +188,7 @@ export default class extends Controller {
           }
         }
       }
-    }
+    });
 
     return filtersParams.toString();
   }
@@ -199,9 +199,9 @@ export default class extends Controller {
     const listItems = [];
 
     const selectedMetrics = this.metricTargets.filter((cbox) => cbox.checked);
-    for (const element of selectedMetrics) {
+    selectedMetrics.forEach((element) => {
       listItems.push(element.value);
-    }
+    });
 
     if (listItems.length) {
       metricsParams.set("metrics", listItems.join(","));
@@ -214,7 +214,7 @@ export default class extends Controller {
     const groupsParams = new URLSearchParams();
 
     // For each group chooser…
-    for (const groupChooserTarget of this.groupChooserTargets) {
+    this.groupChooserTargets.forEach((groupChooserTarget) => {
       // Get the element for selecting the group's dimension
       const dimensionEl = groupChooserTarget.querySelector(".dimension");
 
@@ -297,7 +297,7 @@ export default class extends Controller {
           groupsParams.set(`${dimensionEl.id}.indices`, indices.join(","));
         }
       }
-    }
+    });
 
     return groupsParams.toString();
   }
@@ -324,7 +324,7 @@ export default class extends Controller {
   timeSeriesComparesParamsString() {
     const comparesParams = new URLSearchParams();
 
-    for (const compareTarget of this.compareTargets) {
+    this.compareTargets.forEach((compareTarget) => {
       const compareEl = compareTarget.querySelector("select[name=compare]");
       const lookbackEl = compareTarget.querySelector(
         "input[name=compare-lookback]",
@@ -333,7 +333,7 @@ export default class extends Controller {
       if (compareEl?.value && lookbackEl?.value) {
         comparesParams.set(`compare.${compareEl.value}`, lookbackEl.value);
       }
-    }
+    });
 
     return comparesParams.toString();
   }

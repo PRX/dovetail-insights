@@ -6,4 +6,5 @@ const application = Application.start();
 application.debug = false;
 window.Stimulus = application;
 
+// eslint-disable-next-line import/prefer-default-export
 export { application };

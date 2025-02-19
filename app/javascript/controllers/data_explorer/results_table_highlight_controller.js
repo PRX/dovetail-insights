@@ -10,11 +10,11 @@ export default class extends Controller {
     const paletteOpt = this.paletteTarget.value;
 
     let i = 0;
-    for (const cellSet of spectrumCellSets) {
+    spectrumCellSets.forEach((cellSet) => {
       let max = 0;
       let min = 99999999;
 
-      for (const cell of cellSet) {
+      cellSet.forEach((cell) => {
         const val = +cell.dataset.rawValue;
 
         if (val > max) {
@@ -24,7 +24,7 @@ export default class extends Controller {
         if (val !== 0 && val < min) {
           min = val;
         }
-      }
+      });
 
       let hue;
 
@@ -34,7 +34,7 @@ export default class extends Controller {
         hue = 298 - 0 * 51;
       }
 
-      for (const cell of cellSet) {
+      cellSet.forEach((cell) => {
         const val = +cell.dataset.rawValue;
 
         let scale;
@@ -47,26 +47,30 @@ export default class extends Controller {
         }
 
         cell.style.background = `hsla(${hue} 100% 68% / ${scale})`;
-      }
+      });
 
       i += 1;
-    }
+    });
   }
 
   highlightDeltas(spectrumCellSets) {
     const paletteOpt = this.paletteTarget.value;
 
-    for (const cellSet of spectrumCellSets) {
-      let previousValue = undefined;
+    spectrumCellSets.forEach((cellSet) => {
+      let previousValue;
 
-      for (const cell of cellSet) {
+      cellSet.forEach((cell) => {
         const val = +cell.dataset.rawValue;
 
         if (previousValue) {
           const percentDelta = (val - previousValue) / previousValue;
 
-          const hue = percentDelta > 0 ? 132 : 5;
+          let hue = percentDelta > 0 ? 132 : 5;
           const opacity = Math.min(1, Math.abs(percentDelta / 0.3));
+
+          if (paletteOpt === "monochrome") {
+            hue = 30;
+          }
 
           cell.style.background = `hsla(${hue} 100% 34% / ${opacity})`;
         } else {
@@ -74,8 +78,8 @@ export default class extends Controller {
         }
 
         previousValue = val;
-      }
-    }
+      });
+    });
   }
 
   highlight() {
@@ -92,95 +96,89 @@ export default class extends Controller {
         spectrumCellSets.push(allCells);
       } else if (spectrumsOpt === "per_metric") {
         const uniqMetrics = new Set(
-          Array(...allCells).map((c) => c.dataset.highlightMetric),
+          [...allCells].map((c) => c.dataset.highlightMetric),
         );
-        for (const metric of uniqMetrics) {
+        uniqMetrics.forEach((metric) => {
           spectrumCellSets.push(
             resultsTable.querySelectorAll(
               `td[data-highlight-metric="${metric}"]`,
             ),
           );
-        }
+        });
       } else if (spectrumsOpt === "per_metric_group_1") {
         const uniqMetrics = new Set(
-          Array(...allCells).map((c) => c.dataset.highlightMetric),
+          [...allCells].map((c) => c.dataset.highlightMetric),
         );
 
         const uniqGroup1Members = new Set(
-          Array(...allCells).map((c) =>
-            c.getAttribute("data-highlight-group-1"),
-          ),
+          [...allCells].map((c) => c.getAttribute("data-highlight-group-1")),
         );
 
-        for (const metric of uniqMetrics) {
-          for (const member of uniqGroup1Members) {
+        uniqMetrics.forEach((metric) => {
+          uniqGroup1Members.forEach((member) => {
             spectrumCellSets.push(
               resultsTable.querySelectorAll(
                 `td[data-highlight-metric="${metric}"][data-highlight-group-1="${member}"]`,
               ),
             );
-          }
-        }
+          });
+        });
       } else if (spectrumsOpt === "per_metric_group_2") {
         const uniqMetrics = new Set(
-          Array(...allCells).map((c) => c.dataset.highlightMetric),
+          [...allCells].map((c) => c.dataset.highlightMetric),
         );
 
         const uniqGroup2Members = new Set(
-          Array(...allCells).map((c) =>
-            c.getAttribute("data-highlight-group-2"),
-          ),
+          [...allCells].map((c) => c.getAttribute("data-highlight-group-2")),
         );
 
-        for (const metric of uniqMetrics) {
-          for (const member of uniqGroup2Members) {
+        uniqMetrics.forEach((metric) => {
+          uniqGroup2Members.forEach((member) => {
             spectrumCellSets.push(
               resultsTable.querySelectorAll(
                 `td[data-highlight-metric="${metric}"][data-highlight-group-2="${member}"]`,
               ),
             );
-          }
-        }
+          });
+        });
       } else if (spectrumsOpt === "per_metric_granularity") {
         const uniqMetrics = new Set(
-          Array(...allCells).map((c) => c.dataset.highlightMetric),
+          [...allCells].map((c) => c.dataset.highlightMetric),
         );
 
         const uniqGranularityMembers = new Set(
-          Array(...allCells).map((c) =>
+          [...allCells].map((c) =>
             c.getAttribute("data-highlight-granularity"),
           ),
         );
 
-        for (const metric of uniqMetrics) {
-          for (const member of uniqGranularityMembers) {
+        uniqMetrics.forEach((metric) => {
+          uniqGranularityMembers.forEach((member) => {
             spectrumCellSets.push(
               resultsTable.querySelectorAll(
                 `td[data-highlight-metric="${metric}"][data-highlight-granularity="${member}"]`,
               ),
             );
-          }
-        }
+          });
+        });
       } else if (spectrumsOpt === "per_metric_group_1_delta") {
         const uniqMetrics = new Set(
-          Array(...allCells).map((c) => c.dataset.highlightMetric),
+          [...allCells].map((c) => c.dataset.highlightMetric),
         );
 
         const uniqGroup1Members = new Set(
-          Array(...allCells).map((c) =>
-            c.getAttribute("data-highlight-group-1"),
-          ),
+          [...allCells].map((c) => c.getAttribute("data-highlight-group-1")),
         );
 
-        for (const metric of uniqMetrics) {
-          for (const member of uniqGroup1Members) {
+        uniqMetrics.forEach((metric) => {
+          uniqGroup1Members.forEach((member) => {
             spectrumCellSets.push(
               resultsTable.querySelectorAll(
                 `td[data-highlight-metric="${metric}"][data-highlight-group-1="${member}"]`,
               ),
             );
-          }
-        }
+          });
+        });
       }
 
       if (spectrumsOpt === "per_metric_group_1_delta") {

@@ -77,11 +77,11 @@ export default class extends Controller {
       const vals = val.split(",").map((v) => v.trim());
 
       const optionEls = this.valuesTarget.querySelectorAll("option");
-      for (const optionEl of optionEls) {
+      optionEls.forEach((optionEl) => {
         if (vals.includes(optionEl.value)) {
           optionEl.selected = true;
         }
-      }
+      });
     }
   }
 }
