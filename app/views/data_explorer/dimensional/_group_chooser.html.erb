@@ -10,7 +10,7 @@
   <legend>Group <%= i %></legend>
 
   <label <%= html_attributes(for: "group.#{i}") %>>Group By</label>
-  <select class="dimension" <%= html_attributes(id: "group.#{i}", name: "group.#{i}") %> data-action="data-explorer--group-chooser#do">
+  <select class="dimension" <%= html_attributes(id: "group.#{i}", name: "group.#{i}") %>>
     <option value=""></option>
 
     <% DataSchema.dimensions.each do |dimension_name, dimension_def| %>
