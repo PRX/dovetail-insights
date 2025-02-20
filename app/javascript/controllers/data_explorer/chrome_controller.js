@@ -4,6 +4,8 @@ export default class extends Controller {
   static targets = ["root"];
 
   toggle() {
-    this.rootTarget.classList.toggle("nochrome");
+    if (document.querySelector("#results table")) {
+      this.rootTarget.classList.toggle("nochrome");
+    }
   }
 }
