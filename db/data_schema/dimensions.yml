@@ -256,5 +256,5 @@ Dimensions:
       - downloads
       - impressions
     BigQuery:
-      Selector: feeder_feed
+      Selector: COALESCE(feeder_feed, "Default feed")
       Type: STRING
