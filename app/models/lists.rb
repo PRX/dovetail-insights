@@ -1,5 +1,20 @@
+# TODO This is not meant to be a permanent solution
 class Lists
-  def self.list_for(dimension_key)
+  def self.all_podcasts
+    Rails.cache.fetch("podcast1", expires_in: 12.hours) do
+      big_query = Google::Cloud::Bigquery.new
+      data = big_query.query("SELECT id, title, account_id FROM production.podcasts ORDER BY title ASC")
+
+      rows = []
+      data.all do |row|
+        rows << row
+      end
+
+      rows
+    end
+  end
+
+  def self.list_for(dimension_key, user)
     if dimension_key == "country"
       Rails.cache.fetch("country1", expires_in: 12.hours) do
         big_query = Google::Cloud::Bigquery.new
@@ -29,17 +44,7 @@ class Lists
         rows.filter { |r| !exclude_ids.include?(r[r.keys[0]]) }
       end
     elsif dimension_key == "podcast"
-      Rails.cache.fetch("podcast", expires_in: 12.hours) do
-        big_query = Google::Cloud::Bigquery.new
-        data = big_query.query("SELECT id, title FROM production.podcasts ORDER BY title ASC")
-
-        rows = []
-        data.all do |row|
-          rows << row
-        end
-
-        rows
-      end
+      all_podcasts.filter { |p| user.authorized_account_ids(:read_private).include?(p[p.keys[2]]) }
     elsif dimension_key == "os"
       [
         {key: 44, value: "Amazon OS"},

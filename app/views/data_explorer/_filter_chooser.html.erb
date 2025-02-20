@@ -20,11 +20,11 @@
     </select>
 
     <% if ["Token", "String"].include? dimension_def["Type"] %>
-      <% if Lists.list_for(dim_key) %>
+      <% if Lists.list_for(dim_key, current_user) %>
         <br>
         <label for="filter.<%= dim_key %>.values">Values:</label>
         <select class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" <%= html_attributes(name: "filter.#{dim_key}.values", id: "filter.#{dim_key}.values") %> multiple>
-          <% Lists.list_for(dim_key).each do |item| %>
+          <% Lists.list_for(dim_key, current_user).each do |item| %>
             <option <%= html_attributes(value: item[item.keys[0]]) %> <%= html_attributes(selected: "selected") if filter&.values&.include?(item[item.keys[0]].to_s) %>><%= item[item.keys[1]] %></option>
           <% end %>
         </select>
