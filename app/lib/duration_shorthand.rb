@@ -1,7 +1,18 @@
 ##
-# TODO Docs
-# This intentionally does not support _months_ because of the ambiguity that
-# introduces
+# Takes a string like "10D" or "12h" and expands it into the total number of
+# seconds represented by that duration. Expects the number part to be a
+# positive natural number. Returns an +Integer+.
+#
+# Supports:
+# Y = year
+# W = week
+# D = day
+# h = hour
+# m = minute
+#
+# Does not deal with things like leap years.
+#
+# This intentionally does not support _months_ because it's ambiguous.
 
 class DurationShorthand
   def self.expand(value)
