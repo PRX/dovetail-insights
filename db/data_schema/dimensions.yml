@@ -248,3 +248,13 @@ Dimensions:
     BigQuery:
       Selector: advertisers.id
       RequiredTables: [advertisers]
+  feed:
+    Type: Token
+    QueryKey: feed
+    StaticProperties: []
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: feeder_feed
+      Type: STRING
