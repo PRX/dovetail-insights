@@ -39,6 +39,9 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
+# Active Record's Session Store extracted from Rails [https://github.com/rails/activerecord-session_store]
+gem "activerecord-session_store"
+
 # Make requests to BigQuery [https://cloud.google.com/ruby/docs/reference/google-cloud-bigquery/latest/index.html]
 gem "google-cloud-bigquery"
 
