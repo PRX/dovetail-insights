@@ -92,23 +92,19 @@ module Compositions
     # query for each lookback interval.
 
     def results
+      # TODO Refactor
       return unless valid?
 
       return @results if @results
 
-      bigquery = Google::Cloud::Bigquery.new
+      base_jobs = []
+      compare_jobs = []
+      threads = []
 
-      # Create results with the base query
-      job = self.class.big_query.query_job(query(binding))
-      job.wait_until_done!
-
-      # TODO Move this somewhere else
-      # TODO probably capture totalBytesBilled instead
-      # TODO capture the total of all comparison queries in one record
-      CompositionResultMetadataLog.create!(user_id: 0, total_bytes_processed: job.statistics["totalBytesProcessed"], params: "tktk")
-
-      base_results = Results::TimeSeries.new(self, job.data)
-      base_results.comparison_row_sets = []
+      thread = Thread.new do
+        base_jobs << BigQueryClient.instance.query_job(query(binding))
+      end
+      threads << thread
 
       # Add +comparison_row_sets+ for each comparison required
       # TODO Make sure these row_sets are added to the array at the same
@@ -117,7 +113,7 @@ module Compositions
       # there are multiple comparions, which isn't currently supported
       # TODO Make these BigQuery requests concurrently
       (comparisons || []).each_with_index do |comparison, i|
-        base_results.comparison_row_sets[i] = [] if base_results.comparison_row_sets[i].nil?
+        # base_results.comparison_row_sets[i] = [] if base_results.comparison_row_sets[i].nil?
 
         # Override this compositions from/to values to reflect the range for
         # the comparisons.
@@ -131,43 +127,69 @@ module Compositions
         # oldest results should appear earliest in the array (so the 2022 query
         # from the above example).
         comparison.lookback.times do |j|
-          # For the example, +comparison.lookback+ will be +2+. On the first
-          # loop, we want to go back 2 years, so the lookback will be +-2+ when
-          # +j=0+. And +lookback=-1+ when +j=1+, etc
-          lookback = -(comparison.lookback - j)
+          thread = Thread.new do
+            # For the example, +comparison.lookback+ will be +2+. On the first
+            # loop, we want to go back 2 years, so the lookback will be +-2+ when
+            # +j=0+. And +lookback=-1+ when +j=1+, etc
+            lookback = -(comparison.lookback - j)
 
-          # TODO Figure out the range for this query based on the composition
-          # range, and the comparison properties
-          b = binding
+            # TODO Figure out the range for this query based on the composition
+            # range, and the comparison properties
+            b = binding
 
-          compare_abs_from = abs_from.dup
-          compare_abs_from = case comparison.period
-          when :YoY
-            compare_abs_from.advance(years: lookback)
-          when :QoQ
-            compare_abs_from.advance(months: 3 * lookback)
-          when :WoW
-            compare_abs_from.advance(weeks: lookback)
+            compare_abs_from = abs_from.dup
+            compare_abs_from = case comparison.period
+            when :YoY
+              compare_abs_from.advance(years: lookback)
+            when :QoQ
+              compare_abs_from.advance(months: 3 * lookback)
+            when :WoW
+              compare_abs_from.advance(weeks: lookback)
+            end
+
+            compare_abs_to = abs_to.dup
+            compare_abs_to = case comparison.period
+            when :YoY
+              compare_abs_to.advance(years: lookback)
+            when :QoQ
+              compare_abs_to.advance(months: 3 * lookback)
+            when :WoW
+              compare_abs_to.advance(weeks: lookback)
+            end
+
+            b.local_variable_set(:compare_abs_from, compare_abs_from)
+            b.local_variable_set(:compare_abs_to, compare_abs_to)
+
+            job = BigQueryClient.instance.query_job(query(binding))
+            compare_jobs << job
+
+            b.local_variable_set(:compare_abs_from, compare_abs_from)
+            b.local_variable_set(:compare_abs_to, compare_abs_to)
           end
 
-          compare_abs_to = abs_to.dup
-          compare_abs_to = case comparison.period
-          when :YoY
-            compare_abs_to.advance(years: lookback)
-          when :QoQ
-            compare_abs_to.advance(months: 3 * lookback)
-          when :WoW
-            compare_abs_to.advance(weeks: lookback)
-          end
-
-          b.local_variable_set(:compare_abs_from, compare_abs_from)
-          b.local_variable_set(:compare_abs_to, compare_abs_to)
-
-          base_results.comparison_row_sets[i] << bigquery.query(query(b))
-
-          b.local_variable_set(:compare_abs_from, compare_abs_from)
-          b.local_variable_set(:compare_abs_to, compare_abs_to)
+          threads << thread
         end
+      end
+
+      threads.each(&:join)
+
+      base_results = nil
+
+      base_jobs.each do |job|
+        job.wait_until_done!
+
+        base_results = Results::TimeSeries.new(self, job.data)
+        base_results.comparison_row_sets = []
+        base_results.comparison_row_sets[0] = [] # TODO
+      end
+
+      compare_jobs.each do |job|
+        job.wait_until_done!
+
+        # TODO This should support an arbitrary number of comparisons, rather
+        # than putting everything in [0], but currently the UI only allows only
+        # a single comparison anyway, so we get away with it
+        base_results.comparison_row_sets[0] << job.data
       end
 
       @results = base_results
