@@ -36,7 +36,7 @@
     <% end %>
   <% end %>
 
-  <% if @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
+  <% if @composition.groups.size < 2 || @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
     <% @composition.metrics.each do |metric| %>
       <% if !@composition.groups[0] || @composition.groups[0]&.summable?(metric) %>
         <% total = @composition.results.get_total(metric, @composition.groups[1], nil) %>

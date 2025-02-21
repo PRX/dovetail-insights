@@ -46,7 +46,7 @@
 
   <%# Metrics values for the current group 1 member where group 2 is NULL %>
   <%# One cell for each metric %>
-  <% if @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
+  <% if @composition.groups.size < 2 || @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
     <% @composition.metrics.each do |metric| %>
       <% value = @composition.results.get_value(metric, group_1_member, nil) %>
 
