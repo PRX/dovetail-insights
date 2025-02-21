@@ -46,7 +46,7 @@ module Compositions
 
         @big_query_total_bytes_billed = job.stats["query"]["totalBytesBilled"].to_i
 
-        @results ||= Results::Dimensional.new(self, job.data)
+        Results::Dimensional.new(self, job.data)
       end
     end
 
