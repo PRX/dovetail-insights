@@ -52,13 +52,15 @@
   # so we don't need to show separate totals
   @tbl_show_group_1_totals = false if @composition.groups.size < 2
 
-  #
+  # No need for group 1 headers when no groups are selected
   @tbl_show_group_1_headers = false if @composition.groups.size == 0
 
-  #
+  # If there are any values that have a NULL group 1, we should unknowns for
+  # all group 2s
   @tbl_show_group_1_unknowns = false unless @composition.metrics.any? { |m| @composition.results.get_value(m, nil, false) }
 
-  #
+  # If there are any values that have a NULL group 2, we should unknowns for
+  # all group 1s
   @tbl_show_group_2_unknowns = false unless @composition.metrics.any? { |m| @composition.results.get_value(m, false, nil) }
 %>
 
