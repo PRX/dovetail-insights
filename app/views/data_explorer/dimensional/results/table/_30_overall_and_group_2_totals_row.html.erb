@@ -1,7 +1,7 @@
 <tr class="totals">
   <th scope="row">TOTAL</th>
 
-  <% if @composition.groups.size > 1 %>
+  <% if @tbl_show_group_1_totals %>
     <% @composition.metrics.each do |metric| %>
       <% if @composition.groups[0]&.summable?(metric) && @composition.groups[1]&.summable?(metric) %>
         <% total = @composition.results.get_total(metric) %>
@@ -17,7 +17,7 @@
   <% end %>
 
   <%# A cell for each metric, for each member of group 2 %>
-  <% @composition.results.group_2_unique_members&.each do |group_2_member| %>
+  <% @group_2_unique_members&.each do |group_2_member| %>
     <% @composition.metrics.each do |metric| %>
       <% if @composition.groups[1].summable?(metric) %>
         <% total = @composition.results.get_total(metric, @composition.groups[1], group_2_member) %>
@@ -36,7 +36,7 @@
     <% end %>
   <% end %>
 
-  <% if @composition.groups.size < 2 || @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
+  <% if @tbl_show_group_2_unknowns %>
     <% @composition.metrics.each do |metric| %>
       <% if !@composition.groups[0] || @composition.groups[0]&.summable?(metric) %>
         <% total = @composition.results.get_total(metric, @composition.groups[1], nil) %>

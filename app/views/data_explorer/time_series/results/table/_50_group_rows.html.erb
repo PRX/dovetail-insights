@@ -26,9 +26,8 @@
           <%= html_attributes("data-raw-member": group_1_member) %>
           scope="row">
 
-          <% label = @composition.results.group_member_label(@composition.groups[0], group_1_member) %>
-
           <% unless label_displayed %>
+            <% label = @composition.results.group_member_label(@composition.groups[0], group_1_member) %>
             <%= Labeler.label(label, @composition.groups[0]) %>
             <% label_displayed = true %>
           <% end %>
@@ -76,8 +75,11 @@
       <%= html_attributes("data-raw-member": group_1_member) %>
       scope="row">
 
-      <% label = @composition.results.group_member_label(@composition.groups[0], group_1_member) %>
-      <%= Labeler.label(label, @composition.groups[0]) %>
+      <% unless label_displayed %>
+        <% label = @composition.results.group_member_label(@composition.groups[0], group_1_member) %>
+        <%= Labeler.label(label, @composition.groups[0]) %>
+        <% label_displayed = true %>
+      <% end %>
     </th>
     <% if @composition.groups.size > 1 %><th>UNKNOWN</th><% end %>
 

@@ -11,7 +11,7 @@
   <%# Totals for this member of group 1 (a total for each metric) %>
   <%# This isn't displayed when no group 2 is selected, since the total and %>
   <%# the NULL value are the same, and we display the NULL value %>
-  <% if @composition.groups.size > 1 %>
+  <% if @tbl_show_group_1_totals %>
     <% @composition.metrics.each do |metric| %>
       <% if @composition.groups[0].summable?(metric) %>
         <% total = @composition.results.get_total(metric, @composition.groups[0], group_1_member) %>
@@ -32,7 +32,7 @@
 
   <%# Metrics values for each group 2 member in the current group 1 member%>
   <%# One cell for each metric %>
-  <% @composition.results.group_2_unique_members&.each do |group_2_member| %>
+  <% @group_2_unique_members&.each do |group_2_member| %>
     <% @composition.metrics.each do |metric| %>
       <% value = @composition.results.get_value(metric, group_1_member, group_2_member) %>
 
@@ -46,7 +46,7 @@
 
   <%# Metrics values for the current group 1 member where group 2 is NULL %>
   <%# One cell for each metric %>
-  <% if @composition.groups.size < 2 || @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
+  <% if @tbl_show_group_2_unknowns %>
     <% @composition.metrics.each do |metric| %>
       <% value = @composition.results.get_value(metric, group_1_member, nil) %>
 

@@ -4,7 +4,7 @@
 #
 # A 2-group result with 2+ metrics utilizes all possible components of the
 # table. With fewer groups or fewer metrics, some parts of the table are not
-# included, as the become unnecessary.
+# included, as they become unnecessary.
 #
 # See the +<table>+ below for details about each table row, and see the
 # associated partials for more details about the specific contents of each row.
@@ -16,18 +16,64 @@
 # 4. Cells for each metric where group 2 is NULL
 %>
 
+<%
+  @group_1_unique_members = @composition.results.group_1_unique_members
+  @group_2_unique_members = @composition.results.group_2_unique_members
+
+  # Show full table structure by default
+  @tbl_show_metric_headers = true
+  @tbl_show_metric_totals = true
+  @tbl_show_group_1_headers = true
+  @tbl_show_group_1_totals = true
+  @tbl_show_group_1_unknowns = true
+  @tbl_show_group_2_headers = true
+  @tbl_show_group_2_totals = true
+  @tbl_show_group_2_unknowns = true
+
+  ##
+  # Turn things off for certain permutations of groups and metrics.
+
+  # If less than 2 metrics are selected, don't show the headers. Except if no
+  # groups are selected; in that case always show metrics headers since they
+  # will be the only headers
+  @tbl_show_metric_headers = false if @composition.groups.size > 0 && @composition.metrics.size <= 1
+
+  # Hide group 2 headers when there is no group 2
+  @tbl_show_group_2_headers = false if @composition.groups.size < 2
+
+  # When no groups are selected, the values are the totals so there's no need
+  # to show separate totals
+  @tbl_show_metric_totals = false if @composition.groups.size == 0
+
+  # Hide group 2 total when there's no group 2
+  @tbl_show_group_2_totals = false if @composition.groups.size < 2
+
+  # When no group 2 is selected, the values are group 1 (or no group) totals,
+  # so we don't need to show separate totals
+  @tbl_show_group_1_totals = false if @composition.groups.size < 2
+
+  #
+  @tbl_show_group_1_headers = false if @composition.groups.size == 0
+
+  #
+  @tbl_show_group_1_unknowns = false unless @composition.metrics.any? { |m| @composition.results.get_value(m, nil, false) }
+
+  #
+  @tbl_show_group_2_unknowns = false unless @composition.metrics.any? { |m| @composition.results.get_value(m, false, nil) }
+%>
+
 <table data-data-explorer--results-table-highlight-target="table">
   <colgroup>
     <%# Group 1 member labels %>
     <col>
 
     <%# Group 1 totals %>
-    <% if @composition.groups.size > 1 %>
+    <% if @tbl_show_group_1_totals %>
       <col <%= html_attributes(span: @composition.metrics.size) %> class="totals">
     <% end %>
 
     <%# Group 2 members %>
-    <% @composition.results.group_2_unique_members&.each do |group_2_member| %>
+    <% @group_2_unique_members&.each do |group_2_member| %>
       <col class="data" <%= html_attributes(span: @composition.metrics.size) %>>
     <% end %>
 
@@ -36,13 +82,13 @@
   </colgroup>
 
   <thead>
-    <% if @composition.groups.size > 1 %>
+    <% if @tbl_show_group_2_headers %>
       <%# This row primarily displays the labels for group 2, so if a second %>
       <%# group isn't selected, it's not displayed. %>
       <%= render "data_explorer/dimensional/results/table/10_group_headers" %>
     <% end %>
 
-    <% if @composition.metrics.size > 1 || @composition.groups.size == 0 %>
+    <% if @tbl_show_metric_headers %>
       <%# This row primarily displays the labels for each metric, so if only %>
       <%# one metric is selected, it's not displayed %>
       <%= render "data_explorer/dimensional/results/table/20_metric_headers" %>
@@ -54,7 +100,7 @@
     <%# also includes an overall total for each metric, so it's included  %>
     <%# even when only one group is selected. If no groups are selected, it %>
     <%# is excluded. %>
-    <% if @composition.groups.size > 0 %>
+    <% if @tbl_show_metric_totals || @tbl_show_group_2_totals %>
       <%= render "data_explorer/dimensional/results/table/30_overall_and_group_2_totals_row" %>
     <% end %>
 
@@ -66,6 +112,8 @@
     <%# when a first group is selected and some values are not associated %>
     <%# with any member, and when no first group is selected and the query %>
     <%# results don't associate any values with a group member. %>
-    <%= render "data_explorer/dimensional/results/table/50_no_group_row" %>
+    <% if @tbl_show_group_1_unknowns %>
+      <%= render "data_explorer/dimensional/results/table/50_no_group_row" %>
+    <% end %>
   </tbody>
 </table>

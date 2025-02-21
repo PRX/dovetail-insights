@@ -1,25 +1,25 @@
 <tr class="metrics-headers">
   <%# This +<tr>+ is displayed when zero groups are selected, but other rows %>
   <%# will not include this first cell, so we exclude it here, too. %>
-  <% if @composition.groups.size > 0 %>
+  <% if @tbl_show_group_1_headers %>
     <td></td>
   <% end %>
 
-  <% if @composition.groups.size > 1 %>
+  <% if @tbl_show_group_1_totals %>
     <% @composition.metrics.each do |metric| %>
       <th><%= metric.metric %></th>
     <% end %>
   <% end %>
 
   <%# A cell for each metric, for each member of group 2 %>
-  <% @composition.results.group_2_unique_members&.each do |group_2_member| %>
+  <% @group_2_unique_members&.each do |group_2_member| %>
     <% @composition.metrics.each do |metric| %>
       <th><%= metric.metric %></th>
     <% end %>
   <% end %>
 
   <%# Unknown group 2 %>
-  <% if if @composition.groups.size < 2 || @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
+  <% if @tbl_show_group_2_unknowns %>
     <% @composition.metrics.each do |metric| %>
       <th><%= metric.metric %></th>
     <% end %>
