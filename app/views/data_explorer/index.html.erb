@@ -3,10 +3,10 @@
     <p><a href="/">Home</a> | <a href="/admin">Admin</a></p>
     <p><a href="/data-explorer"><%= current_user_name %></a></p>
 
-    <p>Last 48 hours: <%= number_to_human_size(@bytes) %> (<%= number_to_currency(@bytes.to_f / 2.0**40, precision: 5) %>)</p>
+    <p>Last 48 hours: <%= number_to_human_size(@bytes) %> (<%= number_to_currency(@bytes.to_f / 2.0**40 * BIG_QUERY_PRICE_PER_TIB, precision: 5) %>)</p>
 
     <% if @composition.big_query_total_bytes_billed %>
-      <p><b><%= number_to_human_size(@composition.big_query_total_bytes_billed) %> (<%= number_to_currency(@composition.big_query_total_bytes_billed.to_f / 2.0**40, precision: 5) %>)</b></p>
+      <p><b><%= number_to_human_size(@composition.big_query_total_bytes_billed) %> (<%= number_to_currency(@composition.big_query_total_bytes_billed.to_f / 2.0**40 * BIG_QUERY_PRICE_PER_TIB, precision: 5) %>)</b></p>
     <% end %>
 
     <%= render "data_explorer/composition_errors" if @composition.invalid? %>
