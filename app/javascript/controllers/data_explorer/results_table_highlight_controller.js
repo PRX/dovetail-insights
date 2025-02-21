@@ -181,6 +181,10 @@ export default class extends Controller {
         });
       }
 
+      resultsTable.querySelectorAll("td").forEach((cell) => {
+        cell.style.background = `hsla(0 0% 0% / 0)`;
+      });
+
       if (spectrumsOpt === "per_metric_group_1_delta") {
         this.highlightDeltas(spectrumCellSets);
       } else {
