@@ -97,6 +97,8 @@ module Compositions
 
       return @results if @results
 
+      @big_query_total_bytes_billed = 0
+
       base_jobs = []
       compare_jobs = []
       threads = []
@@ -178,6 +180,8 @@ module Compositions
       base_jobs.each do |job|
         job.wait_until_done!
 
+        @big_query_total_bytes_billed += job.stats["query"]["totalBytesBilled"].to_i
+
         base_results = Results::TimeSeries.new(self, job.data)
         base_results.comparison_row_sets = []
         base_results.comparison_row_sets[0] = [] # TODO
@@ -185,6 +189,8 @@ module Compositions
 
       compare_jobs.each do |job|
         job.wait_until_done!
+
+        @big_query_total_bytes_billed += job.stats["query"]["totalBytesBilled"].to_i
 
         # TODO This should support an arbitrary number of comparisons, rather
         # than putting everything in [0], but currently the UI only allows only
