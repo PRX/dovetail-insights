@@ -1,6 +1,4 @@
 <tr class="metrics-headers">
-  <%# This +<tr>+ is displayed when zero groups are selected, but other rows %>
-  <%# will not include this first cell, so we exclude it here, too. %>
   <% if @tbl_show_group_1_headers %>
     <td></td>
   <% end %>
@@ -11,15 +9,7 @@
     <% end %>
   <% end %>
 
-  <%# A cell for each metric, for each member of group 2 %>
-  <% @group_2_unique_members&.each do |group_2_member| %>
-    <% @composition.metrics.each do |metric| %>
-      <th><%= metric.metric %></th>
-    <% end %>
-  <% end %>
-
-  <%# Unknown group 2 %>
-  <% if @tbl_show_group_2_unknowns %>
+  <% @expand_group_2_members.each do |group_2_member| %>
     <% @composition.metrics.each do |metric| %>
       <th><%= metric.metric %></th>
     <% end %>

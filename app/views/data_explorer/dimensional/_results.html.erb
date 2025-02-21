@@ -62,6 +62,12 @@
   # If there are any values that have a NULL group 2, we should unknowns for
   # all group 1s
   @tbl_show_group_2_unknowns = false unless @composition.metrics.any? { |m| @composition.results.get_value(m, false, nil) }
+
+  @expand_group_1_members = @group_1_unique_members || []
+  @expand_group_1_members << nil if @tbl_show_group_1_unknowns
+
+  @expand_group_2_members = @group_2_unique_members || []
+  @expand_group_2_members << nil if @tbl_show_group_2_unknowns
 %>
 
 <table data-data-explorer--results-table-highlight-target="table">
@@ -84,38 +90,14 @@
   </colgroup>
 
   <thead>
-    <% if @tbl_show_group_2_headers %>
-      <%# This row primarily displays the labels for group 2, so if a second %>
-      <%# group isn't selected, it's not displayed. %>
-      <%= render "data_explorer/dimensional/results/table/10_group_headers" %>
-    <% end %>
+    <%= render "data_explorer/dimensional/results/table/10_group_headers" if @tbl_show_group_2_headers %>
 
-    <% if @tbl_show_metric_headers %>
-      <%# This row primarily displays the labels for each metric, so if only %>
-      <%# one metric is selected, it's not displayed %>
-      <%= render "data_explorer/dimensional/results/table/20_metric_headers" %>
-    <% end %>
+    <%= render "data_explorer/dimensional/results/table/20_metric_headers" if @tbl_show_metric_headers %>
   </thead>
 
   <tbody>
-    <%# This row primarily displays totals for each member of group 2, but %>
-    <%# also includes an overall total for each metric, so it's included  %>
-    <%# even when only one group is selected. If no groups are selected, it %>
-    <%# is excluded. %>
-    <% if @tbl_show_metric_totals || @tbl_show_group_2_totals %>
-      <%= render "data_explorer/dimensional/results/table/30_overall_and_group_2_totals_row" %>
-    <% end %>
+    <%= render "data_explorer/dimensional/results/table/30_overall_and_group_2_totals_row" if @tbl_show_metric_totals || @tbl_show_group_2_totals %>
 
-    <%# Displays a row for each member of group 1. If a first group isn't %>
-    <%# selected, this results in zero rows. %>
-    <%= render "data_explorer/dimensional/results/table/40_group_rows" %>
-
-    <%# This row is for values where group 1 is NULL. This includes both %>
-    <%# when a first group is selected and some values are not associated %>
-    <%# with any member, and when no first group is selected and the query %>
-    <%# results don't associate any values with a group member. %>
-    <% if @tbl_show_group_1_unknowns %>
-      <%= render "data_explorer/dimensional/results/table/50_no_group_row" %>
-    <% end %>
+    <%= render partial: "data_explorer/dimensional/results/table/40_group_row", collection: @expand_group_1_members, as: :group_1_member %>
   </tbody>
 </table>

@@ -1,52 +1,38 @@
 <tr class="totals">
-  <th scope="row">TOTAL</th>
+  <% if @tbl_show_group_1_headers %>
+    <th scope="row">TOTAL</th>
+  <% end %>
 
   <% if @tbl_show_group_1_totals %>
     <% @composition.metrics.each do |metric| %>
+      <%# Don't display an overall total for this metric if either group is not summable %>
       <% if @composition.groups[0]&.summable?(metric) && @composition.groups[1]&.summable?(metric) %>
         <% total = @composition.results.get_total(metric) %>
         <td><%= number_with_delimiter(total) %></td>
       <% else %>
-        <td
-          <%= html_attributes(title: "When grouping by #{@composition.groups[0]&.dimension} and #{@composition.groups[1]&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting.") %>>
+        <% title = "When grouping by #{@composition.groups[0]&.dimension} and #{@composition.groups[1]&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting." %>
 
-          n/a
-        </td>
+        <td title="<%= title %>">n/a</td>
       <% end %>
     <% end %>
   <% end %>
 
-  <%# A cell for each metric, for each member of group 2 %>
-  <% @group_2_unique_members&.each do |group_2_member| %>
+  <% @expand_group_2_members.each do |group_2_member| %>
     <% @composition.metrics.each do |metric| %>
-      <% if @composition.groups[1].summable?(metric) %>
+      <%# Don't display a total for this group 2 member if group 1 is not summable for this metric %>
+      <% if !@composition.groups[0] || @composition.groups[0]&.summable?(metric) %>
         <% total = @composition.results.get_total(metric, @composition.groups[1], group_2_member) %>
         <% min = @composition.results.get_min(metric, @composition.groups[1], group_2_member) %>
         <% max = @composition.results.get_max(metric, @composition.groups[1], group_2_member) %>
-        <% range = max - min %>
+        <% range = (max||0) - (min||0) %>
 
-        <td title="Min: <%= number_with_delimiter(min) %>&#013;Max: <%= number_with_delimiter(max) %>&#013;Range: <%= number_with_delimiter(range) %>"><%= number_with_delimiter total %></td>
+        <% title = "Min: #{number_with_delimiter(min)}\nMax: #{number_with_delimiter(max)}\nRange: #{number_with_delimiter(range)}" %>
+
+        <td title="<%= title %>"><%= number_with_delimiter total %></td>
       <% else %>
-        <td
-          <%= html_attributes(title: "When grouping by #{@composition.groups[1].dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting.") %>>
+        <% title = "When grouping by #{@composition.groups[0]&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting." %>
 
-          n/a
-        </td>
-      <% end %>
-    <% end %>
-  <% end %>
-
-  <% if @tbl_show_group_2_unknowns %>
-    <% @composition.metrics.each do |metric| %>
-      <% if !@composition.groups[0] || @composition.groups[0]&.summable?(metric) %>
-        <% total = @composition.results.get_total(metric, @composition.groups[1], nil) %>
-        <td><%= number_with_delimiter total %></td>
-      <% else %>
-        <td
-          <%= html_attributes(title: "When grouping by #{@composition.groups[0]&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting.") %>>
-
-          n/a
-        </td>
+        <td title="<%= title %>">n/a</td>
       <% end %>
     <% end %>
   <% end %>

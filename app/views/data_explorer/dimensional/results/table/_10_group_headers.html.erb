@@ -1,22 +1,19 @@
 <tr>
-  <td></td>
+  <% if @tbl_show_group_1_headers %>
+    <td></td>
+  <% end %>
 
   <% if @tbl_show_group_1_totals %>
-    <th <%= html_attributes(colspan: @composition.metrics.size) %> scope="colgroup">TOTAL</th>
+    <th colspan="<%= @composition.metrics.size %>" scope="colgroup">TOTAL</th>
   <% end %>
 
-  <%# A cell for each metric, for each member of group 2 %>
-  <% @group_2_unique_members&.each do |group_2_member| %>
+  <% @expand_group_2_members.each do |group_2_member| %>
     <th
-      <%= html_attributes(colspan: @composition.metrics.size) %>
-      <%= html_attributes("data-raw-member": group_2_member) %>>
+      colspan="<%= @composition.metrics.size %>"
+      data-raw-member="<%= group_2_member %>">
 
-      <% label = @composition.results.group_member_label(@composition.groups[1], group_2_member) %>
-      <%= Labeler.label(label, @composition.groups[1]) %>
+      <% label = @composition.results.group_member_label(@composition.groups[1], group_2_member) if group_2_member %>
+      <%= label ? Labeler.label(label, @composition.groups[1]) : "UNKNOWN" %>
     </th>
-  <% end %>
-
-  <% if @tbl_show_group_2_unknowns %>
-    <th colspan="<%= @composition.metrics.size %>">UNKNOWN</th>
   <% end %>
 </tr>

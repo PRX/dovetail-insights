@@ -1,0 +1,57 @@
+<tr>
+  <%# First cell in the row is a header with the group member name %>
+  <% if @tbl_show_group_1_headers %>
+    <th
+      data-raw-member="<%= group_1_member || "__nil__" %>"
+      scope="row">
+
+      <% label = @composition.results.group_member_label(@composition.groups[0], group_1_member) if group_1_member %>
+      <%= label ? Labeler.label(label, @composition.groups[0]) : "UNKNOWN" %>
+    </th>
+  <% end %>
+
+  <%# Totals for this member of group 1 (a total for each metric) %>
+  <%# This isn't displayed when no group 2 is selected, since the total and %>
+  <%# the NULL value are the same, and we display the NULL value %>
+  <% if @tbl_show_group_1_totals %>
+    <% @composition.metrics.each do |metric| %>
+      <%# Don't display a total for this group 1 member if group 2 is not summable for this metric %>
+      <% if !@composition.groups[1] || @composition.groups[1]&.summable?(metric) %>
+        <% total = @composition.results.get_total(metric, @composition.groups[0], group_1_member) %>
+        <% min = @composition.results.get_min(metric, @composition.groups[0], group_1_member) || 0 %>
+        <% max = @composition.results.get_max(metric, @composition.groups[0], group_1_member) || 0 %>
+        <% range = (max||0) - (min||0) %>
+
+        <% title = "Min: #{number_with_delimiter(min)}\nMax: #{number_with_delimiter(max)}\nRange: #{number_with_delimiter(range)}" %>
+
+        <td title="<%= title %>"><%= number_with_delimiter total %></td>
+      <% else %>
+        <% title = "When grouping by #{@composition.groups[1].dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting." %>
+
+        <td
+          title="<%= title %>">
+
+          n/a
+        </td>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% @expand_group_2_members.each do |group_2_member| %>
+    <% @composition.metrics.each do |metric| %>
+      <%# If this is the nil, and there's no need to show unknowns, skip it %>
+      <% next if !group_2_member && !@tbl_show_group_2_unknowns %>
+
+      <% value = @composition.results.get_value(metric, group_1_member, group_2_member) %>
+
+      <td
+        data-highlight-metric="<%= metric.metric %>"
+        data-highlight-group-1="<%= group_1_member || "__nil__" %>"
+        data-highlight-group-2="<%= group_2_member || "__nil__" %>"
+        data-raw-value="<%= value %>">
+
+        <%= number_with_delimiter(value) %>
+      </td>
+    <% end %>
+  <% end %>
+</tr>
