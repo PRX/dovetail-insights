@@ -38,12 +38,12 @@
 
   <% if @composition.metrics.any? { |m| @composition.results.get_value(m, nil, nil) } %>
     <% @composition.metrics.each do |metric| %>
-      <% if !@composition.groups[1] || @composition.groups[1]&.summable?(metric) %>
+      <% if !@composition.groups[0] || @composition.groups[0]&.summable?(metric) %>
         <% total = @composition.results.get_total(metric, @composition.groups[1], nil) %>
         <td><%= number_with_delimiter total %></td>
       <% else %>
         <td
-          <%= html_attributes(title: "When grouping by #{@composition.groups[1]&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting.") %>>
+          <%= html_attributes(title: "When grouping by #{@composition.groups[0]&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting.") %>>
 
           n/a
         </td>
