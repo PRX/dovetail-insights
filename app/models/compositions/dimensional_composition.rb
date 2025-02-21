@@ -44,9 +44,7 @@ module Compositions
         job = BigQueryClient.instance.query_job(query)
         job.wait_until_done!
 
-        # TODO Move this somewhere else
-        # TODO probably capture totalBytesBilled instead
-        CompositionResultMetadataLog.create!(user_id: 0, total_bytes_processed: job.statistics["totalBytesProcessed"], params: "tktk")
+        @big_query_total_bytes_billed = job.stats["query"]["totalBytesBilled"].to_i
 
         @results ||= Results::Dimensional.new(self, job.data)
       end

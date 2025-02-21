@@ -14,6 +14,10 @@ class DataExplorerController < ApplicationController
       Compositions::BaseComposition.from_params(params)
     end
 
+    if @composition.valid? && @composition.results && @composition.big_query_total_bytes_billed
+      CompositionResultMetadataLog.create!(user_id: current_user.user_id, total_bytes_processed: @composition.big_query_total_bytes_billed, params: params.to_s)
+    end
+
     @bytes = CompositionResultMetadataLog.where(current_user.user_id).where("created_at >= ?", 48.hours.ago).pluck(:total_bytes_processed).reduce(0, :+)
   end
 
