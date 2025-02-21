@@ -41,7 +41,7 @@ module Compositions
       return unless valid?
 
       @results ||= begin
-        job = self.class.big_query.query_job(query)
+        job = BigQueryClient.instance.query_job(query)
         job.wait_until_done!
 
         # TODO Move this somewhere else

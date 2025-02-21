@@ -2,8 +2,7 @@
 class Lists
   def self.all_podcasts
     Rails.cache.fetch("podcast1", expires_in: 12.hours) do
-      big_query = Google::Cloud::Bigquery.new
-      data = big_query.query("SELECT id, title, account_id FROM production.podcasts ORDER BY title ASC")
+      data = BigQueryClient.instance.query("SELECT id, title, account_id FROM production.podcasts ORDER BY title ASC")
 
       rows = []
       data.all do |row|
@@ -17,8 +16,7 @@ class Lists
   def self.list_for(dimension_key, user)
     if dimension_key == "country"
       Rails.cache.fetch("country1", expires_in: 12.hours) do
-        big_query = Google::Cloud::Bigquery.new
-        data = big_query.query("SELECT country_iso_code, country_name FROM production.geonames WHERE country_name <> '' AND subdivision_1_iso_code IS NULL AND subdivision_2_iso_code IS NULL AND city_name IS NULL ORDER BY country_name ASC")
+        data = BigQueryClient.instance.query("SELECT country_iso_code, country_name FROM production.geonames WHERE country_name <> '' AND subdivision_1_iso_code IS NULL AND subdivision_2_iso_code IS NULL AND city_name IS NULL ORDER BY country_name ASC")
 
         rows = []
         data.all do |row|
@@ -29,8 +27,7 @@ class Lists
       end
     elsif dimension_key == "ua"
       Rails.cache.fetch("ua", expires_in: 12.hours) do
-        big_query = Google::Cloud::Bigquery.new
-        data = big_query.query("SELECT agentname_id, tag FROM production.agentnames ORDER BY tag ASC")
+        data = BigQueryClient.instance.query("SELECT agentname_id, tag FROM production.agentnames ORDER BY tag ASC")
 
         rows = []
         data.all do |row|
@@ -79,8 +76,7 @@ class Lists
       ]
     elsif dimension_key == "metro"
       Rails.cache.fetch("metro", expires_in: 12.hours) do
-        big_query = Google::Cloud::Bigquery.new
-        data = big_query.query("SELECT code, label FROM production.metronames ORDER BY label ASC")
+        data = BigQueryClient.instance.query("SELECT code, label FROM production.metronames ORDER BY label ASC")
 
         rows = []
         data.all do |row|
@@ -91,8 +87,7 @@ class Lists
       end
     elsif dimension_key == "tz"
       Rails.cache.fetch("tz", expires_in: 12.hours) do
-        big_query = Google::Cloud::Bigquery.new
-        data = big_query.query("SELECT time_zone AS t1, time_zone AS t2 FROM production.geonames WHERE time_zone <> '' GROUP BY time_zone ORDER BY time_zone ASC")
+        data = BigQueryClient.instance.query("SELECT time_zone AS t1, time_zone AS t2 FROM production.geonames WHERE time_zone <> '' GROUP BY time_zone ORDER BY time_zone ASC")
 
         rows = []
         data.all do |row|
@@ -103,8 +98,7 @@ class Lists
       end
     elsif dimension_key == "subdivXXX"
       Rails.cache.fetch("subdiv6", expires_in: 12.hours) do
-        big_query = Google::Cloud::Bigquery.new
-        data = big_query.query("SELECT CONCAT(country_iso_code, '-', subdivision_1_iso_code) AS t1, CONCAT(subdivision_1_name, ', ', country_name) AS t2 FROM production.geonames WHERE subdivision_1_iso_code <> '' AND subdivision_2_iso_code IS NULL AND city_name IS NULL GROUP BY subdivision_1_iso_code, subdivision_1_name, country_name, country_iso_code ORDER BY subdivision_1_name ASC, country_name ASC")
+        data = BigQueryClient.instance.query("SELECT CONCAT(country_iso_code, '-', subdivision_1_iso_code) AS t1, CONCAT(subdivision_1_name, ', ', country_name) AS t2 FROM production.geonames WHERE subdivision_1_iso_code <> '' AND subdivision_2_iso_code IS NULL AND city_name IS NULL GROUP BY subdivision_1_iso_code, subdivision_1_name, country_name, country_iso_code ORDER BY subdivision_1_name ASC, country_name ASC")
 
         rows = []
         data.all do |row|
@@ -115,8 +109,7 @@ class Lists
       end
     elsif dimension_key == "cityXXXX"
       Rails.cache.fetch("city3", expires_in: 12.hours) do
-        big_query = Google::Cloud::Bigquery.new
-        data = big_query.query("SELECT geoname_id AS t1, CONCAT(city_name, ', ', subdivision_1_name, ', ', country_name) AS t2 FROM production.geonames WHERE city_name <> '' GROUP BY geoname_id, country_iso_code, country_name, subdivision_1_iso_code, subdivision_1_name, subdivision_2_iso_code, city_name ORDER BY city_name ASC, country_name ASC")
+        data = BigQueryClient.instance.query("SELECT geoname_id AS t1, CONCAT(city_name, ', ', subdivision_1_name, ', ', country_name) AS t2 FROM production.geonames WHERE city_name <> '' GROUP BY geoname_id, country_iso_code, country_name, subdivision_1_iso_code, subdivision_1_name, subdivision_2_iso_code, city_name ORDER BY city_name ASC, country_name ASC")
 
         rows = []
         data.all do |row|
@@ -127,8 +120,7 @@ class Lists
       end
     elsif dimension_key == "advertiserXXX"
       Rails.cache.fetch("advertiser", expires_in: 12.hours) do
-        big_query = Google::Cloud::Bigquery.new
-        data = big_query.query("SELECT id, name FROM production.advertisers ORDER BY name ASC")
+        data = BigQueryClient.instance.query("SELECT id, name FROM production.advertisers ORDER BY name ASC")
 
         rows = []
         data.all do |row|
@@ -139,8 +131,7 @@ class Lists
       end
     elsif dimension_key == "campaignXXX"
       Rails.cache.fetch("campaign", expires_in: 12.hours) do
-        big_query = Google::Cloud::Bigquery.new
-        data = big_query.query("SELECT id, name FROM production.campaigns ORDER BY name ASC")
+        data = BigQueryClient.instance.query("SELECT id, name FROM production.campaigns ORDER BY name ASC")
 
         rows = []
         data.all do |row|
