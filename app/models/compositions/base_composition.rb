@@ -26,6 +26,7 @@ module Compositions
     include Warnings
 
     attr_reader :filters
+    attr_reader :big_query_total_bytes_billed
 
     # All lenses support and require a time range define by +from+ and +to+.
     # These values are mostly handled by +Ranging+.
