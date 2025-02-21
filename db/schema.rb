@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_19_235447) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_21_021654) do
+  create_table "query_job_statistics", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "total_bytes_processed", null: false
+    t.string "params", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"

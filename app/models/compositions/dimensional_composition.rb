@@ -40,7 +40,16 @@ module Compositions
     def results
       return unless valid?
 
-      @results ||= Results::Dimensional.new(self, self.class.big_query.query(query))
+      @results ||= begin
+        job = self.class.big_query.query_job(query)
+        job.wait_until_done!
+
+        # TODO Move this somewhere else
+        # TODO probably capture totalBytesBilled instead
+        QueryJobStatistic.create!(user_id: 0, total_bytes_processed: job.statistics["totalBytesProcessed"], params: "tktk")
+
+        @results ||= Results::Dimensional.new(self, job.data)
+      end
     end
 
     private

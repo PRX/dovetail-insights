@@ -1,0 +1,2 @@
+class QueryJobStatistic < ApplicationRecord
+end
