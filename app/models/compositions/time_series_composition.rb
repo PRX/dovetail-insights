@@ -99,7 +99,15 @@ module Compositions
       bigquery = Google::Cloud::Bigquery.new
 
       # Create results with the base query
-      base_results = Results::TimeSeries.new(self, bigquery.query(query(binding)))
+      job = self.class.big_query.query_job(query(binding))
+      job.wait_until_done!
+
+      # TODO Move this somewhere else
+      # TODO probably capture totalBytesBilled instead
+      # TODO capture the total of all comparison queries in one record
+      QueryJobStatistic.create!(user_id: 0, total_bytes_processed: job.statistics["totalBytesProcessed"], params: "tktk")
+
+      base_results = Results::TimeSeries.new(self, job.data)
       base_results.comparison_row_sets = []
 
       # Add +comparison_row_sets+ for each comparison required
