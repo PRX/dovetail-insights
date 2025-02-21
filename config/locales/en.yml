@@ -48,3 +48,13 @@ en:
       tz: "Include/exclude data for specific time zones (e.g., Include data only from Eastern time zone in the US)"
       campaign: "Include/exclude data for activity related to a specific campaign (e.g., Include download/impression/etc data only for downloads that included ads for certain campaigns)"
       advertiser: "Include/exclude data for activity related to a specific advertiser (e.g., Include download/impression/etc data only for downloads that included ads from certain advertisers"
+  number:
+    human:
+      storage_units:
+        units:
+          byte: "Byte"
+          kb: "KiB"
+          mb: "MiB"
+          gb: "GiB"
+          tb: "TiB"
+          pb: "PiB"
