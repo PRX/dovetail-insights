@@ -1,7 +1,7 @@
 # TODO This is not meant to be a permanent solution
 class Lists
   def self.all_podcasts
-    Rails.cache.fetch("podcast1", expires_in: 12.hours) do
+    Rails.cache.fetch("podcast", expires_in: 12.hours) do
       data = BigQueryClient.instance.query("SELECT id, title, account_id FROM production.podcasts ORDER BY title ASC")
 
       rows = []
@@ -15,7 +15,7 @@ class Lists
 
   def self.list_for(dimension_key, user)
     if dimension_key == "country"
-      Rails.cache.fetch("country1", expires_in: 12.hours) do
+      Rails.cache.fetch("country", expires_in: 12.hours) do
         data = BigQueryClient.instance.query("SELECT country_iso_code, country_name FROM production.geonames WHERE country_name <> '' AND subdivision_1_iso_code IS NULL AND subdivision_2_iso_code IS NULL AND city_name IS NULL ORDER BY country_name ASC")
 
         rows = []
@@ -96,7 +96,7 @@ class Lists
 
         rows.filter { |r| r[r.keys[0]].present? }
       end
-    elsif dimension_key == "subdivXXX"
+    elsif dimension_key == "subdivX"
       Rails.cache.fetch("subdiv6", expires_in: 12.hours) do
         data = BigQueryClient.instance.query("SELECT CONCAT(country_iso_code, '-', subdivision_1_iso_code) AS t1, CONCAT(subdivision_1_name, ', ', country_name) AS t2 FROM production.geonames WHERE subdivision_1_iso_code <> '' AND subdivision_2_iso_code IS NULL AND city_name IS NULL GROUP BY subdivision_1_iso_code, subdivision_1_name, country_name, country_iso_code ORDER BY subdivision_1_name ASC, country_name ASC")
 
@@ -107,7 +107,7 @@ class Lists
 
         rows.filter { |r| r[r.keys[0]].present? }
       end
-    elsif dimension_key == "cityXXXX"
+    elsif dimension_key == "cityX"
       Rails.cache.fetch("city3", expires_in: 12.hours) do
         data = BigQueryClient.instance.query("SELECT geoname_id AS t1, CONCAT(city_name, ', ', subdivision_1_name, ', ', country_name) AS t2 FROM production.geonames WHERE city_name <> '' GROUP BY geoname_id, country_iso_code, country_name, subdivision_1_iso_code, subdivision_1_name, subdivision_2_iso_code, city_name ORDER BY city_name ASC, country_name ASC")
 
@@ -118,7 +118,7 @@ class Lists
 
         rows.filter { |r| r[r.keys[0]].present? }
       end
-    elsif dimension_key == "advertiserXXX"
+    elsif dimension_key == "advertiserX"
       Rails.cache.fetch("advertiser", expires_in: 12.hours) do
         data = BigQueryClient.instance.query("SELECT id, name FROM production.advertisers ORDER BY name ASC")
 
@@ -129,7 +129,7 @@ class Lists
 
         rows
       end
-    elsif dimension_key == "campaignXXX"
+    elsif dimension_key == "campaignX"
       Rails.cache.fetch("campaign", expires_in: 12.hours) do
         data = BigQueryClient.instance.query("SELECT id, name FROM production.campaigns ORDER BY name ASC")
 
