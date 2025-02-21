@@ -26,7 +26,22 @@ module Results
       row && row[metric.as]
     end
 
+    ##
+    # Get the total for a metric. If a group and member is given, this will be
+    # the total just for that member. If not, it will be the total for the
+    # metric across the entire result.
+
+    def get_total(metric, granularity_member)
+      if granularity_member
+        rows.filter { |row| row[@composition.granularity_as] == granularity_member }.inject(0) { |sum, row| sum + row[metric.as] }
+      else
+        # rows.inject(0) { |sum, row| sum + row[metric.as] }
+      end
+    end
+
     def get_value_comparison(comparison, lookback, metric, granularity_member, group1_member = false, group2_member = false)
+      return get_value(metric, granularity_member, group1_member, group2_member) unless comparison
+
       idx = @composition.comparisons.index(comparison)
 
       # +rows+ here will be the query result for a single lookback for a single

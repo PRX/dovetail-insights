@@ -17,9 +17,6 @@
 %>
 
 <%
-  @group_1_unique_members = @composition.results.group_1_unique_members
-  @group_2_unique_members = @composition.results.group_2_unique_members
-
   # Show full table structure by default
   @tbl_show_metric_headers = true
   @tbl_show_metric_totals = true
@@ -63,10 +60,12 @@
   # all group 1s
   @tbl_show_group_2_unknowns = false unless @composition.metrics.any? { |m| @composition.results.get_value(m, false, nil) }
 
-  @expand_group_1_members = @group_1_unique_members || []
+  # Create a set of each group's members, plus `nil` to represent values that
+  # don't belong to any member of that group (if necessary)
+  @expand_group_1_members = @composition.results.group_1_unique_members || []
   @expand_group_1_members << nil if @tbl_show_group_1_unknowns
 
-  @expand_group_2_members = @group_2_unique_members || []
+  @expand_group_2_members = @composition.results.group_2_unique_members || []
   @expand_group_2_members << nil if @tbl_show_group_2_unknowns
 %>
 

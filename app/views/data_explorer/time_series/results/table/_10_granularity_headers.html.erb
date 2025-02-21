@@ -1,14 +1,11 @@
 <tr>
-  <td></td>
-  <% if @composition.groups.size > 1 %><td></td><% end %>
+  <% if @tbl_show_group_1_headers %><td></td><% end %>
+  <% if @tbl_show_group_2_headers %><td></td><% end %>
 
   <%# A cell for each granularity period, spanning all metrics and comparisons %>
   <% @composition.results.granularity_unique_members.each do |member| %>
-    <% num_metrics = @composition.metrics.size %>
-    <% num_comparisons = @composition.comparisons.reduce(0) { |sum, c| sum + c.lookback } + 1 %>
-    <% colspan = num_metrics * num_comparisons %>
 
-    <th <%= html_attributes(colspan: colspan) %>>
+    <th colspan="<%= @tbl_cols_per_granularity_memeber %>">
       <%= granularity_label(@composition, member) %>
     </th>
   <% end %>

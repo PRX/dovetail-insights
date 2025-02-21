@@ -1,0 +1,65 @@
+<% group_1_label_displayed = false %>
+
+<% @expand_group_2_members.each do |group_2_member| %>
+  <% display_row = true %>
+
+  <%
+    # Check if this row is going to have any useful information, and skip it
+    # if not
+    values = []
+
+    @composition.results.granularity_unique_members.each do |granularity_member|
+      @composition.metrics.each do |metric|
+        @composition.comparisons.each do |comparison|
+          comparison.lookback.times do |i|
+            lookback = -(comparison.lookback - i)
+            value = @composition.results.get_value_comparison(comparison, lookback, metric, granularity_member, group_1_member, group_2_member)
+
+            values << value
+          end
+        end
+
+        values << @composition.results.get_value(metric, granularity_member, group_1_member, group_2_member)
+      end
+    end
+
+    display_row = false if values.compact.size == 0
+  %>
+
+  <% if display_row %>
+    <tr>
+      <% if @tbl_show_group_1_headers %>
+        <th data-raw-member="<%= group_1_member %>" scope="row">
+          <% unless group_1_label_displayed %>
+            <%# We only want to show the group 1 label for the first row of that group %>
+            <% label = @composition.results.group_member_label(@composition.groups[0], group_1_member) if group_1_member %>
+            <%= label ? Labeler.label(label, @composition.groups[0]) : "UNKNOWN" %>
+            <% group_1_label_displayed = true %>
+          <% end %>
+        </th>
+      <% end %>
+
+      <% if @tbl_show_group_2_headers %>
+        <th data-raw-member="<%= group_2_member %>" scope="row">
+          <% label = @composition.results.group_member_label(@composition.groups[1], group_2_member) if group_2_member %>
+          <%= label ? Labeler.label(label, @composition.groups[0]) : "UNKNOWN" %>
+        </th>
+      <% end %>
+
+      <% @composition.results.granularity_unique_members.each do |granularity_member| %>
+        <% @composition.metrics.each do |metric| %>
+          <% @composition.comparisons.each do |comparison| %>
+            <% comparison.lookback.times do |i| %>
+              <%# if +comparison.lookback+ is 3, +lookback+ should be -3, -2, %>
+              <%# and -1 for the loops. So when i=0, lookback=-3, and i=1 l=-2 %>
+              <% lookback = -(comparison.lookback - i) %>
+              <%= render partial: "data_explorer/time_series/results/table/51_value_cell", locals: {comparison: comparison, lookback: lookback, metric: metric, granularity_member: granularity_member, group_1_member: group_1_member, group_2_member: group_2_member} %>
+            <% end %>
+          <% end %>
+
+          <%= render partial: "data_explorer/time_series/results/table/51_value_cell", locals: {comparison: nil, lookback: nil, metric: metric, granularity_member: granularity_member, group_1_member: group_1_member, group_2_member: group_2_member} %>
+        <% end %>
+      <% end %>
+    </tr>
+  <% end %>
+<% end %>

@@ -1,0 +1,17 @@
+<tr class="totals">
+  <% if @tbl_show_group_1_headers %><th scope="row">TOTAL</th><% end %>
+  <% if @tbl_show_group_2_headers %><th></th><% end %>
+
+  <% @composition.results.granularity_unique_members.each do |granularity_member| %>
+    <% @composition.metrics.each do |metric| %>
+      <% @composition.comparisons.each do |comparison| %>
+        <% comparison.lookback.times do |i| %>
+          <td>tktk</td>
+        <% end %>
+      <% end %>
+
+      <% total = @composition.results.get_total(metric, granularity_member)%>
+      <td><%= number_with_delimiter(total) %></td>
+    <% end %>
+  <% end %>
+</tr>

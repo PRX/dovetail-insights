@@ -1,36 +1,74 @@
+<%#
+# This constructs a table for all the various permutations of time series
+# sresults, which supports a mandatory time granularity group, 0, 1 or 2
+# groups, 1 or more metrics, and 0 or 1 comparisons.
+%>
+
+<%
+  # Show full table structure by default
+  @tbl_show_metric_headers = true
+  @tbl_show_comparison_headers = true
+  @tbl_show_group_2_headers = true
+  @tbl_show_group_1_headers = true
+
+  ##
+  # Turn things off for certain permutations of groups, metrics, and comparisons.
+
+  # If less than 2 metrics are selected, don't show the headers.
+  @tbl_show_metric_headers = false if @composition.metrics.size <= 1
+
+  # If there are no comparisons, don't show the headers
+  @tbl_show_comparison_headers = false if @composition.comparisons.size < 1
+
+  #
+  @tbl_show_group_2_headers = false if @composition.groups.size < 2
+
+  # No need for group 1 headers when no groups are selected
+  @tbl_show_group_1_headers = false if @composition.groups.size == 0
+
+  @tbl_cols_per_granularity_metric = @composition.comparisons.reduce(0) { |sum, c| sum + c.lookback } + 1
+  @tbl_cols_per_granularity_memeber = @composition.metrics.size * @tbl_cols_per_granularity_metric
+
+  # Create a set of each group's members, plus `nil` to represent values that
+  # don't belong to any member of that group (if necessary)
+  @expand_group_1_members = @composition.results.group_1_unique_members || []
+  @expand_group_1_members << nil #if @tbl_show_group_1_unknowns
+
+  @expand_group_2_members = @composition.results.group_2_unique_members || []
+  @expand_group_2_members << nil #if @tbl_show_group_2_unknowns
+%>
+
 <table data-data-explorer--results-table-highlight-target="table">
   <colgroup>
     <%# Group 1 member labels %>
-    <col>
+    <% if @tbl_show_group_1_headers %>
+      <col>
+    <% end %>
 
     <%# Group 2 member labels %>
-    <col>
+    <% if @tbl_show_group_2_headers %>
+      <col>
+    <% end %>
 
     <%# Granularity member labels %>
-    <% @composition.results.granularity_unique_members.each do |granularity_member| %>
-      <% num_metrics = @composition.metrics.size %>
-      <% num_comparisons = @composition.comparisons.reduce(0) { |sum, c| sum + c.lookback } + 1 %>
-      <% colspan = num_metrics * num_comparisons %>
-
-      <col class="data" <%= html_attributes(span: colspan) %>>
+    <% @composition.results.granularity_unique_members.each do |_| %>
+      <col class="data" span="<%= @tbl_cols_per_granularity_memeber %>">
     <% end %>
   </colgroup>
 
   <thead>
     <%= render "data_explorer/time_series/results/table/10_granularity_headers" %>
 
-    <%= render "data_explorer/time_series/results/table/20_metric_headers" %>
+    <%= render "data_explorer/time_series/results/table/20_metric_headers" if @tbl_show_metric_headers %>
 
-    <% if @composition.comparisons.size > 0 %>
-      <%= render "data_explorer/time_series/results/table/30_comparison_headers" %>
-    <% end %>
+    <%= render "data_explorer/time_series/results/table/30_comparison_headers" if @tbl_show_comparison_headers %>
   </thead>
 
   <tbody>
     <%= render "data_explorer/time_series/results/table/40_totals_row" %>
 
-    <%= render "data_explorer/time_series/results/table/50_group_rows" %>
+    <%= render partial: "data_explorer/time_series/results/table/50_group_row_block", collection: @expand_group_1_members, as: :group_1_member %>
 
-    <%= render "data_explorer/time_series/results/table/60_no_group_row" %>
+    <%#= render "data_explorer/time_series/results/table/60_no_group_row" %>
   </tbody>
 </table>
