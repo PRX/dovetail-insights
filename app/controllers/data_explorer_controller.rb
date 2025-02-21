@@ -13,6 +13,8 @@ class DataExplorerController < ApplicationController
     else
       Compositions::BaseComposition.from_params(params)
     end
+
+    @bytes = CompositionResultMetadataLog.where(current_user.user_id).where("created_at >= ?", 48.hours.ago).pluck(:total_bytes_processed).reduce(0, :+)
   end
 
   def export

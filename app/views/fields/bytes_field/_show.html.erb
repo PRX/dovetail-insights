@@ -1,1 +1,1 @@
-<%= field.to_s %>
+<%= number_to_human_size(field.data) %> (<%= number_to_currency(field.data.to_f / 2.0**40, precision: 5) %>)
