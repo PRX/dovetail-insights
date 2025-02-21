@@ -4,9 +4,9 @@ Rails.application.routes.draw do
   mount PrxAuth::Rails::Engine => "/auth", :as => "prx_auth_engine"
 
   namespace :admin do
-    resources :query_job_statistics
+    resources :composition_result_metadata_logs
 
-    root to: "query_job_statistics#index"
+    root to: "composition_result_metadata_logs#index"
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

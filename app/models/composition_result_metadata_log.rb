@@ -1,0 +1,2 @@
+class CompositionResultMetadataLog < ApplicationRecord
+end

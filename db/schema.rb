@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_21_021654) do
-  create_table "query_job_statistics", force: :cascade do |t|
+ActiveRecord::Schema[8.0].define(version: 2025_02_21_040827) do
+  create_table "composition_result_metadata_logs", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "total_bytes_processed", null: false
     t.string "params", null: false

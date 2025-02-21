@@ -105,7 +105,7 @@ module Compositions
       # TODO Move this somewhere else
       # TODO probably capture totalBytesBilled instead
       # TODO capture the total of all comparison queries in one record
-      QueryJobStatistic.create!(user_id: 0, total_bytes_processed: job.statistics["totalBytesProcessed"], params: "tktk")
+      CompositionResultMetadataLog.create!(user_id: 0, total_bytes_processed: job.statistics["totalBytesProcessed"], params: "tktk")
 
       base_results = Results::TimeSeries.new(self, job.data)
       base_results.comparison_row_sets = []

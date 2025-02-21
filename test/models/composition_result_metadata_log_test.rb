@@ -1,6 +1,6 @@
 require "test_helper"
 
-class QueryJobStatisticTest < ActiveSupport::TestCase
+class CompositionResultMetadataLogTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

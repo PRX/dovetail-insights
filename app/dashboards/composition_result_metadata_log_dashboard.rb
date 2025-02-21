@@ -1,6 +1,6 @@
 require "administrate/base_dashboard"
 
-class QueryJobStatisticDashboard < Administrate::BaseDashboard
+class CompositionResultMetadataLogDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -60,10 +60,10 @@ class QueryJobStatisticDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how query job statistics are displayed
-  # across all pages of the admin dashboard.
+  # Overwrite this method to customize how composition result metadata logs are
+  # displayed across all pages of the admin dashboard.
   #
-  # def display_resource(query_job_statistic)
-  #   "QueryJobStatistic ##{query_job_statistic.id}"
+  # def display_resource(composition_result_metadata_log)
+  #   "CompositionResultMetadataLog ##{composition_result_metadata_log.id}"
   # end
 end

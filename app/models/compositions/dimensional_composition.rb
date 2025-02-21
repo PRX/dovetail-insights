@@ -46,7 +46,7 @@ module Compositions
 
         # TODO Move this somewhere else
         # TODO probably capture totalBytesBilled instead
-        QueryJobStatistic.create!(user_id: 0, total_bytes_processed: job.statistics["totalBytesProcessed"], params: "tktk")
+        CompositionResultMetadataLog.create!(user_id: 0, total_bytes_processed: job.statistics["totalBytesProcessed"], params: "tktk")
 
         @results ||= Results::Dimensional.new(self, job.data)
       end
