@@ -8,13 +8,6 @@
   <% end %>
 
   <% @expand_group_2_member_descriptors.each do |group_2_member_descriptor| %>
-    <th
-      colspan="<%= @composition.metrics.size %>"
-      data-member-descriptor="<%= group_2_member_descriptor %>"
-      data-member-exhibition="<%= @composition.results.group_member_exhibition(@composition.groups[1], group_2_member_descriptor) %>"
-      data-member-label="<%= member_label(@composition, @composition.groups[1], group_2_member_descriptor) %>">
-
-      <%= member_label(@composition, @composition.groups[1], group_2_member_descriptor) %>
-    </th>
+    <%= group_table_header_tag(@composition, @composition.groups[1], group_2_member_descriptor, :colgroup) %>
   <% end %>
 </tr>

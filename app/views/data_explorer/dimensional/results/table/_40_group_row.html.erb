@@ -1,13 +1,6 @@
 <tr>
   <%# First cell in the row is a header with the group member name %>
-  <% if @tbl_show_group_1_headers %>
-    <th
-      data-raw-member="<%= group_1_member_descriptor || "__nil__" %>"
-      scope="row">
-
-      <%= member_label(@composition, @composition.groups[0], group_1_member_descriptor) %>
-    </th>
-  <% end %>
+  <%= group_table_header_tag(@composition, @composition.groups[0], group_1_member_descriptor, :row) if @tbl_show_group_1_headers %>
 
   <%# Totals for this member of group 1 (a total for each metric) %>
   <%# This isn't displayed when no group 2 is selected, since the total and %>

@@ -5,13 +5,13 @@
 
   <% if @tbl_show_group_1_totals %>
     <% @composition.metrics.each do |metric| %>
-      <th><%= metric.metric %></th>
+      <th scope="col"><%= metric.metric %></th>
     <% end %>
   <% end %>
 
   <% @expand_group_2_member_descriptors.each do |_| %>
     <% @composition.metrics.each do |metric| %>
-      <th><%= metric.metric %></th>
+      <th scope="col"><%= metric.metric %></th>
     <% end %>
   <% end %>
 </tr>

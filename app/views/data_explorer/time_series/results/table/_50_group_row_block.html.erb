@@ -29,20 +29,11 @@
   <% if display_row %>
     <tr>
       <% if @tbl_show_group_1_headers %>
-        <th data-raw-member="<%= group_1_member_descriptor %>" scope="row">
-          <% unless group_1_label_displayed %>
-            <%# We only want to show the group 1 label for the first row of that group %>
-            <%= member_label(@composition, @composition.groups[0], group_1_member_descriptor) %>
-            <% group_1_label_displayed = true %>
-          <% end %>
-        </th>
+        <%= group_table_header_tag(@composition, @composition.groups[0], group_1_member_descriptor, :row, group_1_label_displayed) %>
+        <% group_1_label_displayed = true %>
       <% end %>
 
-      <% if @tbl_show_group_2_headers %>
-        <th data-raw-member="<%= group_2_member_descriptor %>" scope="row">
-          <%= member_label(@composition, @composition.groups[1], group_2_member_descriptor) %>
-        </th>
-      <% end %>
+      <%= group_table_header_tag(@composition, @composition.groups[1], group_2_member_descriptor, :row) if @tbl_show_group_2_headers %>
 
       <% @composition.results.granularity_unique_members.each do |granularity_member| %>
         <% @composition.metrics.each do |metric| %>
