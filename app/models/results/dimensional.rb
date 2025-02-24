@@ -188,9 +188,7 @@ module Results
       # If the group has indices, we want to maintain the order of the
       # indices as they were defined
       if group.indices
-        # These strings match how these groups are being created in the query
-        # TODO Figure out a better solution
-        members = group.indices.map { |i| i.to_s }
+        members = group.abs_indices.map { |i| i.to_s }
         members.push(Compositions::Components::Group::TERMINATOR_INDEX)
       else
         rows
