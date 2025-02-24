@@ -203,9 +203,9 @@ table {
     padding: 3px;
   }
 
-  col.data:nth-child(even) {
+  /* col.data:nth-child(even) {
     background: gainsboro
-  }
+  } */
 
   tr:hover {
     border: red 10px solid;
