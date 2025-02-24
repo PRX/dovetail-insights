@@ -1,41 +1,28 @@
 module GroupMemberLabelHelper
-  def duration_label(composition, group, member_descriptor)
-    if member_descriptor == Compositions::Components::Group::TERMINATOR_INDEX
-      "Over"
-      # if member_descriptor.starts_with? "LT"
-      #   val = member_descriptor.sub("LT ", "").to_f
-
-      # else
-      #   val = member_descriptor.sub("GTE ", "").to_f
-
-      #   if val % (86400 * 365) == 0
-      #     val /= (86400 * 365)
-      #     return "#{val.to_i} #{"year".pluralize(val)} or more"
-      #   elsif val % (86400 * 7) == 0 && val > (86400 * 28)
-      #     val /= (86400 * 7)
-      #     return "#{val.to_i} #{"week".pluralize(val)} or more"
-      #   elsif val % 86400 == 0
-      #     val /= 86400
-      #     return "#{val.to_i} #{"day".pluralize(val)} or more"
-      #   else
-      #     return "#{ActionController::Base.helpers.number_with_delimiter val} #{"second".pluralize(val)} or more"
-      #   end
-      # end
+  def human_duration(seconds)
+    if seconds % (86400 * 365) == 0
+      years = seconds / (86400 * 365)
+      "#{years.to_i} #{"year".pluralize(years)}"
+    elsif seconds % (86400 * 7) == 0 && seconds > (86400 * 28)
+      weeks = seconds / (86400 * 7)
+      "#{weeks.to_i} #{"week".pluralize(weeks)}"
+    elsif seconds % 86400 == 0
+      days = seconds / 86400
+      "#{days.to_i} #{"day".pluralize(days)}"
     else
-      val = member_descriptor.to_f
+      "#{ActionController::Base.helpers.number_with_delimiter seconds.to_i} #{"second".pluralize(seconds)}"
+    end
+  end
 
-      if val % (86400 * 365) == 0
-        val /= (86400 * 365)
-        "Under #{val.to_i} #{"year".pluralize(val)}"
-      elsif val % (86400 * 7) == 0 && val > (86400 * 28)
-        val /= (86400 * 7)
-        "Under #{val.to_i} #{"week".pluralize(val)}"
-      elsif val % 86400 == 0
-        val /= 86400
-        "Under #{val.to_i} #{"day".pluralize(val)}"
-      else
-        "Under #{ActionController::Base.helpers.number_with_delimiter val.to_i} #{"second".pluralize(val)}"
-      end
+  def duration_label(composition, group, member_descriptor)
+    index_of_index = group.indices.index(member_descriptor.to_i)
+
+    if member_descriptor == Compositions::Components::Group::TERMINATOR_INDEX
+      "Over #{human_duration(group.indices.last)}"
+    elsif index_of_index == 0
+      "Under #{human_duration(member_descriptor.to_f)}"
+    else
+      "Between #{human_duration(group.indices[index_of_index - 1])} and #{human_duration(member_descriptor.to_f)}"
     end
   end
 
