@@ -1,5 +1,30 @@
 module Compositions
   module Components
+    ##
+    # Ranges and Indices
+    #
+    # Both Timestamp and Duration dimensions support user-defined ranges, which
+    # the user defines by providing a set of indices. If a single index is
+    # provided (e.g., 100), that creates two ranges: [lt 100, gte 100].
+    # With two indexes (100 and 200), that creates three ranges [lt 100, gte 100
+    # AND lt 200, gte 200]. Etc.
+    #
+    # Duration indices represent a number of seconds, and can be expressed as
+    # positive integers or duration shorthands. Timestamp indices can be
+    # expressed as strings (e.g., "2025-01-01", "2025-01-01T12:34:56Z") or
+    # relatime expressions (e.g., "now-1/Y").
+    #
+    # +group.indices+ holds the unresolved version of these.
+    # +group.abs_indices+ holds the resolved versions, such as converting a
+    # duration shorthand to a number of seconds. Other than in the UI, you
+    # probably want to use +abs_indices+ for most things.
+    #
+    # Each range is represented in the SQL query by it's **upper bound**.
+    # Except for the final group, which uses a constant (TERMINATOR_INDEX). So
+    # given indices [100, 200], and ranges [lt 100, gte 100 AND lt 200, gte
+    # 200], the three groups in the SQL result would be called 100, 200, and
+    # the value of TERMINATOR_INDEX.
+
     class Group
       # When changing these, be sure to also change the view helpers that
       # transform these values into database engine specific arguments.
@@ -8,7 +33,7 @@ module Compositions
       EXTRACT_OPTS = %i[hour day_of_week day week month year]
       TRUNCATE_OPTS = %i[week month year]
 
-      TERMINATOR_INDEX = "THE_END"
+      TERMINATOR_INDEX = "OVERFLOW"
 
       include ActiveModel::Model
 
@@ -19,6 +44,10 @@ module Compositions
       # even if it's obvious that the params for some group are missing or
       # invalid. We still want to capture as much of the user input as possible
       # so we can provide errors from validations and things like that.
+      #
+      # TODO Add support for ranges that accumulute, i.e., rather than having
+      # indices 10/20 which creates three ranges: < 10, ≥10 < 20, and ≥ 20,
+      # it would create: < 10, <20, ≥ 20.
 
       def self.all_from_params(params)
         # A group for a single dimension may be defined across multiple params,
