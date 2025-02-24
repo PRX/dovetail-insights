@@ -8,6 +8,8 @@ module Compositions
       EXTRACT_OPTS = %i[hour day_of_week day week month year]
       TRUNCATE_OPTS = %i[week month year]
 
+      TERMINATOR_INDEX = "THE_END"
+
       include ActiveModel::Model
 
       ##

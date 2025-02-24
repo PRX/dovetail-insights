@@ -120,13 +120,13 @@ downloads_in_range AS (
       group.abs_indices.each_with_index do |i, idx|
         if dimension_def["BigQuery"]["Type"] == "TIMESTAMP"
           # Wrap TIMESTAMPS in quotes
-          cases << "WHEN #{selector} < '#{i}' THEN 'LT #{group.indices[idx]}'"
+          cases << "WHEN #{selector} < '#{i}' THEN '#{group.indices[idx]}'"
         else
-          cases << "WHEN #{selector} < #{i} THEN 'LT #{group.indices[idx]}'"
+          cases << "WHEN #{selector} < #{i} THEN '#{group.indices[idx]}'"
         end
       end
 
-      cases << "ELSE 'GTE #{group.indices.last}'"
+      cases << "ELSE '#{Compositions::Components::Group::TERMINATOR_INDEX}'"
 
       selects << "CASE \n #{cases.join("\n")} \n END AS #{group.as}"
     else

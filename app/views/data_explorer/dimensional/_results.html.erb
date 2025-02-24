@@ -62,11 +62,11 @@
 
   # Create a set of each group's members, plus `nil` to represent values that
   # don't belong to any member of that group (if necessary)
-  @expand_group_1_members = @composition.results.group_1_unique_members || []
-  @expand_group_1_members << nil if @tbl_show_group_1_unknowns
+  @expand_group_1_member_descriptors = @composition.results.group_1_unique_member_descriptors || []
+  @expand_group_1_member_descriptors << nil if @tbl_show_group_1_unknowns
 
-  @expand_group_2_members = @composition.results.group_2_unique_members || []
-  @expand_group_2_members << nil if @tbl_show_group_2_unknowns
+  @expand_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
+  @expand_group_2_member_descriptors << nil if @tbl_show_group_2_unknowns
 %>
 
 <table data-data-explorer--results-table-highlight-target="table">
@@ -80,12 +80,9 @@
     <% end %>
 
     <%# Group 2 members %>
-    <% @group_2_unique_members&.each do |group_2_member| %>
+    <% @expand_group_2_member_descriptors&.each do |_| %>
       <col class="data" <%= html_attributes(span: @composition.metrics.size) %>>
     <% end %>
-
-    <%# Group 2 nulls %>
-    <col class="data" <%= html_attributes(span: @composition.metrics.size) %>>
   </colgroup>
 
   <thead>
@@ -97,6 +94,6 @@
   <tbody>
     <%= render "data_explorer/dimensional/results/table/30_overall_and_group_2_totals_row" if @tbl_show_metric_totals || @tbl_show_group_2_totals %>
 
-    <%= render partial: "data_explorer/dimensional/results/table/40_group_row", collection: @expand_group_1_members, as: :group_1_member %>
+    <%= render partial: "data_explorer/dimensional/results/table/40_group_row", collection: @expand_group_1_member_descriptors, as: :group_1_member_descriptor %>
   </tbody>
 </table>

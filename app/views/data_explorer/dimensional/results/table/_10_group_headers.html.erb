@@ -7,13 +7,14 @@
     <th colspan="<%= @composition.metrics.size %>" scope="colgroup">TOTAL</th>
   <% end %>
 
-  <% @expand_group_2_members.each do |group_2_member| %>
+  <% @expand_group_2_member_descriptors.each do |group_2_member_descriptor| %>
     <th
       colspan="<%= @composition.metrics.size %>"
-      data-raw-member="<%= group_2_member %>">
+      data-member-descriptor="<%= group_2_member_descriptor %>"
+      data-member-exhibition="<%= @composition.results.group_member_exhibition(@composition.groups[1], group_2_member_descriptor) %>"
+      data-member-label="<%= member_label(@composition, @composition.groups[1], group_2_member_descriptor) %>">
 
-      <% label = @composition.results.group_member_label(@composition.groups[1], group_2_member) if group_2_member %>
-      <%= label ? Labeler.label(label, @composition.groups[1]) : "UNKNOWN" %>
+      <%= member_label(@composition, @composition.groups[1], group_2_member_descriptor) %>
     </th>
   <% end %>
 </tr>

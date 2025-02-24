@@ -40,8 +40,8 @@ module Results
 
           csv << row
         elsif @composition.groups.size == 1
-          group_1_unique_members.each do |member|
-            row = [group_member_label(@composition.groups[0], member)]
+          group_1_unique_member_descriptors.each do |member|
+            row = [group_member_exhibition(@composition.groups[0], member)]
 
             # Add values for each metric for this group
             @composition.metrics.each do |metric|
@@ -58,34 +58,34 @@ module Results
           end
           csv << row
         elsif @composition.groups.size == 2
-          group_1_unique_members.each do |group_1_member|
-            group_2_unique_members.each do |group_2_member|
+          group_1_unique_member_descriptors.each do |group_1_member_descriptor|
+            group_2_unique_member_descriptors.each do |group_2_member_descriptor|
               row = []
-              row << group_member_label(@composition.groups[0], group_1_member)
-              row << group_member_label(@composition.groups[1], group_2_member)
+              row << group_member_exhibition(@composition.groups[0], group_1_member_descriptor)
+              row << group_member_exhibition(@composition.groups[1], group_2_member_descriptor)
 
               @composition.metrics.each do |metric|
-                row << get_value(metric, group_1_member, group_2_member)
+                row << get_value(metric, group_1_member_descriptor, group_2_member_descriptor)
               end
 
               csv << row
             end
 
             row = []
-            row << group_member_label(@composition.groups[0], group_1_member)
+            row << group_member_exhibition(@composition.groups[0], group_1_member_descriptor)
             row << nil
             @composition.metrics.each do |metric|
-              row << get_value(metric, group_1_member, nil)
+              row << get_value(metric, group_1_member_descriptor, nil)
             end
             csv << row
           end
 
-          group_2_unique_members.each do |group_2_member|
+          group_2_unique_member_descriptors.each do |group_2_member_descriptor|
             row = []
             row << nil
-            row << group_member_label(@composition.groups[1], group_2_member)
+            row << group_member_exhibition(@composition.groups[1], group_2_member_descriptor)
             @composition.metrics.each do |metric|
-              row << get_value(metric, nil, group_2_member)
+              row << get_value(metric, nil, group_2_member_descriptor)
             end
             csv << row
           end
@@ -176,46 +176,58 @@ module Results
     end
 
     ##
-    # If the composition that yielded these results had a group, this returns
-    # an array with all the unique members of that group from the data set.
+    # Returns an array of all unique member descriptors for this group in the
+    # given results. For dimensions whose selector is something like an ID,
+    # these descriptors will be like [1,2,3]. When the selector is not an ID,
+    # e.g., time zone, this would be like ["America/New York",
+    # "Europe/London"].
 
-    def group_unique_members(index)
-      if @composition.groups && @composition.groups[index]
-        group = @composition.groups[index]
+    def unique_group_member_descriptors(group)
+      return unless group
 
-        # If the group has indices, we want to maintain the order of the
-        # indices as they were defined
-        if group.indices
-          # These strings match how these groups are being created in the query
-          # TODO Figure out a better solution
-          members = group.indices.map { |i| "LT #{i}" }
-          members.push("GTE #{group.indices.last}")
-        else
-          rows.map { |row| row[group.as] }.compact.uniq.sort { |a, b| group_member_label(group, a) <=> group_member_label(group, b) }
-        end
+      # If the group has indices, we want to maintain the order of the
+      # indices as they were defined
+      if group.indices
+        # These strings match how these groups are being created in the query
+        # TODO Figure out a better solution
+        members = group.indices.map { |i| i.to_s }
+        members.push(Compositions::Components::Group::TERMINATOR_INDEX)
+      else
+        rows
+          .map { |row| row[group.as] } # Map each row to the member descriptor for this group
+          .compact
+          .uniq
+          # TODO It likely makes sense to move this sorting to the view, so it
+          # can reflect the final label
+          .sort { |a, b| group_member_exhibition(group, a) <=> group_member_exhibition(group, b) }
       end
     end
 
-    def group_1_unique_members
-      @group_1_unique_members ||= group_unique_members(0)
+    def group_1_unique_member_descriptors
+      @group_1_unique_member_descriptors ||= unique_group_member_descriptors(@composition.groups[0])
     end
 
-    def group_2_unique_members
-      @group_2_unique_members ||= group_unique_members(1)
+    def group_2_unique_member_descriptors
+      @group_2_unique_member_descriptors ||= unique_group_member_descriptors(@composition.groups[1])
     end
 
     ##
-    # Return the display label for the given group member. In some cases this
-    # will simply return the member itself. If the dimension involved defines
-    # an exhibit property, this will look through the result data to find the
-    # value for that property associated with the given member.
+    # Return the resolved exhibition value for the given group member
+    # descriptor. In some cases this will simply return the descriptor itself.
+    # If the dimension involved defines an exhibit property, this will look
+    # through the result data to find the value for that property associated
+    # with the given member.
     #
-    # For example, if the group's dimension is podcast_id, the member will be
-    # an ID number like 123. This would look for the podcast_name value
+    # For example, if the group's dimension is podcast_id, the descriptor will
+    # be an ID number like 123. This would look for the podcast_name value
     # associated with podcast 123, since podcast_name is the exhibit property
     # of podcast_id.
+    #
+    # This is intended to translate a member descriptor to an exhibition once
+    # you **already know** things are unique. After this translation, unique
+    # descriptors may become the same exhibitions.
 
-    def group_member_label(group, member)
+    def group_member_exhibition(group, member_descriptor)
       dimension_def = DataSchema.dimensions[group.dimension.to_s]
 
       if dimension_def.has_key?("ExhibitProperty")
@@ -230,17 +242,17 @@ module Results
         prop_as = :"#{group.as}_#{exhibit_property_name}"
 
         # Look for any row in the results that include the original member
-        sample_row = rows.find { |row| row[group.as] == member }
+        sample_row = rows.find { |row| row[group.as] == member_descriptor }
 
         # That row will also have the exhibit property value that we're looking
         # for
         exhibit_value = sample_row[prop_as]
 
         # If for some reason the exhibt value did't come back as something
-        # useful, fallback to the member value
-        exhibit_value.blank? ? member : exhibit_value
+        # useful, fallback to the member descriptor
+        exhibit_value.blank? ? member_descriptor : exhibit_value
       else
-        member
+        member_descriptor
       end
     end
   end

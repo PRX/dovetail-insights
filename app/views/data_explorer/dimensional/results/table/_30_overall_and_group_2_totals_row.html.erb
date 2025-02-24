@@ -17,13 +17,13 @@
     <% end %>
   <% end %>
 
-  <% @expand_group_2_members.each do |group_2_member| %>
+  <% @expand_group_2_member_descriptors.each do |group_2_member_descriptor| %>
     <% @composition.metrics.each do |metric| %>
       <%# Don't display a total for this group 2 member if group 1 is not summable for this metric %>
       <% if !@composition.groups[0] || @composition.groups[0]&.summable?(metric) %>
-        <% total = @composition.results.get_total(metric, @composition.groups[1], group_2_member) %>
-        <% min = @composition.results.get_min(metric, @composition.groups[1], group_2_member) %>
-        <% max = @composition.results.get_max(metric, @composition.groups[1], group_2_member) %>
+        <% total = @composition.results.get_total(metric, @composition.groups[1], group_2_member_descriptor) %>
+        <% min = @composition.results.get_min(metric, @composition.groups[1], group_2_member_descriptor) %>
+        <% max = @composition.results.get_max(metric, @composition.groups[1], group_2_member_descriptor) %>
         <% range = (max||0) - (min||0) %>
 
         <% title = "Min: #{number_with_delimiter(min)}\nMax: #{number_with_delimiter(max)}\nRange: #{number_with_delimiter(range)}" %>
