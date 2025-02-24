@@ -1,7 +1,5 @@
 <tr class="metrics-headers">
-  <% if @tbl_show_group_1_headers %>
-    <td></td>
-  <% end %>
+  <%= tag.td if @tbl_show_group_1_headers %>
 
   <% if @tbl_show_group_1_totals %>
     <% @composition.metrics.each do |metric| %>

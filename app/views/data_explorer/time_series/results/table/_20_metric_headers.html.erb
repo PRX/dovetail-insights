@@ -1,6 +1,6 @@
 <tr>
-  <% if @tbl_show_group_1_headers %><td></td><% end %>
-  <% if @tbl_show_group_2_headers %><td></td><% end %>
+  <%= tag.td if @tbl_show_group_1_headers %>
+  <%= tag.td if @tbl_show_group_2_headers %>
 
   <% @composition.results.granularity_unique_members.each do |_| %>
     <% @composition.metrics.each do |metric| %>
