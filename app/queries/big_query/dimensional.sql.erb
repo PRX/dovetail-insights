@@ -120,9 +120,9 @@ downloads_in_range AS (
       group.abs_indices.each_with_index do |i, idx|
         if dimension_def["BigQuery"]["Type"] == "TIMESTAMP"
           # Wrap TIMESTAMPS in quotes
-          cases << "WHEN #{selector} < '#{i}' THEN '#{group.indices[idx]}'"
+          cases << "WHEN #{selector} < '#{i}' THEN '#{group.abs_indices[idx]}'"
         else
-          cases << "WHEN #{selector} < #{i} THEN '#{group.indices[idx]}'"
+          cases << "WHEN #{selector} < #{i} THEN '#{group.abs_indices[idx]}'"
         end
       end
 
