@@ -21,6 +21,13 @@ module Results
         # more info like "extract" and "HOUR" if necesasry
         @composition.groups.each do |group|
           headers << group.dimension
+
+          dimension_def = DataSchema.dimensions[group.dimension.to_s]
+          if dimension_def.has_key?("ExhibitProperty")
+            exhibit_property_name = dimension_def["ExhibitProperty"]
+
+            headers << exhibit_property_name
+          end
         end
 
         # Add a column for each metric (1 or more)
@@ -41,7 +48,13 @@ module Results
           csv << row
         elsif @composition.groups.size == 1
           group_1_unique_member_descriptors.each do |member|
-            row = [group_member_exhibition(@composition.groups[0], member)]
+            row = []
+            row << member
+
+            dimension_def = DataSchema.dimensions[@composition.groups[0].dimension.to_s]
+            if dimension_def.has_key?("ExhibitProperty")
+              row << group_member_exhibition(@composition.groups[0], member)
+            end
 
             # Add values for each metric for this group
             @composition.metrics.each do |metric|
@@ -61,7 +74,9 @@ module Results
           group_1_unique_member_descriptors.each do |group_1_member_descriptor|
             group_2_unique_member_descriptors.each do |group_2_member_descriptor|
               row = []
+              row << group_1_member_descriptor
               row << group_member_exhibition(@composition.groups[0], group_1_member_descriptor)
+              row << group_2_member_descriptor
               row << group_member_exhibition(@composition.groups[1], group_2_member_descriptor)
 
               @composition.metrics.each do |metric|
