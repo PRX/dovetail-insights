@@ -8,7 +8,7 @@
   data-data-explorer--composition-url-target="groupChooser">
   <legend>Group <%= i %></legend>
 
-  <label <%= html_attributes(for: "group.#{i}") %>>Group By</label>
+  <label for="<%= "group.#{i}" %>">Group By</label>
   <select class="dimension" <%= html_attributes(id: "group.#{i}", name: "group.#{i}") %>>
     <option value=""></option>
 
@@ -16,7 +16,7 @@
       <% dim_key = dimension_def["QueryKey"] || dimension_name %>
       <option
         data-dimension-type="<%= dimension_def["Type"] %>"
-        <%= html_attributes(value: dim_key) %>
+        value="<%= dim_key %>"
         <%= html_attributes(selected: "selected") if params["group.#{i}"] == dim_key %>>
         <%= dim_key %>
       </option>
@@ -24,15 +24,17 @@
   </select>
 
   <div class="timestamp-options">
-    <select class="mode-chooser" <%= html_attributes(name: "group.#{i}.timestamp-mode") %>>
+    <select class="mode-chooser" name="<%= "group.#{i}.timestamp-mode" %>">
       <option value="range">Range</option>
       <option value="truncate" <%= html_attributes(selected: "selected") if group&.truncate %>>Truncate</option>
       <option value="extract" <%= html_attributes(selected: "selected") if group&.extract %>>Extract</option>
     </select>
 
-    <select class="extract-options" <%= html_attributes(name: "group.#{i}.extract") %>>
+    <select class="extract-options" name="<%= "group.#{i}.extract" %>">
       <option></option>
 
+      <%# If the group has a extract value we don't recognize, add an option %>
+      <%# for it, to help with error messages %>
       <% unless Compositions::Components::Group::EXTRACT_OPTS.include?(group&.extract) %>
         <option selected><%= group&.extract %></option>
       <% end %>
@@ -42,15 +44,17 @@
       <% end %>
     </select>
 
-    <select class="truncate-options" <%= html_attributes(name: "group.#{i}.truncate") %>>
+    <select class="truncate-options" name="<%= "group.#{i}.truncate" %>">
       <option></option>
 
+      <%# If the group has a truncate value we don't recognize, add an option %>
+      <%# for it, to help with error messages %>
       <% unless Compositions::Components::Group::TRUNCATE_OPTS.include?(group&.truncate) %>
         <option selected><%= group&.truncate %></option>
       <% end %>
 
       <% Compositions::Components::Group::TRUNCATE_OPTS.each do |part| %>
-        <option <%= html_attributes(value: part) %> <%= html_attributes(selected: "selected") if group&.truncate == part %>><%= part.to_s.humanize %></option>
+        <option value="<%= part %>" <%= html_attributes(selected: "selected") if group&.truncate == part %>><%= t "groups.truncate.display.#{part}" %></option>
       <% end %>
     </select>
 
