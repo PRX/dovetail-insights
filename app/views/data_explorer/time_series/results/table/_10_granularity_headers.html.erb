@@ -3,10 +3,12 @@
   <%= tag.td if @tbl_show_group_2_headers %>
 
   <%# A cell for each granularity period, spanning all metrics and comparisons %>
-  <% @composition.results.granularity_unique_members.each do |member| %>
-
-    <th colspan="<%= @tbl_cols_per_granularity_memeber %>">
-      <%= granularity_label(@composition, member) %>
+  <% @composition.results.granularity_unique_member_descriptors.each do |member_descriptor| %>
+    <th
+      data-member-descriptor="<%= member_descriptor %>"
+      data-member-label="<%= granularity_label(@composition, member_descriptor) %>"
+      colspan="<%= @tbl_cols_per_granularity_memeber %>">
+      <%= granularity_label(@composition, member_descriptor) %>
     </th>
   <% end %>
 </tr>

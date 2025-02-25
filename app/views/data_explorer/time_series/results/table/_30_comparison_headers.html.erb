@@ -2,7 +2,7 @@
   <%= tag.td if @tbl_show_group_1_headers %>
   <%= tag.td if @tbl_show_group_2_headers %>
 
-  <% @composition.results.granularity_unique_members.each do |_| %>
+  <% @composition.results.granularity_unique_member_descriptors.each do |_| %>
     <% @composition.metrics.each do |metric| %>
       <% @composition.comparisons.each do |comparison| %>
         <% comparison.lookback.times do |i| %>

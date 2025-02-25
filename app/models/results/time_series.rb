@@ -3,7 +3,7 @@ module Results
     attr_accessor :comparison_row_sets
 
     # TODO This should be able to fill in gaps
-    def granularity_unique_members
+    def granularity_unique_member_descriptors
       @rows.map { |row| row[@composition.granularity_as] }.compact.uniq.sort
     end
 
