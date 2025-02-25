@@ -1,6 +1,6 @@
 module IntervalLabelHelper
   ##
-  # Takes a granularity descriptor and returns a formatted string
+  # Takes an interval descriptor and returns a formatted string
   # representation suitable for displaying within the results.
   #
   # For example, the descriptor may be a string like "2023-01-01T12:34:56T"
