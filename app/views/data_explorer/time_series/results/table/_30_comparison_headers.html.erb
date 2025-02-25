@@ -10,7 +10,7 @@
           <%# and -1 for the loops. So when i=0, lookback=-3, and i=1 l=-2 %>
           <% rewind = -(comparison.lookback - i) %>
 
-          <th><%= comparison_label(comparison, member_descriptor, rewind) %></th>
+          <th><%= granularity_label(@composition, comparison_label(comparison, member_descriptor, rewind)) %></th>
         <% end %>
       <% end %>
 
