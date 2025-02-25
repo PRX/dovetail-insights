@@ -31,7 +31,6 @@ module DataExplorerHelper
   end
 
   def group_table_header_tag(composition, group, member_descriptor, th_scope, skip_content = false)
-    # TODO support <th> scope
     opts = {
       colspan: (th_scope == :colgroup) ? composition.metrics.size : 1,
       scope: th_scope,

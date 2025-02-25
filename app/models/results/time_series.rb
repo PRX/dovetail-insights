@@ -2,9 +2,11 @@ module Results
   class TimeSeries < Dimensional
     # A hash where each key is some comparison, and the value is an array of
     # the all the query job datas.
-    # { yoy: [ 2022_rows, 2023_rows, 2024_rows ] }
+    # { YoY: [ 2022_rows, 2023_rows, 2024_rows ] }
     attr_accessor :comparison_results
 
+    ##
+    # These are things like Date, DateTime, etc. **Not strings**.
     # TODO This should be able to fill in gaps
     def granularity_unique_member_descriptors
       @rows.map { |row| row[@composition.granularity_as] }.compact.uniq.sort

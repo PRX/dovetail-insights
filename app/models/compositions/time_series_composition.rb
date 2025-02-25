@@ -35,7 +35,7 @@ module Compositions
 
     validates :granularity, presence: true
     validate :rolling_must_have_window, :window_only_supported_with_rolling, :window_is_supported
-    validate :each_comparions_is_valid, :comparisons_are_unique, :comparison_count_is_correct
+    validate :each_comparison_is_valid, :comparisons_are_unique, :comparison_count_is_correct
     validates :granularity, inclusion: {in: [:daily, :weekly, :monthly, :quarterly, :yearly, :rolling], message: "is not a supported value"}
     validate :comparisons_are_supported_granularity
     validate :rolling_uniques_period_exceeds_interval
@@ -92,7 +92,6 @@ module Compositions
     # query for each lookback interval.
 
     def results
-      # TODO Refactor
       return unless valid?
 
       return @results if @results
@@ -249,7 +248,7 @@ module Compositions
       end
     end
 
-    def each_comparions_is_valid
+    def each_comparison_is_valid
       (comparisons || []).each do |comparison|
         unless comparison.valid?
           comparison.errors.each do |e|
