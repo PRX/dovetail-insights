@@ -24,6 +24,6 @@
 
 <fieldset>
   <legend>Current Time Range</legend>
-  <p>From: <%= @composition.abs_from %></p>
-  <p>To: <%= @composition.abs_to %></p>
+  <p>From: <%= @composition.abs_from&.strftime("%Y-%m-%dT%H:%M:%SZ") %></p>
+  <p>To: <%= @composition.abs_to&.strftime("%Y-%m-%dT%H:%M:%SZ") %></p>
 </fieldset>
