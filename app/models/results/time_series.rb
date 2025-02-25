@@ -28,11 +28,10 @@ module Results
       when :monthly
         composition.abs_to.beginning_of_month
       when :quarterly
-      # TODO
+        composition.abs_to.beginning_of_quarter
       when :yearly
         Time.new(composition.abs_to.year, 1, 1)
       when :rolling
-        # TODO May not be correct
         composition.abs_to
       end
 
@@ -51,7 +50,7 @@ module Results
         when :monthly
           current_grain.advance(months: -1)
         when :quarterly
-          # TODO
+          current_grain.advance(months: -3)
         when :yearly
           current_grain.advance(years: -1)
         when :rolling
