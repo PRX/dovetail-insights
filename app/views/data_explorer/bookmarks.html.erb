@@ -13,3 +13,27 @@
   <li><a href="/data-explorer?lens=timeSeries&from=now-3/M&to=now&filter.podcast=include&filter.podcast.values=224,332,187,30,59,143,3723,287,8013,2238,366,26,2073,3492,231,274,232,35,135,72,93,25,98,36,4944,380,97,52,282,4548,1116,3&granularity=monthly&metrics=downloads&group.1=podcast">Monthly downloads for all Radiotopia shows</a></li>
   <li><a href="/data-explorer?lens=dimensional&from=now-2/Y&to=now-1/Y&filter.podcast=include&filter.podcast.values=&metrics=downloads&group.1=published&group.1.extract=year&group.2=time&group.2.extract=year">Dowloads by year and year the episode was published</a></li>
 </ul>
+
+
+<h3>Smoke tests</h3>
+<ul>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=downloads">Dimensional: 0 groups, 1 metric</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=downloads,uniques">Dimensional: 0 groups, 2+ metrics</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=downloads&group.1=continent">Dimensional: 1 groups, 1 metrics</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=downloads,uniques&group.1=continent">Dimensional: 1 groups, 2+ metricd</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=downloads&group.1=continent&group.2=device">Dimensional: 2 groups, 1 metric</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=downloads,uniques&group.1=continent&group.2=device">Dimensional: 2 groups, 2+ metrics</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads">Time Series: Daily, 0 groups, 1 metric, 0 comparisons</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads,uniques">Time Series: Daily, 0 groups, 2+ metrics, 0 comparisons</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads&group.1=continent">Time Series: Daily, 1 group, 1 metric, 0 comparisons</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads,uniques&group.1=continent">Time Series: Daily, 1 group, 2+ metrics, 0 comparisons</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads&group.1=continent&group.2=device">Time Series: Daily, 2 groups, 1 metric, 0 comparisons</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads&group.1=continent&group.2=device">Time Series: Daily, 2 groups, 2+ metrics, 0 comparisons</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads&compare.WoW=1">Time Series: Daily, 0 groups, 1 metric, 1 comparison</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads&compare.WoW=1">Time Series: Daily, 0 groups, 2+ metrics, 1 comparison</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads&group.1=continent&compare.WoW=1">Time Series: Daily, 1 group, 1 metric, 1 comparison</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads,uniques&group.1=continent&compare.WoW=1">Time Series: Daily, 1 group, 2+ metrics, 1 comparison</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads&group.1=continent&group.2=device&compare.WoW=1">Time Series: Daily, 2 groups, 1 metric, 1 comparison</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=downloads,uniques&group.1=continent&group.2=device&compare.WoW=1">Time Series: Daily, 2 groups, 2+ metrics, 1 comparison</a></li>
+  <li><a href="/data-explorer?lens=timeSeries&from=2025-02-22T00:00:00Z&to=2025-02-26T00:00:00Z&filter.podcast=include&filter.podcast.values=3&filter.country=include&filter.country.values=AI&granularity=daily&metrics=downloads">Time Series: with missing intervals</a></li>
+</ul>
