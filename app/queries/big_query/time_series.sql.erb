@@ -32,7 +32,7 @@
         if join_def["Key"]
           all_joins << "#{bq["Join"]} JOIN #{bq["Table"]} AS #{table_name} ON #{table_name}.#{bq["Key"]} = #{join_table_name}.#{join_def["Key"]}"
         elsif join_def["Expression"]
-          # TODO For joins that are not based on keys, like RANGE_CONTAINS
+          all_joins << "#{bq["Join"]} JOIN #{bq["Table"]} AS #{table_name} ON #{join_def["Expression"]}"
         end
       end
     end
