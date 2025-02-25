@@ -28,7 +28,10 @@
 
         <% title = "Min: #{number_with_delimiter(min)}\nMax: #{number_with_delimiter(max)}\nRange: #{number_with_delimiter(range)}" %>
 
-        <td title="<%= title %>"><%= number_with_delimiter total %></td>
+        <td
+          data-highlight-metric="<%= metric.metric %>"
+          data-highlight-group-2="<%= group_2_member_descriptor || "__nil__" %>"
+          title="<%= title %>"><%= number_with_delimiter total %> <button data-action="data-explorer--results-table-sort#sort">O</button></td>
       <% else %>
         <% title = "When grouping by #{@composition.groups[0]&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting." %>
 
