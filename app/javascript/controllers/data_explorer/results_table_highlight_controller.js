@@ -179,13 +179,40 @@ export default class extends Controller {
             );
           });
         });
+      } else if (spectrumsOpt === "per_metric_group_1_group_2_delta") {
+        const uniqMetrics = new Set(
+          [...allCells].map((c) => c.dataset.highlightMetric),
+        );
+
+        const uniqGroup1Members = new Set(
+          [...allCells].map((c) => c.getAttribute("data-highlight-group-1")),
+        );
+
+        const uniqGroup2Members = new Set(
+          [...allCells].map((c) => c.getAttribute("data-highlight-group-2")),
+        );
+
+        uniqMetrics.forEach((metric) => {
+          uniqGroup1Members.forEach((group1Member) => {
+            uniqGroup2Members.forEach((group2Member) => {
+              spectrumCellSets.push(
+                resultsTable.querySelectorAll(
+                  `td[data-highlight-metric="${metric}"][data-highlight-group-1="${group1Member}"][data-highlight-group-2="${group2Member}"]`,
+                ),
+              );
+            });
+          });
+        });
       }
 
       resultsTable.querySelectorAll("td").forEach((cell) => {
         cell.style.background = `hsla(0 0% 0% / 0)`;
       });
 
-      if (spectrumsOpt === "per_metric_group_1_delta") {
+      if (
+        spectrumsOpt === "per_metric_group_1_delta" ||
+        spectrumsOpt === "per_metric_group_1_group_2_delta"
+      ) {
         this.highlightDeltas(spectrumCellSets);
       } else {
         this.highlightValues(spectrumCellSets);
