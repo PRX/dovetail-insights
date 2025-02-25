@@ -35,7 +35,8 @@ module GroupMemberLabelHelper
   end
 
   ##
-  # Returns a label for a single durating range within a set of defined ranges.
+  # Takes a group member descriptor, which will be a number, for a duration
+  # range and returns a string that describes that range in words.
 
   def duration_label(composition, group, member_descriptor)
     index_of_index = group.indices.index(member_descriptor.to_i)
@@ -50,8 +51,9 @@ module GroupMemberLabelHelper
   end
 
   ##
-  # Formats groups resulting from extacted Timestamp dimensions into more
-  # human-readable strings
+  # Takes a group member descriptor for an timestamp extraction group, which
+  # will be a number (like 1 for Sunday, or 13 for hour, or 2025 for year) and
+  # returns a formatted string suitable for displaying to the user
 
   def timestamp_extract_label(composition, group, member_descriptor)
     case group.extract
@@ -69,7 +71,8 @@ module GroupMemberLabelHelper
   end
 
   ##
-  # Returns a label for a single time/date range within a set of defined ranges.
+  # Takes a group member descriptor for a single timestamp range, which will be
+  # a timestamp string, and returns a string that describes that range in words
 
   def timestamp_range_label(composition, group, member_descriptor)
     index_of_index = group.abs_indices.index(member_descriptor)
@@ -84,7 +87,9 @@ module GroupMemberLabelHelper
   end
 
   ##
-  # tktk
+  # Takes a group member descriptor for a truncated timestamp, which will be a
+  # timestamp string, and returns a reformatted string suitable for displaying
+  # to the user
 
   def timestamp_truncate_label(composition, group, member_descriptor)
     case group.truncate
@@ -124,6 +129,10 @@ module GroupMemberLabelHelper
   # duration descriptors are replaced to be more meaningful and readible. Other
   # time, an individual value may need to be replaced before being displayed to
   # the user, like we may want to override the name of a specific user agent.
+  #
+  # When member_descriptor is nil, this is being used to label data that is not
+  # associated with any member of the group (e.g., downloads that don't have a
+  # country, because we didn't determine the origin).
 
   def member_label(composition, group, member_descriptor)
     return "UNKNOWN" unless member_descriptor
