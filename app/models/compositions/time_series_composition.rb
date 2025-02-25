@@ -201,6 +201,7 @@ module Compositions
       @results = base_results
 
       # TODO Move this somewhere; should have a place to run a bunch of post-flight checks
+      # TODO Maybe some cases that need to be checked at the end as well
       warnings.add(:granularity, :partial, message: "results in period that extends beyond the time range") if @results.granularity_unique_members[0] < abs_from
 
       @results
