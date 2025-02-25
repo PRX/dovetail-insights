@@ -141,7 +141,7 @@ export default class extends Controller {
             );
           });
         });
-      } else if (spectrumsOpt === "per_metric_granularity") {
+      } else if (spectrumsOpt === "per_metric_interval") {
         const uniqMetrics = new Set(
           [...allCells].map((c) => c.dataset.highlightMetric),
         );

@@ -67,9 +67,9 @@ module Results
       descriptors.reverse.filter { |m| m < composition.abs_to }
     end
 
-    def get_value(metric, interval, group1_member = false, group2_member = false)
+    def get_value(metric, interval_descriptor, group1_member = false, group2_member = false)
       row = @rows.find do |row|
-        granularity_test = row[composition.granularity_as] == interval
+        granularity_test = row[composition.granularity_as] == interval_descriptor
 
         g1_test = true
         g2_test = true
@@ -100,8 +100,8 @@ module Results
       end
     end
 
-    def get_value_comparison(comparison, rewind, metric, interval, group1_member = false, group2_member = false)
-      return get_value(metric, interval, group1_member, group2_member) unless comparison
+    def get_value_comparison(comparison, rewind, metric, interval_descriptor, group1_member = false, group2_member = false)
+      return get_value(metric, interval_descriptor, group1_member, group2_member) unless comparison
 
       results_for_this_comparison = comparison_results[comparison.period]
 
@@ -112,17 +112,19 @@ module Results
 
       rows_for_this_lookback = results_for_this_comparison[idx]
 
+      interval_timestamp = Time.parse(interval_descriptor)
+
       row = rows_for_this_lookback.find do |row|
         comparison_member = case comparison.period
         when :YoY
-          interval.advance(years: rewind)
+          interval_timestamp.advance(years: rewind)
         when :QoQ
-          interval.advance(months: 3 * rewind)
+          interval_timestamp.advance(months: 3 * rewind)
         when :WoW
-          interval.advance(weeks: rewind)
+          interval_timestamp.advance(weeks: rewind)
         end
 
-        granularity_test = row[composition.granularity_as] == comparison_member
+        granularity_test = row[composition.granularity_as] == comparison_member.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         g1_test = true
         g2_test = true
@@ -139,25 +141,27 @@ module Results
       row && row[metric.as]
     end
 
-    def get_total_comparison(comparison, rewind, metric, interval)
-      if interval
+    def get_total_comparison(comparison, rewind, metric, interval_descriptor)
+      if interval_descriptor
         results_for_this_comparison = comparison_results[comparison.period]
 
         idx = comparison.lookback + rewind
 
         rows_for_this_lookback = results_for_this_comparison[idx]
 
+        interval_timestamp = Time.parse(interval_descriptor)
+
         (rows_for_this_lookback.filter do |row|
           comparison_member = case comparison.period
           when :YoY
-            interval.advance(years: rewind)
+            interval_timestamp.advance(years: rewind)
           when :QoQ
-            interval.advance(months: 3 * rewind)
+            interval_timestamp.advance(months: 3 * rewind)
           when :WoW
-            interval.advance(weeks: rewind)
+            interval_timestamp.advance(weeks: rewind)
           end
 
-          row[composition.granularity_as] == comparison_member
+          row[composition.granularity_as] == comparison_member.strftime("%Y-%m-%dT%H:%M:%SZ")
         end).inject(0) { |sum, row| sum + row[metric.as] }
       else
         # TODO Suppport overall metric totals?

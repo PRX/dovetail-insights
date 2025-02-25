@@ -2,7 +2,7 @@
   <%= tag.td if @tbl_show_group_1_headers %>
   <%= tag.td if @tbl_show_group_2_headers %>
 
-  <% @composition.results.unique_interval_descriptors.each do |member_descriptor| %>
+  <% @composition.results.unique_interval_descriptors.each do |interval_descriptor| %>
     <% @composition.metrics.each do |metric| %>
       <% @composition.comparisons.each do |comparison| %>
         <% comparison.lookback.times do |i| %>
@@ -10,11 +10,11 @@
           <%# and -1 for the loops. So when i=0, lookback=-3, and i=1 l=-2 %>
           <% rewind = -(comparison.lookback - i) %>
 
-          <th><%= interval_label(@composition, comparison_label(comparison, member_descriptor, rewind)) %></th>
+          <th><%= interval_label(@composition, comparison_descriptor(comparison, interval_descriptor, rewind)) %></th>
         <% end %>
       <% end %>
 
-      <th><%= interval_label(@composition, member_descriptor) %></th>
+      <th><%= interval_label(@composition, interval_descriptor) %></th>
     <% end %>
   <% end %>
 </tr>
