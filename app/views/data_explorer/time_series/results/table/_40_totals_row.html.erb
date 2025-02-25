@@ -5,8 +5,10 @@
   <% @composition.results.granularity_unique_member_descriptors.each do |granularity_member| %>
     <% @composition.metrics.each do |metric| %>
       <% @composition.comparisons.each do |comparison| %>
-        <% comparison.lookback.times do |i| %>
-          <td>tktk</td>
+        <% comparison.lookback.times do |j| %>
+          <% rewind = -(comparison.lookback - j) %>
+          <% total = @composition.results.get_total_comparison(comparison, rewind, metric, granularity_member) %>
+          <td><%= number_with_delimiter(total) %></td>
         <% end %>
       <% end %>
 

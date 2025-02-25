@@ -1,6 +1,9 @@
 module Results
   class TimeSeries < Dimensional
-    attr_accessor :comparison_row_sets
+    # A hash where each key is some comparison, and the value is an array of
+    # the all the query job datas.
+    # { yoy: [ 2022_rows, 2023_rows, 2024_rows ] }
+    attr_accessor :comparison_results
 
     # TODO This should be able to fill in gaps
     def granularity_unique_member_descriptors
@@ -35,27 +38,31 @@ module Results
       if granularity_member
         rows.filter { |row| row[@composition.granularity_as] == granularity_member }.inject(0) { |sum, row| sum + row[metric.as] }
       else
+        # TODO Suppport overall metric totals?
         # rows.inject(0) { |sum, row| sum + row[metric.as] }
       end
     end
 
-    def get_value_comparison(comparison, lookback, metric, granularity_member, group1_member = false, group2_member = false)
+    def get_value_comparison(comparison, rewind, metric, granularity_member, group1_member = false, group2_member = false)
       return get_value(metric, granularity_member, group1_member, group2_member) unless comparison
 
-      idx = @composition.comparisons.index(comparison)
+      results_for_this_comparison = comparison_results[comparison.period]
 
-      # +rows+ here will be the query result for a single lookback for a single
-      # comparison.
-      rows = comparison_row_sets[idx][lookback]
+      # When comparison.lookback=5, rewind will be something like -5, which
+      # is the first item in the array, so 5 + -5 = 0. The most recent comparison
+      # data will be rewind = -1, so 5 + -1 = 4
+      idx = comparison.lookback + rewind
 
-      row = rows.find do |row|
+      rows_for_this_lookback = results_for_this_comparison[idx]
+
+      row = rows_for_this_lookback.find do |row|
         comparison_member = case comparison.period
         when :YoY
-          granularity_member.advance(years: lookback)
+          granularity_member.advance(years: rewind)
         when :QoQ
-          granularity_member.advance(months: 3 * lookback)
+          granularity_member.advance(months: 3 * rewind)
         when :WoW
-          granularity_member.advance(weeks: lookback)
+          granularity_member.advance(weeks: rewind)
         end
 
         granularity_test = row[@composition.granularity_as] == comparison_member
@@ -73,6 +80,32 @@ module Results
       end
 
       row && row[metric.as]
+    end
+
+    def get_total_comparison(comparison, rewind, metric, granularity_member)
+      if granularity_member
+        results_for_this_comparison = comparison_results[comparison.period]
+
+        idx = comparison.lookback + rewind
+
+        rows_for_this_lookback = results_for_this_comparison[idx]
+
+        (rows_for_this_lookback.filter do |row|
+          comparison_member = case comparison.period
+          when :YoY
+            granularity_member.advance(years: rewind)
+          when :QoQ
+            granularity_member.advance(months: 3 * rewind)
+          when :WoW
+            granularity_member.advance(weeks: rewind)
+          end
+
+          row[@composition.granularity_as] == comparison_member
+        end).inject(0) { |sum, row| sum + row[metric.as] }
+      else
+        # TODO Suppport overall metric totals?
+        # rows.inject(0) { |sum, row| sum + row[metric.as] }
+      end
     end
   end
 end

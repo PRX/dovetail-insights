@@ -12,8 +12,8 @@
       @composition.metrics.each do |metric|
         @composition.comparisons.each do |comparison|
           comparison.lookback.times do |i|
-            lookback = -(comparison.lookback - i)
-            value = @composition.results.get_value_comparison(comparison, lookback, metric, granularity_member, group_1_member_descriptor, group_2_member_descriptor)
+            rewind = -(comparison.lookback - i)
+            value = @composition.results.get_value_comparison(comparison, rewind, metric, granularity_member, group_1_member_descriptor, group_2_member_descriptor)
 
             values << value
           end
