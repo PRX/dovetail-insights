@@ -1,4 +1,4 @@
-module GranularityMemberLabelHelper
+module IntervalLabelHelper
   ##
   # Takes a granularity descriptor and returns a formatted string
   # representation suitable for displaying within the results.
@@ -8,9 +8,9 @@ module GranularityMemberLabelHelper
   # selected _yearly_ grouping. This will return +"2023"+, based on that chosen
   # granularity.
 
-  def granularity_label(composition, member_descriptor)
+  def interval_label(composition, interval_descriptor)
     # Parse the given descriptor into a Time
-    time = Time.parse(member_descriptor)
+    time = Time.parse(interval_descriptor)
 
     # Compose an appropriately formatted string based on the chosen granularity
     case composition.granularity
@@ -28,9 +28,9 @@ module GranularityMemberLabelHelper
     when :yearly
       time.strftime("%Y")
     when :rolling
-      "#{human_duration composition.window} starting #{compact_timestamp_string member_descriptor}"
+      "#{human_duration composition.window} starting #{compact_timestamp_string interval_descriptor}"
     else
-      member_descriptor
+      interval_descriptor
     end
   end
 end

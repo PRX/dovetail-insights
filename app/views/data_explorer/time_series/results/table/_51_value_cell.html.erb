@@ -1,8 +1,8 @@
-<% value = @composition.results.get_value_comparison(comparison, lookback, metric, granularity_member, group_1_member_descriptor, group_2_member_descriptor) %>
+<% value = @composition.results.get_value_comparison(comparison, lookback, metric, interval, group_1_member_descriptor, group_2_member_descriptor) %>
 
 <td
   data-highlight-metric="<%= metric.metric %>"
-  data-highlight-granularity="<%= granularity_member %>"
+  data-highlight-interval="<%= interval %>"
   data-highlight-group-1="<%= group_1_member_descriptor %>"
   data-highlight-group-2="<%= group_2_member_descriptor %>"
   data-highlight-comparison="<%= "#{comparison&.period}-#{lookback}" %>"

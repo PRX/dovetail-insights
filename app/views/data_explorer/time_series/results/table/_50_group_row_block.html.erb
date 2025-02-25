@@ -8,18 +8,18 @@
     # if not
     values = []
 
-    @composition.results.granularity_unique_member_descriptors.each do |granularity_member|
+    @composition.results.unique_interval_descriptors.each do |interval|
       @composition.metrics.each do |metric|
         @composition.comparisons.each do |comparison|
           comparison.lookback.times do |i|
             rewind = -(comparison.lookback - i)
-            value = @composition.results.get_value_comparison(comparison, rewind, metric, granularity_member, group_1_member_descriptor, group_2_member_descriptor)
+            value = @composition.results.get_value_comparison(comparison, rewind, metric, interval, group_1_member_descriptor, group_2_member_descriptor)
 
             values << value
           end
         end
 
-        values << @composition.results.get_value(metric, granularity_member, group_1_member_descriptor, group_2_member_descriptor)
+        values << @composition.results.get_value(metric, interval, group_1_member_descriptor, group_2_member_descriptor)
       end
     end
 
@@ -35,18 +35,18 @@
 
       <%= group_table_header_tag(@composition, @composition.groups[1], group_2_member_descriptor, :row) if @tbl_show_group_2_headers %>
 
-      <% @composition.results.granularity_unique_member_descriptors.each do |granularity_member| %>
+      <% @composition.results.unique_interval_descriptors.each do |interval| %>
         <% @composition.metrics.each do |metric| %>
           <% @composition.comparisons.each do |comparison| %>
             <% comparison.lookback.times do |i| %>
               <%# if +comparison.lookback+ is 3, +lookback+ should be -3, -2, %>
               <%# and -1 for the loops. So when i=0, lookback=-3, and i=1 l=-2 %>
               <% lookback = -(comparison.lookback - i) %>
-              <%= render partial: "data_explorer/time_series/results/table/51_value_cell", locals: {comparison: comparison, lookback: lookback, metric: metric, granularity_member: granularity_member, group_1_member_descriptor: group_1_member_descriptor, group_2_member_descriptor: group_2_member_descriptor} %>
+              <%= render partial: "data_explorer/time_series/results/table/51_value_cell", locals: {comparison: comparison, lookback: lookback, metric: metric, interval: interval, group_1_member_descriptor: group_1_member_descriptor, group_2_member_descriptor: group_2_member_descriptor} %>
             <% end %>
           <% end %>
 
-          <%= render partial: "data_explorer/time_series/results/table/51_value_cell", locals: {comparison: nil, lookback: nil, metric: metric, granularity_member: granularity_member, group_1_member_descriptor: group_1_member_descriptor, group_2_member_descriptor: group_2_member_descriptor} %>
+          <%= render partial: "data_explorer/time_series/results/table/51_value_cell", locals: {comparison: nil, lookback: nil, metric: metric, interval: interval, group_1_member_descriptor: group_1_member_descriptor, group_2_member_descriptor: group_2_member_descriptor} %>
         <% end %>
       <% end %>
     </tr>

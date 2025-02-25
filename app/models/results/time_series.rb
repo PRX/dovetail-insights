@@ -15,7 +15,7 @@ module Results
     #
     # These descriptors are always strings like "2023-01-01T12:34:56Z"
 
-    def granularity_unique_member_descriptors
+    def unique_interval_descriptors
       # Keeping this here for checking actual values coming out of the query
       # return @rows.map { |row| row[composition.granularity_as] }.compact.uniq.sort
 
@@ -67,11 +67,9 @@ module Results
       descriptors.reverse.filter { |m| m < composition.abs_to }
     end
 
-    def get_value(metric, granularity_member, group1_member = false, group2_member = false)
+    def get_value(metric, interval, group1_member = false, group2_member = false)
       row = @rows.find do |row|
-        p "ROW  #{row[composition.granularity_as]}"
-        p "GEN #{granularity_member}"
-        granularity_test = row[composition.granularity_as] == granularity_member
+        granularity_test = row[composition.granularity_as] == interval
 
         g1_test = true
         g2_test = true
@@ -93,17 +91,17 @@ module Results
     # the total just for that member. If not, it will be the total for the
     # metric across the entire result.
 
-    def get_total(metric, granularity_member)
-      if granularity_member
-        rows.filter { |row| row[composition.granularity_as] == granularity_member }.inject(0) { |sum, row| sum + row[metric.as] }
+    def get_total(metric, inteval)
+      if inteval
+        rows.filter { |row| row[composition.granularity_as] == inteval }.inject(0) { |sum, row| sum + row[metric.as] }
       else
         # TODO Suppport overall metric totals?
         # rows.inject(0) { |sum, row| sum + row[metric.as] }
       end
     end
 
-    def get_value_comparison(comparison, rewind, metric, granularity_member, group1_member = false, group2_member = false)
-      return get_value(metric, granularity_member, group1_member, group2_member) unless comparison
+    def get_value_comparison(comparison, rewind, metric, interval, group1_member = false, group2_member = false)
+      return get_value(metric, interval, group1_member, group2_member) unless comparison
 
       results_for_this_comparison = comparison_results[comparison.period]
 
@@ -117,11 +115,11 @@ module Results
       row = rows_for_this_lookback.find do |row|
         comparison_member = case comparison.period
         when :YoY
-          granularity_member.advance(years: rewind)
+          interval.advance(years: rewind)
         when :QoQ
-          granularity_member.advance(months: 3 * rewind)
+          interval.advance(months: 3 * rewind)
         when :WoW
-          granularity_member.advance(weeks: rewind)
+          interval.advance(weeks: rewind)
         end
 
         granularity_test = row[composition.granularity_as] == comparison_member
@@ -141,8 +139,8 @@ module Results
       row && row[metric.as]
     end
 
-    def get_total_comparison(comparison, rewind, metric, granularity_member)
-      if granularity_member
+    def get_total_comparison(comparison, rewind, metric, interval)
+      if interval
         results_for_this_comparison = comparison_results[comparison.period]
 
         idx = comparison.lookback + rewind
@@ -152,11 +150,11 @@ module Results
         (rows_for_this_lookback.filter do |row|
           comparison_member = case comparison.period
           when :YoY
-            granularity_member.advance(years: rewind)
+            interval.advance(years: rewind)
           when :QoQ
-            granularity_member.advance(months: 3 * rewind)
+            interval.advance(months: 3 * rewind)
           when :WoW
-            granularity_member.advance(weeks: rewind)
+            interval.advance(weeks: rewind)
           end
 
           row[composition.granularity_as] == comparison_member

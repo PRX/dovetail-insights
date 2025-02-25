@@ -147,16 +147,14 @@ export default class extends Controller {
         );
 
         const uniqGranularityMembers = new Set(
-          [...allCells].map((c) =>
-            c.getAttribute("data-highlight-granularity"),
-          ),
+          [...allCells].map((c) => c.getAttribute("data-highlight-interval")),
         );
 
         uniqMetrics.forEach((metric) => {
           uniqGranularityMembers.forEach((member) => {
             spectrumCellSets.push(
               resultsTable.querySelectorAll(
-                `td[data-highlight-metric="${metric}"][data-highlight-granularity="${member}"]`,
+                `td[data-highlight-metric="${metric}"][data-highlight-interval="${member}"]`,
               ),
             );
           });

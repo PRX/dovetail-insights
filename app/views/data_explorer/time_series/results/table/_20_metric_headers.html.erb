@@ -2,7 +2,7 @@
   <%= tag.td if @tbl_show_group_1_headers %>
   <%= tag.td if @tbl_show_group_2_headers %>
 
-  <% @composition.results.granularity_unique_member_descriptors.each do |_| %>
+  <% @composition.results.unique_interval_descriptors.each do |_| %>
     <% @composition.metrics.each do |metric| %>
       <th colspan="<%= @tbl_cols_per_granularity_metric %>">
         <%= metric.metric %>

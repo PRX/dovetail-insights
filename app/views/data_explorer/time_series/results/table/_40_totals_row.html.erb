@@ -2,17 +2,17 @@
   <% if @tbl_show_group_1_headers %><th scope="row">TOTAL</th><% end %>
   <%= tag.td if @tbl_show_group_2_headers %>
 
-  <% @composition.results.granularity_unique_member_descriptors.each do |granularity_member| %>
+  <% @composition.results.unique_interval_descriptors.each do |interval| %>
     <% @composition.metrics.each do |metric| %>
       <% @composition.comparisons.each do |comparison| %>
         <% comparison.lookback.times do |j| %>
           <% rewind = -(comparison.lookback - j) %>
-          <% total = @composition.results.get_total_comparison(comparison, rewind, metric, granularity_member) %>
+          <% total = @composition.results.get_total_comparison(comparison, rewind, metric, interval) %>
           <td><%= number_with_delimiter(total) %></td>
         <% end %>
       <% end %>
 
-      <% total = @composition.results.get_total(metric, granularity_member)%>
+      <% total = @composition.results.get_total(metric, interval)%>
       <td><%= number_with_delimiter(total) %></td>
     <% end %>
   <% end %>
