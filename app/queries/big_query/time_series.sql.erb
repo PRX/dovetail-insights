@@ -136,7 +136,11 @@ downloads_in_range AS (
   selects = []
 
   if rolling?
+    # Use the raw range tuple as the source of truth for GROUP BY, but include
+    # the start of the range as a useful value we can use elsewhere to
+    # represent each group
     selects << "rolling_window_range AS #{granularity_as}_raw"
+    # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
     selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", RANGE_START(rolling_window_range), "UTC") AS #{granularity_as})
   else
     bq_granularity = case granularity
@@ -152,7 +156,8 @@ downloads_in_range AS (
       "YEAR"
     end
 
-    selects << "DATE(TIMESTAMP_TRUNC(downloads.timestamp, #{bq_granularity})) AS #{granularity_as}"
+    # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
+    selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", TIMESTAMP_TRUNC(downloads.timestamp, #{bq_granularity}), "UTC") AS #{granularity_as})
   end
 
   # Add SELECTs derived from the group selections and the modes they are
@@ -181,8 +186,9 @@ downloads_in_range AS (
         month: "MONTH",
         year: "YEAR"
       }[group.truncate]
-      # Format after truncating to get a format we are anticipating
-      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S %Ez", TIMESTAMP_TRUNC(#{selector}, #{truncate_arg}, "UTC"), "UTC") AS #{group.as})
+      # Format after truncating to get a format we are anticipating.
+      # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
+      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", TIMESTAMP_TRUNC(#{selector}, #{truncate_arg}, "UTC"), "UTC") AS #{group.as})
     elsif group.indices
       cases = []
 

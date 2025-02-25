@@ -19,7 +19,7 @@ module Results
         # Add a column for each group (zero or more)
         # TODO dimension is not meaningful enough on its own. Needs to include
         # more info like "extract" and "HOUR" if necesasry
-        @composition.groups.each do |group|
+        composition.groups.each do |group|
           headers << group.dimension
 
           dimension_def = DataSchema.dimensions[group.dimension.to_s]
@@ -31,33 +31,33 @@ module Results
         end
 
         # Add a column for each metric (1 or more)
-        @composition.metrics.each do |metric|
+        composition.metrics.each do |metric|
           headers << metric.metric
         end
 
         # Add row of headers
         csv << headers
 
-        if @composition.groups.size == 0
+        if composition.groups.size == 0
           row = []
 
-          @composition.metrics.each do |metric|
+          composition.metrics.each do |metric|
             row << get_value(metric, nil, nil)
           end
 
           csv << row
-        elsif @composition.groups.size == 1
+        elsif composition.groups.size == 1
           group_1_unique_member_descriptors.each do |member|
             row = []
             row << member
 
-            dimension_def = DataSchema.dimensions[@composition.groups[0].dimension.to_s]
+            dimension_def = DataSchema.dimensions[composition.groups[0].dimension.to_s]
             if dimension_def.has_key?("ExhibitProperty")
-              row << group_member_exhibition(@composition.groups[0], member)
+              row << group_member_exhibition(composition.groups[0], member)
             end
 
             # Add values for each metric for this group
-            @composition.metrics.each do |metric|
+            composition.metrics.each do |metric|
               row << get_value(metric, member, nil)
             end
 
@@ -66,20 +66,20 @@ module Results
 
           # Add values for each metric for groupless values
           row = ["UNKNOWN"]
-          @composition.metrics.each do |metric|
+          composition.metrics.each do |metric|
             row << get_value(metric, nil, nil)
           end
           csv << row
-        elsif @composition.groups.size == 2
+        elsif composition.groups.size == 2
           group_1_unique_member_descriptors.each do |group_1_member_descriptor|
             group_2_unique_member_descriptors.each do |group_2_member_descriptor|
               row = []
               row << group_1_member_descriptor
-              row << group_member_exhibition(@composition.groups[0], group_1_member_descriptor)
+              row << group_member_exhibition(composition.groups[0], group_1_member_descriptor)
               row << group_2_member_descriptor
-              row << group_member_exhibition(@composition.groups[1], group_2_member_descriptor)
+              row << group_member_exhibition(composition.groups[1], group_2_member_descriptor)
 
-              @composition.metrics.each do |metric|
+              composition.metrics.each do |metric|
                 row << get_value(metric, group_1_member_descriptor, group_2_member_descriptor)
               end
 
@@ -87,9 +87,9 @@ module Results
             end
 
             row = []
-            row << group_member_exhibition(@composition.groups[0], group_1_member_descriptor)
+            row << group_member_exhibition(composition.groups[0], group_1_member_descriptor)
             row << nil
-            @composition.metrics.each do |metric|
+            composition.metrics.each do |metric|
               row << get_value(metric, group_1_member_descriptor, nil)
             end
             csv << row
@@ -98,8 +98,8 @@ module Results
           group_2_unique_member_descriptors.each do |group_2_member_descriptor|
             row = []
             row << nil
-            row << group_member_exhibition(@composition.groups[1], group_2_member_descriptor)
-            @composition.metrics.each do |metric|
+            row << group_member_exhibition(composition.groups[1], group_2_member_descriptor)
+            composition.metrics.each do |metric|
               row << get_value(metric, nil, group_2_member_descriptor)
             end
             csv << row
@@ -108,7 +108,7 @@ module Results
           row = []
           row << nil
           row << nil
-          @composition.metrics.each do |metric|
+          composition.metrics.each do |metric|
             row << get_value(metric, nil, nil)
           end
           csv << row
@@ -137,11 +137,11 @@ module Results
         g1_test = true
         g2_test = true
 
-        g1_test = row[@composition.groups[0].as] == group1_member if group1_member
-        g2_test = row[@composition.groups[1].as] == group2_member if group2_member
+        g1_test = row[composition.groups[0].as] == group1_member if group1_member
+        g2_test = row[composition.groups[1].as] == group2_member if group2_member
 
-        g1_test = row[@composition.groups[0].as].nil? if group1_member.nil? && @composition.groups[0]
-        g2_test = row[@composition.groups[1].as].nil? if group2_member.nil? && @composition.groups[1]
+        g1_test = row[composition.groups[0].as].nil? if group1_member.nil? && composition.groups[0]
+        g2_test = row[composition.groups[1].as].nil? if group2_member.nil? && composition.groups[1]
 
         g1_test && g2_test
       end
@@ -217,11 +217,11 @@ module Results
     end
 
     def group_1_unique_member_descriptors
-      @group_1_unique_member_descriptors ||= unique_group_member_descriptors(@composition.groups[0])
+      @group_1_unique_member_descriptors ||= unique_group_member_descriptors(composition.groups[0])
     end
 
     def group_2_unique_member_descriptors
-      @group_2_unique_member_descriptors ||= unique_group_member_descriptors(@composition.groups[1])
+      @group_2_unique_member_descriptors ||= unique_group_member_descriptors(composition.groups[1])
     end
 
     ##

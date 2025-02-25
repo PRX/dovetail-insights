@@ -27,11 +27,11 @@ module GroupMemberLabelHelper
   end
 
   ##
-  # tktk
+  # Given a timestamp string like 2025-01-01T12:34:56Z, removes the time part
+  # of the string if it is midnight, returning just the date
 
-  def clean_timestamp_string(datetime)
-    # datetime is a DateTime
-    datetime.to_s.gsub("T00:00:00+00:00", "").gsub("T00:00:00Z", "")
+  def compact_timestamp_string(time_string)
+    time_string.gsub("T00:00:00Z", "")
   end
 
   ##
@@ -75,11 +75,25 @@ module GroupMemberLabelHelper
     index_of_index = group.abs_indices.index(member_descriptor)
 
     if member_descriptor == Compositions::Components::Group::TERMINATOR_INDEX
-      "After #{clean_timestamp_string group.abs_indices.last}"
+      "After #{compact_timestamp_string group.abs_indices.last}"
     elsif index_of_index == 0
-      "Before #{clean_timestamp_string member_descriptor}"
+      "Before #{compact_timestamp_string member_descriptor}"
     else
-      "Between #{clean_timestamp_string group.abs_indices[index_of_index - 1]} and #{clean_timestamp_string member_descriptor}"
+      "Between #{compact_timestamp_string group.abs_indices[index_of_index - 1]} and #{compact_timestamp_string member_descriptor}"
+    end
+  end
+
+  ##
+  # tktk
+
+  def timestamp_truncate_label(composition, group, member_descriptor)
+    case group.truncate
+    when :year
+      compact_timestamp_string member_descriptor
+    when :month
+      compact_timestamp_string member_descriptor
+    when :week
+      compact_timestamp_string member_descriptor
     end
   end
 
@@ -90,6 +104,8 @@ module GroupMemberLabelHelper
   def timestamp_label(composition, group, member_descriptor)
     if group.extract
       timestamp_extract_label(composition, group, member_descriptor)
+    elsif group.truncate
+      timestamp_truncate_label(composition, group, member_descriptor)
     elsif group.indices
       timestamp_range_label(composition, group, member_descriptor)
     end

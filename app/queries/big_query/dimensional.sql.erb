@@ -111,8 +111,9 @@ downloads_in_range AS (
         month: "MONTH",
         year: "YEAR"
       }[group.truncate]
-      # Format after truncating to get a format we are anticipating
-      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S %Ez", TIMESTAMP_TRUNC(#{selector}, #{truncate_arg}, "UTC"), "UTC") AS #{group.as})
+      # Format after truncating to get a format we are anticipating.
+      # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
+      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", TIMESTAMP_TRUNC(#{selector}, #{truncate_arg}, "UTC"), "UTC") AS #{group.as})
     elsif group.indices
       cases = []
 

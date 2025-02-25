@@ -16,15 +16,8 @@ module Compositions
     def self.from_params(params)
       composition = super
 
-      composition.granularity = params[:granularity].to_sym if params[:granularity]
-
-      # TODO This converts the value to seconds in the form, which is a hostile
-      if /^[0-9]+D$/.match?(params[:window])
-        days = params[:window].match(/^([0-9]+)D$/)[1].to_i
-        composition.window = days * 86400
-      elsif params[:window]
-        composition.window = params[:window].to_i if params[:window].present?
-      end
+      composition.granularity = params[:granularity].to_sym if params[:granularity].present?
+      composition.window = DurationShorthand.expand(params[:window]) if params[:window].present?
 
       composition.comparisons = Components::Comparison.all_from_params(params)
 

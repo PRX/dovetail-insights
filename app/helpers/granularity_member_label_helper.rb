@@ -1,31 +1,34 @@
 module GranularityMemberLabelHelper
   ##
-  # Takes a member, which is something like a +Time+ or +DateTime+, and returns
-  # a formatted string representation suitable for displaying within the
-  # results.
+  # Takes a granularity descriptor and returns a formatted string
+  # representation suitable for displaying within the results.
   #
-  # For example, the results may contain a +DateTime+ like +2023-01-01 00:00:00+
+  # For example, the descriptor may be a string like "2023-01-01T12:34:56T"
   # but the results are intended to only display the year, like if the user
   # selected _yearly_ grouping. This will return +"2023"+, based on that chosen
   # granularity.
 
   def granularity_label(composition, member_descriptor)
+    # Parse the given descriptor into a Time
+    time = Time.parse(member_descriptor)
+
+    # Compose an appropriately formatted string based on the chosen granularity
     case composition.granularity
     when :daily
-      member_descriptor.strftime("%F")
+      time.strftime("%F")
     when :weekly
-      "Week of #{member_descriptor.strftime("%F")}"
+      "Week of #{time.strftime("%F")}"
     when :monthly
-      member_descriptor.strftime("%Y-%m")
+      time.strftime("%Y-%m")
     when :quarterly
-      y = member_descriptor.strftime("%Y")
-      m = member_descriptor.strftime("%-m")
+      y = time.strftime("%Y")
+      m = time.strftime("%-m")
       q = (m.to_f / 3).ceil
       "#{y}Q#{q}"
     when :yearly
-      member_descriptor.strftime("%Y")
+      time.strftime("%Y")
     when :rolling
-      "#{human_duration composition.window} starting #{clean_timestamp_string member_descriptor}"
+      "#{human_duration composition.window} starting #{compact_timestamp_string member_descriptor}"
     else
       member_descriptor
     end
