@@ -24,6 +24,8 @@ module GranularityMemberLabelHelper
       "#{y}Q#{q}"
     when :yearly
       member_descriptor.strftime("%Y")
+    when :rolling
+      "#{human_duration composition.window} starting #{clean_timestamp_string member_descriptor}"
     else
       member_descriptor
     end

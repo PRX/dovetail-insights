@@ -31,7 +31,7 @@ module GroupMemberLabelHelper
 
   def clean_timestamp_string(datetime)
     # datetime is a DateTime
-    datetime.to_s.gsub("T00:00:00+00:00", "")
+    datetime.to_s.gsub("T00:00:00+00:00", "").gsub("T00:00:00Z", "")
   end
 
   ##
