@@ -91,9 +91,9 @@ module Results
     # the total just for that member. If not, it will be the total for the
     # metric across the entire result.
 
-    def get_total(metric, inteval)
-      if inteval
-        rows.filter { |row| row[composition.granularity_as] == inteval }.inject(0) { |sum, row| sum + row[metric.as] }
+    def get_total(metric, interval)
+      if interval
+        rows.filter { |row| row[composition.granularity_as] == interval }.inject(0) { |sum, row| sum + row[metric.as] }
       else
         # TODO Suppport overall metric totals?
         # rows.inject(0) { |sum, row| sum + row[metric.as] }
