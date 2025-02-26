@@ -23,6 +23,7 @@ module Compositions
     validate :all_metrics_are_valid, :includes_at_least_one_metric
     validate :group_order_is_correct, :all_groups_are_valid, :group_count_is_supported
     caution :all_groups_are_safe
+    caution :range_includes_future
 
     def query
       return unless valid?
@@ -88,6 +89,10 @@ module Compositions
           errors.add(:groups, "must include between 0 and 2 groups, but had #{groups.size}")
         end
       end
+    end
+
+    def range_includes_future
+      warnings.add(:to, :includes_future, message: "extends into the future") if abs_to > Time.now
     end
   end
 end
