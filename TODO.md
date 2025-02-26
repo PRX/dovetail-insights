@@ -28,3 +28,6 @@
   - episode is dropped with a backdated pubDate
   - episode is imported (i.e., missing historical data)
 - Maybe allow filters/groups/etc to reference the time range from/to?
+- Support aggregations other than TOTAL
+- Build aggregation method into metrics, so sum() becomes explicit, which allows for others down the road
+- For dimensional group 1, allow selecting other static properties to be displayed

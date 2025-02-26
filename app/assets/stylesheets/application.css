@@ -198,9 +198,23 @@ table {
     text-align: left;
   }
 
+  thead {
+    th {
+      position: sticky;
+      top: 0;
+      background: white;
+    }
+  }
+
   td {
     border: 1px solid #bbb;
     padding: 3px;
+  }
+
+  tbody th {
+    position: sticky;
+    left: 0;
+    background: white;
   }
 
   /* col.data:nth-child(even) {

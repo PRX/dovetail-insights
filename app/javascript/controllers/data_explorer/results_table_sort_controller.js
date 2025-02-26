@@ -1,6 +1,9 @@
 import { Controller } from "@hotwired/stimulus";
 
 // TODO proof of concept
+// TODO allow sorting on time series with 0 or 1 groups. Doesn't make sense with 2
+// TODO Dimensional, allow sorting by group 1 totals
+// TODO Allow sorting by group 1 (i.e., horizontally)
 export default class extends Controller {
   // eslint-disable-next-line class-methods-use-this
   sort(event) {

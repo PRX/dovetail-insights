@@ -35,6 +35,7 @@ module Compositions
 
     # TODO Validate that comparisons are supported for the selected granularity
     # TODO Validate metrics (may be different validations than with dimensional lens)
+    # TODO Warning when the theoretical range of the first and last intervals extend beyond the composition time range
 
     def granularity=(granularity)
       raise unless granularity.instance_of? Symbol
