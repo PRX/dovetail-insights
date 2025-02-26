@@ -22,6 +22,8 @@ module Warnings
     end
 
     def safe?
+      warnings.clear
+      valid?
       warnings.empty?
     end
 
