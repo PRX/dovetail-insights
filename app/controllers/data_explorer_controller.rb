@@ -56,7 +56,7 @@ class DataExplorerController < ApplicationController
     end
 
     unless all_valid
-      render plain: "podcast ID not authorized"
+      @composition.unauthorized_podcast_ids = true
     end
   end
 end

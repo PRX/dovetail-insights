@@ -28,12 +28,16 @@ module Compositions
     attr_reader :filters
     attr_reader :big_query_total_bytes_billed
 
+    # TODO Needing to set this is pretty hacky
+    attr_accessor :unauthorized_podcast_ids
+
     # All lenses support and require a time range define by +from+ and +to+.
     # These values are mostly handled by +Ranging+.
     validates :from, :to, presence: true
 
     validate :lens_must_not_be_base_class, :all_filters_are_valid
     validate :require_explicit_podcast_selection
+    validate :only_authorized_podcasts
 
     def query_value
       self.class.query_value
@@ -71,7 +75,19 @@ module Compositions
       podcast_filter = filters&.find { |f| f.dimension == :podcast_id }
 
       errors.add(:filters, "must include a podcast filter") if !podcast_filter
+
+      # TODO Adding errors outside of #validate doesn't play nicely with .valid?
       podcast_filter.errors.add(:operator, "can only be 'include'") if podcast_filter && podcast_filter.operator != :include
+    end
+
+    def only_authorized_podcasts
+      if unauthorized_podcast_ids
+        errors.add(:filters, :unauthorized, message: "must not include unauthorized podcasts")
+
+        # TODO Adding errors outside of #validate doesn't play nicely with .valid?
+        podcast_filter = filters&.find { |f| f.dimension == :podcast_id }
+        podcast_filter.errors.add(:values, "must not include unauthorized podcasts")
+      end
     end
   end
 end
