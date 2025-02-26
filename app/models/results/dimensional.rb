@@ -168,6 +168,7 @@ module Results
     # tktk
 
     def get_min(metric, group = false, member = false)
+      # TODO This should not icnlude nil group
       if group && member.nil?
         rows.filter { |row| row[group.as].nil? }.map { |row| row[metric.as] }.compact.min
       elsif group && member
@@ -181,12 +182,31 @@ module Results
     # tktk
 
     def get_max(metric, group = false, member = false)
+      # TODO This should not icnlude nil group
       if group && member.nil?
         rows.filter { |row| row[group.as].nil? }.map { |row| row[metric.as] }.compact.max
       elsif group && member
         rows.filter { |row| row[group.as] == member }.map { |row| row[metric.as] }.compact.max
       else
         rows.map { |row| row[metric.as] }.compact.max.blank?
+      end
+    end
+
+    def get_arith_mean(metric, group1_member_descriptor = false, group2_member_descriptor = false)
+      # TODO There may be cases where 0 is not the correct default for missing values
+
+      if group1_member_descriptor
+        # Get the mean for some group 1 member across all group 2 members
+        values = group_2_unique_member_descriptors.map { |d| get_value(metric, group1_member_descriptor, d) || 0 }
+        values.sum / group_2_unique_member_descriptors.size
+      elsif group2_member_descriptor
+        # Get the mean for some group 2 member across all group 1 members
+        values = group_1_unique_member_descriptors.map { |d| get_value(metric, d, group2_member_descriptor) || 0 }
+        values.sum / group_1_unique_member_descriptors.size
+      else
+        # Get the mean across all group 1 members
+        values = group_1_unique_member_descriptors.map { |d| get_value(metric, d) || 0 }
+        values.sum / group_1_unique_member_descriptors.size
       end
     end
 

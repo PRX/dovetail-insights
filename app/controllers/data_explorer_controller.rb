@@ -46,7 +46,9 @@ class DataExplorerController < ApplicationController
     # doesn't make .valid? fail.
     podcast_filter = @composition&.filters&.find { |f| f.dimension == :podcast_id }
 
-    all_valid = podcast_filter.values.all? do |podcast_id|
+    return unless podcast_filter
+
+    all_valid = podcast_filter&.values&.all? do |podcast_id|
       all_podcasts = Lists.all_podcasts
       podcast = all_podcasts.find { |podcast| podcast[:id] == podcast_id.to_i }
 

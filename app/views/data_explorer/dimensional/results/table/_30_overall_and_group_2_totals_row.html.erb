@@ -25,8 +25,9 @@
         <% min = @composition.results.get_min(metric, @composition.groups[1], group_2_member_descriptor) %>
         <% max = @composition.results.get_max(metric, @composition.groups[1], group_2_member_descriptor) %>
         <% range = (max||0) - (min||0) %>
+        <% mean = @composition.results.get_arith_mean(metric, false, group_2_member_descriptor) || 0 %>
 
-        <% title = "Min: #{number_with_delimiter(min)}\nMax: #{number_with_delimiter(max)}\nRange: #{number_with_delimiter(range)}" %>
+        <% title = "Mean: #{number_with_delimiter(mean)}\nMin: #{number_with_delimiter(min)}\nMax: #{number_with_delimiter(max)}\nRange: #{number_with_delimiter(range)}" %>
 
         <td
           data-highlight-metric="<%= metric.metric %>"
