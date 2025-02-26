@@ -33,7 +33,7 @@ module Compositions
     validates :from, :to, presence: true
 
     validate :lens_must_not_be_base_class, :all_filters_are_valid
-    validate :temp_podcast_filter
+    validate :require_explicit_podcast_selection
 
     def query_value
       self.class.query_value
@@ -67,10 +67,11 @@ module Compositions
       end
     end
 
-    def temp_podcast_filter
-      if !filters || !filters.find { |f| f.dimension == :podcast_id }
-        errors.add("dev", "Currently a podcast_id filter is required")
-      end
+    def require_explicit_podcast_selection
+      podcast_filter = filters&.find { |f| f.dimension == :podcast_id }
+
+      errors.add(:filters, "must include a podcast filter") if !podcast_filter
+      podcast_filter.errors.add(:operator, "can only be 'include'") if podcast_filter && podcast_filter.operator != :include
     end
   end
 end

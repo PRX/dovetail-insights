@@ -19,6 +19,8 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user_podcast_accounts
+    return [] unless current_user
+
     # For the time being, there are no resource-level permissions for Insights,
     # so we're piggybacking off some Feeder and Augury permissions to determine
     # which podcasts people should see in Insights

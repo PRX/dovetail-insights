@@ -13,7 +13,7 @@ class Lists
     end
   end
 
-  def self.list_for(dimension_key, user)
+  def self.list_for(dimension_key, accounts = [])
     if dimension_key == "country"
       Rails.cache.fetch("country", expires_in: 12.hours) do
         data = BigQueryClient.instance.query("SELECT country_iso_code, country_name FROM production.geonames WHERE country_name <> '' AND subdivision_1_iso_code IS NULL AND subdivision_2_iso_code IS NULL AND city_name IS NULL ORDER BY country_name ASC")
@@ -41,7 +41,7 @@ class Lists
         rows.filter { |r| !exclude_ids.include?(r[r.keys[0]]) }
       end
     elsif dimension_key == "podcast"
-      all_podcasts.filter { |p| user.authorized_account_ids(:read_private).include?(p[p.keys[2]]) }
+      all_podcasts.filter { |p| accounts.include?(p[p.keys[2]].to_s) }
     elsif dimension_key == "os"
       [
         {key: 44, value: "Amazon OS"},
