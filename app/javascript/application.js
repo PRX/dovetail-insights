@@ -4,6 +4,7 @@ import "@hotwired/turbo-rails";
 import "controllers";
 
 document.querySelectorAll("#filters select.token").forEach((el) => {
+  // eslint-disable-next-line no-new, no-undef
   new SlimSelect({
     select: el,
   });
