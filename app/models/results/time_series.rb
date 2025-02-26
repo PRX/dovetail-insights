@@ -20,7 +20,7 @@ module Results
       # return @rows.map { |row| row[composition.granularity_as] }.compact.uniq.sort
 
       # Truncate the time range end based on chosen granularity
-      end_grain = case composition.granularity
+      final_interval = case composition.granularity
       when :daily
         composition.abs_to.beginning_of_day
       when :weekly
@@ -36,28 +36,28 @@ module Results
       end
 
       # Make a list to hold all the descriptors
-      descriptors = [end_grain.strftime("%Y-%m-%dT%H:%M:%SZ")]
+      descriptors = [final_interval.strftime("%Y-%m-%dT%H:%M:%SZ")]
 
       # Starting from the end, step back 1 week/month/etc based on chosen
       # granularity, until we're before the time range start
-      current_grain = end_grain
-      while current_grain > composition.abs_from
-        current_grain = case composition.granularity
+      current_interval = final_interval
+      while current_interval > composition.abs_from
+        current_interval = case composition.granularity
         when :daily
-          current_grain.advance(days: -1)
+          current_interval.advance(days: -1)
         when :weekly
-          current_grain.advance(weeks: -1)
+          current_interval.advance(weeks: -1)
         when :monthly
-          current_grain.advance(months: -1)
+          current_interval.advance(months: -1)
         when :quarterly
-          current_grain.advance(months: -3)
+          current_interval.advance(months: -3)
         when :yearly
-          current_grain.advance(years: -1)
+          current_interval.advance(years: -1)
         when :rolling
-          current_grain.advance(seconds: -1 * composition.window)
+          current_interval.advance(seconds: -1 * composition.window)
         end
 
-        descriptors << current_grain.strftime("%Y-%m-%dT%H:%M:%SZ")
+        descriptors << current_interval.strftime("%Y-%m-%dT%H:%M:%SZ")
       end
 
       # We know have a list of all necessary descriptors for this range and

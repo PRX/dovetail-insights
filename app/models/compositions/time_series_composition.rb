@@ -32,10 +32,10 @@ module Compositions
     validates :granularity, inclusion: {in: [:daily, :weekly, :monthly, :quarterly, :yearly, :rolling], message: "is not a supported value"}
     validate :comparisons_are_supported_granularity
     validate :rolling_uniques_period_exceeds_interval
+    caution :first_interval_precedes_time_range, :last_interval_exceeds_time_range
 
     # TODO Validate that comparisons are supported for the selected granularity
     # TODO Validate metrics (may be different validations than with dimensional lens)
-    # TODO Warning when the theoretical range of the first and last intervals extend beyond the composition time range
 
     def granularity=(granularity)
       raise unless granularity.instance_of? Symbol
@@ -195,10 +195,6 @@ module Compositions
         @results.comparison_results[period][idx] = big_query_job.data
       end
 
-      # TODO Move this somewhere; should have a place to run a bunch of post-flight checks
-      # TODO Maybe some cases that need to be checked at the end as well, but need to look at the interval's end rather than the descriptor
-      warnings.add(:granularity, :partial, message: "results in period that extends beyond the time range") if @results.unique_interval_descriptors[0] < abs_from
-
       @results
     end
 
@@ -296,6 +292,63 @@ module Compositions
           end
         end
       end
+    end
+
+    def first_interval_precedes_time_range
+      return unless abs_from && granularity
+
+      # Create a Results just to get the interval descriptors from it
+      results = Results::TimeSeries.new(self, nil)
+
+      # The interval's descriptor is the beginning of the range covered by the
+      # interval, so if it is before the composition's from, extends outside
+      # the included data
+      first_interval_start = Time.parse(results.unique_interval_descriptors.first)
+      if first_interval_start < abs_from
+        warnings.add(:from, :first_interval_out_of_range, message: "#{abs_from} does not cover all time included in the #{first_interval_start} interval, so it may include partial data")
+      end
+    end
+
+    def last_interval_exceeds_time_range
+      return unless abs_from && abs_to && granularity
+
+      # Create a Results just to get the interval descriptors from it
+      results = Results::TimeSeries.new(self, nil)
+
+      # The interval's descriptor is the beginning of the range covered by the
+      # interval. For the final interval, we want to check the *end* of the
+      # range, so we advance the start time by some amount based on the chosen
+      # granularity.
+      last_interval_start = Time.parse(results.unique_interval_descriptors.last)
+
+      # This is the **exclusive** end of the interval's range
+      last_interval_end = case granularity
+      when :daily
+        last_interval_start.advance(days: 1)
+      when :weekly
+        last_interval_start.advance(weeks: 1)
+      when :monthly
+        last_interval_start.advance(months: 1)
+      when :quarterly
+        last_interval_start.advance(months: 3)
+      when :yearly
+        last_interval_start.advance(years: 1)
+      when :rolling
+        last_interval_start.advance(seconds: 1 * window) if window
+      end
+
+      # Both values here are **exclusive** range ends, so when they are equal
+      # there is no overflow on the last interval. If the last interval end is
+      # after the composition time range end, than it's covering a range that
+      # exceeds the composition range.
+      if last_interval_end > abs_to
+        warnings.add(:to, :last_interval_out_of_range, message: "#{abs_to} does not cover all time included in the #{last_interval_start} interval, so it may include partial data")
+      end
+    end
+
+    def range_includes_future
+      # This is overriding the default message provided by DimensionalComposition
+      warnings.add(:to, :includes_future, message: "extends into the future, so some intervals may include less data than you expect") if abs_to > Time.now
     end
   end
 end

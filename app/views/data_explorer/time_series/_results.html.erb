@@ -26,8 +26,8 @@
   # No need for group 1 headers when no groups are selected
   @tbl_show_group_1_headers = false if @composition.groups.size == 0
 
-  @tbl_cols_per_granularity_metric = @composition.comparisons.reduce(0) { |sum, c| sum + c.lookback } + 1
-  @tbl_cols_per_granularity_memeber = @composition.metrics.size * @tbl_cols_per_granularity_metric
+  @tbl_cols_per_interval_metric = @composition.comparisons.reduce(0) { |sum, c| sum + c.lookback } + 1
+  @tbl_cols_per_interval = @composition.metrics.size * @tbl_cols_per_interval_metric
 
   # Create a set of each group's members, plus `nil` to represent values that
   # don't belong to any member of that group (if necessary)
@@ -50,14 +50,14 @@
       <col>
     <% end %>
 
-    <%# Granularity member labels %>
+    <%# Interval labels %>
     <% @composition.results.unique_interval_descriptors.each do |_| %>
-      <col class="data" span="<%= @tbl_cols_per_granularity_memeber %>">
+      <col class="data" span="<%= @tbl_cols_per_interval %>">
     <% end %>
   </colgroup>
 
   <thead>
-    <%= render "data_explorer/time_series/results/table/10_granularity_headers" %>
+    <%= render "data_explorer/time_series/results/table/10_interval_headers" %>
 
     <%= render "data_explorer/time_series/results/table/20_metric_headers" if @tbl_show_metric_headers %>
 

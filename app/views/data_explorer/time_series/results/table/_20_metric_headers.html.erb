@@ -4,7 +4,7 @@
 
   <% @composition.results.unique_interval_descriptors.each do |_| %>
     <% @composition.metrics.each do |metric| %>
-      <th colspan="<%= @tbl_cols_per_granularity_metric %>">
+      <th colspan="<%= @tbl_cols_per_interval_metric %>">
         <%= metric.metric %>
       </th>
     <% end %>

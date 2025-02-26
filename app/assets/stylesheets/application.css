@@ -198,6 +198,10 @@ table {
     text-align: left;
   }
 
+  th.partial {
+    background: yellow;
+  }
+
   thead {
     th {
       position: sticky;

@@ -1,0 +1,18 @@
+<tr>
+  <%= tag.td if @tbl_show_group_1_headers %>
+  <%= tag.td if @tbl_show_group_2_headers %>
+
+  <%# A cell for each granularity period, spanning all metrics and comparisons %>
+  <% @composition.results.unique_interval_descriptors.each_with_index do |interval_descriptor, idx| %>
+    <% partial = (idx == 0 && @composition.warnings.added?(:from, :first_interval_out_of_range)) || (idx == (@composition.results.unique_interval_descriptors.size - 1) && @composition.warnings.added?(:to, :last_interval_out_of_range)) %>
+
+    <th
+      data-member-descriptor="<%= interval_descriptor %>"
+      data-member-label="<%= interval_label(@composition, interval_descriptor) %>"
+      <%= html_attributes(class: "partial" ) if partial %>
+      colspan="<%= @tbl_cols_per_interval %>">
+      <%= interval_label(@composition, interval_descriptor) %>
+      <%= "(Partial data)" if partial %>
+    </th>
+  <% end %>
+</tr>
