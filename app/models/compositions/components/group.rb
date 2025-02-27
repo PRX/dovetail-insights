@@ -146,7 +146,7 @@ module Compositions
       validates :truncate, inclusion: {in: TRUNCATE_OPTS, message: "by %{value} is not a supported operation"}, if: -> { truncate }
       validate :no_options_for_token_type
       validate :duration_type_has_only_indices
-      validate :timestamp_type_has_single_option
+      validate :timestamp_type_has_single_option, :timestamp_type_has_some_option
       caution :local_time_distortion
 
       def initialize(dimension_name)
@@ -183,11 +183,16 @@ module Compositions
       # current absolute time
 
       def abs_indices
-        indices&.map do |i|
-          if i.to_s.match Relatime::EXPRESSION_REGEXP
-            Relatime.rel2abs(i.to_s, :front, DateTime.now.new_offset(0))
-          else
-            i
+        @abs_indices ||= begin
+          # Use the same now for all conversions
+          now = DateTime.now.new_offset(0)
+
+          indices&.map do |i|
+            if i.to_s.match Relatime::EXPRESSION_REGEXP
+              Relatime.rel2abs(i.to_s, :front, now)
+            else
+              i
+            end
           end
         end
       end
@@ -241,6 +246,14 @@ module Compositions
         end
       end
 
+      def timestamp_type_has_some_option
+        dimension_def = DataSchema.dimensions[dimension.to_s]
+
+        if dimension_def && dimension_def["Type"] == "Timestamp"
+          errors.add(:dimension, :invalid_option, message: "group requires configurations") unless extract || truncate || indices
+        end
+      end
+
       def no_missing_indices
         if indices && indices.empty?
           errors.add(:indices, :missing_indices, message: "cannot be empty")
@@ -269,7 +282,7 @@ module Compositions
         if dimension_def && dimension_def["Type"] == "Duration" && indices
           indices.each do |i|
             if i.is_a?(Integer)
-            elsif /^[0-9]+[a-zA-Z]$/.match?(i)
+            elsif i.is_a?(String) && /^[0-9]+[a-zA-Z]$/.match?(i)
             else
               errors.add(:indices, :invalid, message: "#{i} is not a valid index")
             end

@@ -26,11 +26,11 @@ class FilterTest < ActiveSupport::TestCase
   end
 
   test "invalid dimension" do
-    @model = Compositions::Components::Filter.new(:bogus)
-    @model.operator = :include
-    @model.values = [1, 2, 3]
-    @model.validate
+    filter = Compositions::Components::Filter.new(:bogus)
+    filter.operator = :include
+    filter.values = [1, 2, 3]
+    filter.validate
 
-    assert @model.errors.added?(:dimension, :invalid_dimension)
+    assert filter.errors.added?(:dimension, :invalid_dimension)
   end
 end
