@@ -19,6 +19,8 @@ module Results
       # Keeping this here for checking actual values coming out of the query
       # return @rows.map { |row| row[composition.granularity_as] }.compact.uniq.sort
 
+      return @unique_interval_descriptors if @unique_interval_descriptors
+
       # Truncate the time range end based on chosen granularity
       final_interval = case composition.granularity
       when :daily
@@ -64,7 +66,9 @@ module Results
       # granularity, but it's backwards. Reverse it to correct that. This set
       # may also be inclusive of the time range end, so filter things out to
       # enforce the time range end being LT.
-      descriptors.reverse.filter { |m| m < composition.abs_to }
+      @unique_interval_descriptors = descriptors.reverse.filter { |m| m < composition.abs_to }
+
+      @unique_interval_descriptors
     end
 
     def get_value(metric, interval_descriptor, group1_member = false, group2_member = false)
