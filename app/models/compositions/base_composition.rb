@@ -53,6 +53,22 @@ module Compositions
       @filters = filters
     end
 
+    def as_json(options = {})
+      obj = {}
+
+      obj[:lens] = lens if lens
+      obj[:from] = from if from
+      obj[:to] = to if to
+
+      obj[:filters] = filters.map { |f| f.as_json(options) } if filters
+
+      obj
+    end
+
+    def to_json(*options)
+      as_json.to_json(*options)
+    end
+
     private
 
     ##

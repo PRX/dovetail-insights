@@ -120,6 +120,20 @@ module Compositions
         @lt = lt
       end
 
+      def as_json(options = {})
+        obj = {dimension: dimension}
+
+        obj[:operator] = operator if operator
+        obj[:gte] = gte if gte
+        obj[:lt] = lt if lt
+        obj[:from] = from if from
+        obj[:to] = to if to
+        obj[:values] = values if values
+        obj[:extract] = extract if extract
+
+        obj
+      end
+
       private
 
       def dimension_is_defined

@@ -198,6 +198,17 @@ module Compositions
       @results
     end
 
+    def as_json(options = {})
+      obj = super
+
+      obj[:granularity] = granularity if granularity
+      obj[:window] = window if window
+
+      # TODO comparisons
+
+      obj
+    end
+
     private
 
     def comparisons_are_supported_granularity

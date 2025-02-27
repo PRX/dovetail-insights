@@ -51,6 +51,15 @@ module Compositions
       end
     end
 
+    def as_json(options = {})
+      obj = super
+
+      obj[:groups] = groups.map { |g| g.as_json(options) } if groups
+      obj[:metrics] = metrics.map { |g| g.as_json(options) } if metrics
+
+      obj
+    end
+
     private
 
     def all_metrics_are_valid

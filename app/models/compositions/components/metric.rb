@@ -73,6 +73,14 @@ module Compositions
         @as ||= Base64.strict_encode64(SecureRandom.uuid).to_sym
       end
 
+      def as_json(options = {})
+        obj = {metric: metric}
+
+        obj[:variable] = variable if variable
+
+        obj
+      end
+
       private
 
       def metric_is_defined

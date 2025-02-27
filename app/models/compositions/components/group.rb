@@ -197,6 +197,16 @@ module Compositions
         end
       end
 
+      def as_json(options = {})
+        obj = {dimension: dimension}
+
+        obj[:extract] = extract if extract
+        obj[:truncate] = truncate if truncate
+        obj[:indices] = indices if indices
+
+        obj
+      end
+
       private
 
       def dimension_is_real
