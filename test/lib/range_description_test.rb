@@ -45,4 +45,27 @@ class RelatimeTest < ActiveSupport::TestCase
     desc = RangeDescription.in_words("now-3M", "now")
     assert_equal "3 months ago to now", desc
   end
+
+  test "complete year" do
+    desc = RangeDescription.in_words("2024-01-01T00:00:00Z", "2025-01-01T00:00:00Z")
+    assert_equal "2024", desc
+  end
+
+  test "complete years" do
+    desc = RangeDescription.in_words("2023-01-01T00:00:00Z", "2025-01-01T00:00:00Z")
+    assert_equal "2023–2024", desc
+  end
+
+  test "complete month" do
+    desc = RangeDescription.in_words("2024-01-01T00:00:00Z", "2024-02-01T00:00:00Z")
+    assert_equal "Jan 2024", desc
+  end
+
+  test "complete months" do
+    desc = RangeDescription.in_words("2024-01-01T00:00:00Z", "2024-03-01T00:00:00Z")
+    assert_equal "Jan 2024—Feb 2024", desc
+
+    desc = RangeDescription.in_words("2023-05-01T00:00:00Z", "2024-03-01T00:00:00Z")
+    assert_equal "May 2023—Feb 2024", desc
+  end
 end

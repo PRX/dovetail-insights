@@ -4,6 +4,12 @@ class RangeDescription
 
     if Relatime::EXPRESSION_REGEXP.match?(from) && Relatime::EXPRESSION_REGEXP.match?(to)
       relatime_in_words(from, to)
+    elsif Relatime::EXPRESSION_REGEXP.match?(from)
+      # Only from is relatime
+    elsif Relatime::EXPRESSION_REGEXP.match?(to)
+      # Only to is relatime
+    else
+      timestamps_in_words(from, to)
     end
   end
 
@@ -89,5 +95,40 @@ class RangeDescription
     end
 
     "#{from} to #{to}"
+  end
+
+  def self.timestamps_in_words(from, to)
+    from_time = DateTime.parse(from)
+    to_time = DateTime.parse(to)
+
+    # e.g., 2020-01-01 to 2021-01-01 aka 2020
+    # e.g., 2020-01-01 to 2023-01-01 aka 2020-2022
+    if from_time == from_time.beginning_of_year && to_time == to_time.beginning_of_year
+      years = to_time.year - from_time.year
+      if years == 1
+        return from_time.year.to_s
+      else
+        return "#{from_time.year}–#{to_time.year - 1}"
+      end
+    end
+
+    # Single complete month
+    # e.g., 2020-01-01 to 2020-02-1 aka January 2020
+    if from_time == from_time.beginning_of_month && to_time == to_time.beginning_of_month
+      years_dif = to_time.year - from_time.year
+      months_dif = to_time.month - from_time.month
+      if years_dif == 0 && months_dif == 1
+        return "#{Date::ABBR_MONTHNAMES[from_time.month]} #{from_time.year}"
+      end
+    end
+
+    # Multiple complete months
+    # e.g., 2019-12-01 to 2020-02-01 aka Dec 2019 to Jan 2020
+    if from_time == from_time.beginning_of_month && to_time == to_time.beginning_of_month
+      final_momth = to_time.advance(months: -1)
+      return "#{Date::ABBR_MONTHNAMES[from_time.month]} #{from_time.year}—#{Date::ABBR_MONTHNAMES[final_momth.month]} #{final_momth.year}"
+    end
+
+    "#{from_time} to #{to_time}"
   end
 end
