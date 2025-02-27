@@ -6,16 +6,31 @@ class FilterTest < ActiveSupport::TestCase
   setup do
     @model = Compositions::Components::Filter.new(:podcast_id)
     @model.operator = :include
+    @model.values = [1, 2, 3]
   end
 
-  test "is valid" do
-    assert @model.valid?
+  test "missing operator" do
+    assert_raises(RuntimeError) do
+      @model.operator = nil
+    end
+
+    filter = Compositions::Components::Filter.new(:podcast_id)
+    filter.validate
+    assert filter.errors.include?(:operator)
+  end
+
+  test "invalid operator" do
+    @model.operator = :bogus
+    @model.validate
+    assert @model.errors.include?(:operator)
   end
 
   test "invalid dimension" do
-    model = Compositions::Components::Filter.new(:foo)
-    model.operator = :include
+    @model = Compositions::Components::Filter.new(:bogus)
+    @model.operator = :include
+    @model.values = [1, 2, 3]
+    @model.validate
 
-    assert_not model.valid?
+    assert @model.errors.added?(:dimension, :invalid_dimension)
   end
 end

@@ -92,9 +92,9 @@ module Compositions
       validates :dimension, :operator, presence: true
       validates :operator, inclusion: {in: [:include, :exclude], message: "must be either include or exclude"}
       validate :dimension_is_defined, :uses_supported_options
-      validate :token_filter_has_valid_values, :extraction_is_valid, :timestamp_filter_only_uses_one_mode, :timestamp_range_is_complete
-
-      # TODO Validate lt is larger than gte
+      validate :token_filter_has_valid_values
+      validate :timestamp_filter_only_uses_one_mode, :timestamp_filter_has_options, :timestamp_extraction_is_valid, :timestamp_range_is_complete
+      validate :duration_has_range, :duration_range_is_complete, :gte_must_be_smaller_than_lt
 
       def initialize(dimension_name)
         raise unless dimension_name.instance_of? Symbol
@@ -104,6 +104,7 @@ module Compositions
 
       def operator=(operator)
         raise unless operator.instance_of? Symbol
+
         @operator = operator
       end
 
@@ -128,41 +129,6 @@ module Compositions
       end
 
       ##
-      # A filter for a Token dimension must have values. This is not true of
-      # all filters that sometimes allow values.
-
-      def token_filter_has_valid_values
-        if DataSchema.dimensions.has_key? dimension.to_s
-          dimension_data = DataSchema.dimensions[dimension.to_s]
-
-          if dimension_data["Type"] == "Token"
-            if !values || values.empty?
-              errors.add(:values, :missing_values, message: "are required")
-            end
-          end
-        end
-      end
-
-      ##
-      # If +extract+ is set, do some validations. This validation doesn't
-      # determine if extract is compatible with other options, just that it's
-      # valid in isolation as configured.
-
-      def extraction_is_valid
-        if extract.present?
-          # Only certain date parts are supported
-          if ![:hour, :dow, :day, :week, :month, :year].include?(extract)
-            errors.add(:extract, :bad_extract, message: "must be a supported value, not #{extract}")
-          end
-
-          # Extract always needs values
-          if !values || values.empty?
-            errors.add(:values, :missing_values, message: "are required")
-          end
-        end
-      end
-
-      ##
       # Various attributes of filters are allowed using allowlists. By default,
       # it's assumed that an attribute is not available for any particular
       # filter/dimension type. This only checks that an option _may_ be
@@ -177,12 +143,40 @@ module Compositions
             errors.add(:values, :invalid_option, message: "cannot be used with this filter")
           end
 
-          if from && !["Timestamp", "Duration"].include?(dimension_data["Type"])
+          if extract && !["Timestamp"].include?(dimension_data["Type"])
+            errors.add(:extract, :invalid_option, message: "cannot be used with this filter")
+          end
+
+          if from && !["Timestamp"].include?(dimension_data["Type"])
             errors.add(:from, :invalid_option, message: "cannot be used with this filter")
           end
 
-          if to && !["Timestamp", "Duration"].include?(dimension_data["Type"])
+          if to && !["Timestamp"].include?(dimension_data["Type"])
             errors.add(:to, :invalid_option, message: "cannot be used with this filter")
+          end
+
+          if gte && !["Duration"].include?(dimension_data["Type"])
+            errors.add(:gte, :invalid_option, message: "cannot be used with this filter")
+          end
+
+          if lt && !["Duration"].include?(dimension_data["Type"])
+            errors.add(:lt, :invalid_option, message: "cannot be used with this filter")
+          end
+        end
+      end
+
+      ##
+      # A filter for a Token dimension must have values. This is not true of
+      # all filters that sometimes allow values.
+
+      def token_filter_has_valid_values
+        if DataSchema.dimensions.has_key? dimension.to_s
+          dimension_data = DataSchema.dimensions[dimension.to_s]
+
+          if dimension_data["Type"] == "Token"
+            if !values || values.empty?
+              errors.add(:values, :missing_values, message: "are required")
+            end
           end
         end
       end
@@ -207,11 +201,70 @@ module Compositions
         end
       end
 
+      def timestamp_filter_has_options
+        if DataSchema.dimensions.has_key? dimension.to_s
+          dimension_data = DataSchema.dimensions[dimension.to_s]
+
+          if dimension_data["Type"] == "Timestamp"
+            unless from || to || extract || values
+              errors.add(:dimension, :invalid_option, message: "filter requires configuration")
+            end
+          end
+        end
+      end
+
+      ##
+      # If +extract+ is set, do some validations. This validation doesn't
+      # determine if extract is compatible with other options, just that it's
+      # valid in isolation as configured.
+
+      def timestamp_extraction_is_valid
+        if extract.present?
+          # Only certain date parts are supported
+          if ![:hour, :dow, :day, :week, :month, :year].include?(extract)
+            errors.add(:extract, :bad_extract, message: "must be a supported value, not #{extract}")
+          end
+
+          # Extract always needs values
+          if !values || values.empty?
+            errors.add(:values, :missing_values, message: "are required")
+          end
+        end
+      end
+
+      ##
+      # If either +from+ to +to+ is present, both must be present
+
       def timestamp_range_is_complete
         if from || to
           errors.add(:from, :missing, message: "cannot be empty") if !from
           errors.add(:to, :missing, message: "cannot be empty") if !to
         end
+      end
+
+      def duration_has_range
+        if DataSchema.dimensions.has_key? dimension.to_s
+          dimension_data = DataSchema.dimensions[dimension.to_s]
+
+          if dimension_data["Type"] == "Duration"
+            errors.add(:gte, :missing_values, message: "are required") if !gte
+            errors.add(:lt, :missing_values, message: "are required") if !lt
+          end
+        end
+      end
+
+      ##
+      # If either +gte+ to +lt+ is present, both must be present
+
+      def duration_range_is_complete
+        if gte || lt
+          errors.add(:gte, :missing, message: "cannot be empty") if !gte
+          errors.add(:lt, :missing, message: "cannot be empty") if !lt
+        end
+      end
+
+      def gte_must_be_smaller_than_lt
+        errors.add(:gte, :out_of_order, message: "must precede lt") if gte && lt && gte >= lt
       end
     end
   end
