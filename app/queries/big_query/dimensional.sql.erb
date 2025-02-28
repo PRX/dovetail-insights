@@ -138,7 +138,7 @@ downloads_in_range AS (
       exhibit_property_name = dimension_def["ExhibitProperty"]
       property_def = DataSchema.dimensions[exhibit_property_name] || DataSchema.properties[exhibit_property_name]
       exhibit_selector = property_def["BigQuery"]["Selector"]
-      exhibit_as = "#{group.as}_#{exhibit_property_name}"
+      exhibit_as = "#{group.as}_exhibit_#{exhibit_property_name}"
 
       selects << "#{exhibit_selector} AS #{exhibit_as}"
     end
@@ -253,7 +253,7 @@ WHERE <%= wheres.join(" AND ") %>
     dimension_def = DataSchema.dimensions[group.dimension.to_s]
     if dimension_def["ExhibitProperty"]
       exhibit_property_name = dimension_def["ExhibitProperty"]
-      exhibit_as = "#{group.as}_#{exhibit_property_name}"
+      exhibit_as = "#{group.as}_exhibit_#{exhibit_property_name}"
 
       group_bys << exhibit_as
     end

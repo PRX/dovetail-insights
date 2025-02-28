@@ -313,7 +313,7 @@ module Results
 
         # In the query, the exhibit property was SELECTed using an AS with a
         # particular format, to prevent collisions
-        prop_as = :"#{group.as}_#{exhibit_property_name}"
+        prop_as = :"#{group.as}_exhibit_#{exhibit_property_name}"
 
         # Look for any row in the results that include the original member
         sample_row = rows.find { |row| row[group.as] == member_descriptor }
