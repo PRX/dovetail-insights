@@ -30,6 +30,10 @@
     <% end %>
   <% end %>
 
+  <% @meta&.each do |meta| %>
+    <td><%= @composition.results.group_meta_descriptor(@composition.groups[0], group_1_member_descriptor, meta) %></td>
+  <% end %>
+
   <% @expand_group_2_member_descriptors.each do |group_2_member_descriptor| %>
     <% @composition.metrics.each do |metric| %>
       <%# If this is the nil, and there's no need to show unknowns, skip it %>

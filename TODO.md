@@ -1,4 +1,3 @@
-- Write more tests and validations for Filter.
 - Write validations and tests specific to the Dimensional lens
 - Write validations and tests specific to the Time Series lens
 - Write tests for the various #from_params methods
@@ -27,7 +26,10 @@
   - episode is unpublished
   - episode is dropped with a backdated pubDate
   - episode is imported (i.e., missing historical data)
-- Maybe allow filters/groups/etc to reference the time range from/to?
+- Maybe allow filters/groups/etc to reference the composition time range from/to?
 - Support aggregations other than TOTAL
 - Build aggregation method into metrics, so sum() becomes explicit, which allows for others down the road
 - For dimensional group 1, allow selecting other static properties to be displayed
+- If we have a value in the data some point that indicates if an episode was originally published before it was hosted on Dovetail, add a warning that the data is incomplete
+- When including "published" as a meta on episode, the value being displayed in the results has a time zone. No values in the app, internal or external, should have time zones
+- Probably need to add a SortProperty, so groups can be sorted by something other than the exhibit property (thinking about episode, probably makes sense to sort by pub date by default)

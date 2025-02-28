@@ -125,6 +125,8 @@ module Compositions
                   v.present? ? v : nil
                 end
               end
+            elsif param_key == "group.#{group_number}.meta"
+              group.meta = param_value.split(",", -1).map { |i| (DataSchema.dimensions.find { |k, v| v["QueryKey"] == i.strip }&.dig(0) || i.strip).to_sym }
             end
           end
         end
@@ -136,10 +138,11 @@ module Compositions
       include Warnings
 
       attr_reader :dimension
-      attr_accessor :truncate, :extract, :indices
+      attr_accessor :truncate, :extract, :indices, :meta
 
       validates :dimension, presence: true
       validate :dimension_is_real
+      validate :meta_not_empty, :metas_are_valid_for_dimension
       validate :no_missing_indices, :indices_order_is_correct, :indices_are_not_repeated
       validate :timestamp_indices_are_valid, :duration_indices_are_valid
       validates :extract, inclusion: {in: EXTRACT_OPTS, message: "by %{value} is not a supported operation"}, if: -> { extract }
@@ -225,6 +228,24 @@ module Compositions
           errors.add(:extract, :option_mismatch, message: "option is not valid with dimenson #{dimension}") if extract
           errors.add(:truncate, :option_mismatch, message: "option is not valid with dimenson #{dimension}") if truncate
           errors.add(:indices, :option_mismatch, message: "option is not valid with dimenson #{dimension}") if indices
+        end
+      end
+
+      def meta_not_empty
+        if meta && meta.empty?
+          errors.add(:meta, :missing_metas, message: "cannot be empty")
+        end
+
+        if meta&.any? { |i| i.nil? }
+          errors.add(:meta, :missing_metas, message: "cannot include empty values")
+        end
+      end
+
+      def metas_are_valid_for_dimension
+        dimension_def = DataSchema.dimensions[dimension.to_s]
+
+        if dimension_def && meta
+          errors.add(:meta, :invalid, message: "cannot include unsupported values") if meta.any? { |m| !dimension_def["StaticProperties"].include?(m.to_s) }
         end
       end
 

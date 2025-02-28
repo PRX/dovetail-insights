@@ -1,4 +1,4 @@
-<% idx = i - 1 %>
+<% idx = group_num - 1 %>
 
 <%# Get the group instance – it may not exist! %>
 <% group = @composition.try(:groups)&.values_at(idx)&.first %>
@@ -6,10 +6,10 @@
 <fieldset
   <%= html_attributes(class: "field_with_errors") if group&.errors.present? %>
   data-data-explorer--composition-url-target="groupChooser">
-  <legend>Group <%= i %></legend>
+  <legend>Group <%= group_num %></legend>
 
-  <label for="<%= "group.#{i}" %>">Group By</label>
-  <select class="dimension" <%= html_attributes(id: "group.#{i}", name: "group.#{i}") %>>
+  <label for="<%= "group.#{group_num}" %>">Group By</label>
+  <select class="dimension" <%= html_attributes(id: "group.#{group_num}", name: "group.#{group_num}") %>>
     <option value=""></option>
 
     <% DataSchema.dimensions.each do |dimension_name, dimension_def| %>
@@ -17,20 +17,20 @@
       <option
         data-dimension-type="<%= dimension_def["Type"] %>"
         value="<%= dim_key %>"
-        <%= html_attributes(selected: "selected") if params["group.#{i}"] == dim_key %>>
+        <%= html_attributes(selected: "selected") if params["group.#{group_num}"] == dim_key %>>
         <%= dim_key %>
       </option>
     <% end %>
   </select>
 
   <div class="timestamp-options">
-    <select class="mode-chooser" name="<%= "group.#{i}.timestamp-mode" %>">
+    <select class="mode-chooser" name="<%= "group.#{group_num}.timestamp-mode" %>">
       <option value="range">Range</option>
       <option value="truncate" <%= html_attributes(selected: "selected") if group&.truncate %>>Truncate</option>
       <option value="extract" <%= html_attributes(selected: "selected") if group&.extract %>>Extract</option>
     </select>
 
-    <select class="extract-options" name="<%= "group.#{i}.extract" %>">
+    <select class="extract-options" name="<%= "group.#{group_num}.extract" %>">
       <option></option>
 
       <%# If the group has a extract value we don't recognize, add an option %>
@@ -44,7 +44,7 @@
       <% end %>
     </select>
 
-    <select class="truncate-options" name="<%= "group.#{i}.truncate" %>">
+    <select class="truncate-options" name="<%= "group.#{group_num}.truncate" %>">
       <option></option>
 
       <%# If the group has a truncate value we don't recognize, add an option %>
@@ -102,4 +102,29 @@
       </ul>
     </div>
   </div>
+
+  <% if group_num == 1 %>
+    <div class="meta-options">
+      <% DataSchema.dimensions.each do |dimension_name, dimension_def| %>
+        <% dim_key = dimension_def["QueryKey"] || dimension_name %>
+
+        <div <%= html_attributes(class: "meta-options-for-#{dim_key}") %>>
+          <% dimension_def["StaticProperties"]&.filter {|p| p != dimension_def["ExhibitProperty"] }&.each do |static_property_name| %>
+            <% static_property_def = DataSchema.dimensions[static_property_name] || DataSchema.properties[static_property_name] %>
+            <% static_property_key = static_property_def["QueryKey"] || static_property_name %>
+            <% x = "meta-#{static_property_key}-#{dim_key}" %>
+            <label for="<%= x %>">
+              <input
+                type="checkbox"
+                value="<%= static_property_key %>"
+                id="<%= x %>"
+                <%= html_attributes(checked: "checked") if group && group.meta&.include?(static_property_name.to_sym) %>
+                <%= html_attributes(name: "group.#{group_num}.meta") %>>
+              <%= static_property_key %>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 </fieldset>

@@ -17,6 +17,10 @@
     <% end %>
   <% end %>
 
+  <% @meta&.each do |meta| %>
+    <td><%= meta %></td>
+  <% end %>
+
   <% @expand_group_2_member_descriptors.each do |group_2_member_descriptor| %>
     <% @composition.metrics.each do |metric| %>
       <%# Don't display a total for this group 2 member if group 1 is not summable for this metric %>

@@ -36,6 +36,7 @@ Dimensions:
       - podcast_id
       - podcast_name
       - episode_title
+      - episode_title_with_pubdate_prefix
       - episode_publish_timestamp
       - current_episode_age_in_seconds
       - season_number

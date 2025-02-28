@@ -217,6 +217,16 @@ downloads_in_range AS (
 
       selects << "#{exhibit_selector} AS #{exhibit_as}"
     end
+
+    group.meta&.each do |meta_property|
+      property_def = DataSchema.dimensions[meta_property.to_s] || DataSchema.properties[meta_property.to_s]
+      meta_selector = property_def["BigQuery"]["Selector"]
+      meta_as = "#{group.as}_meta_#{meta_property}"
+
+      # TODO Also need exhibit property for this property?
+
+      selects << "#{meta_selector} AS #{meta_as}"
+    end
   end
 
   # -- TODO Needs to handle variables/uniques
@@ -324,6 +334,13 @@ WHERE <%= wheres.join(" AND ") %>
       exhibit_as = "#{group.as}_#{exhibit_property_name}"
 
       group_bys << exhibit_as
+    end
+
+    group.meta&.each do |meta_property|
+      property_def = DataSchema.dimensions[meta_property.to_s] || DataSchema.properties[meta_property.to_s]
+      meta_as = "#{group.as}_meta_#{meta_property}"
+
+      group_bys << meta_as
     end
   end
 %>

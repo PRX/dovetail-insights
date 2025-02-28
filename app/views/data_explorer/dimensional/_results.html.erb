@@ -67,6 +67,8 @@
 
   @expand_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
   @expand_group_2_member_descriptors << nil if @tbl_show_group_2_unknowns
+
+  @meta = @composition.groups[0]&.meta
 %>
 
 <table data-data-explorer--results-table-highlight-target="table" data-controller="data-explorer--results-table-sort">

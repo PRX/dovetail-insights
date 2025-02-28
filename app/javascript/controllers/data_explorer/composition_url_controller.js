@@ -236,6 +236,19 @@ export default class extends Controller {
         // Add a URL param for the group and dimension
         groupsParams.set(dimensionEl.id, dimensionKey);
 
+        //
+        const selectedMetaCheckboxes = [
+          ...groupChooserTarget.querySelectorAll(
+            `*[name="group.${groupIndex}.meta"]:checked`,
+          ),
+        ];
+        console.log(selectedMetaCheckboxes);
+
+        if (selectedMetaCheckboxes.length) {
+          const values = selectedMetaCheckboxes.map((el) => el.value);
+          groupsParams.set(`group.${groupIndex}.meta`, values.join(","));
+        }
+
         // Other options are based on attributes of the chosen dimension, which
         // we can get from the specific option element for that dimension
         const selectedDimensionOptionEl = dimensionEl.selectedOptions.item(0);
@@ -313,7 +326,7 @@ export default class extends Controller {
     const granularityParams = new URLSearchParams();
 
     const selectedLens = this.lensTargets.find((radio) => radio.checked);
-    if (selectedLens?.value === "timeSeries") {
+    if (["timeSeries", "cume"].includes(selectedLens?.value)) {
       if (this.granularityTarget.value) {
         granularityParams.set("granularity", this.granularityTarget.value);
       }

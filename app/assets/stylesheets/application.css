@@ -106,7 +106,8 @@ form.nochrome {
 #metrics { display: none; }
 
 #lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #metrics,
-#lens-data-parameters:has(input[type=radio][value=dimensional]:checked) #metrics {
+#lens-data-parameters:has(input[type=radio][value=dimensional]:checked) #metrics,
+#lens-data-parameters:has(input[type=radio][value=cume]:checked) #metrics {
   display: block;
 }
 
@@ -127,7 +128,8 @@ body:has(#time-series-granularity option:last-child:checked) #time-series-granul
 }
 
 #granularity { display: none; }
-#lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #granularity {
+#lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #granularity,
+#lens-data-parameters:has(input[type=radio][value=cume]:checked) #granularity {
   display: block;
 }
 
@@ -136,7 +138,8 @@ body:has(#time-series-granularity option:last-child:checked) #time-series-granul
 
 #groups { display: none; }
 #lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #groups,
-#lens-data-parameters:has(input[type=radio][value=dimensional]:checked) #groups {
+#lens-data-parameters:has(input[type=radio][value=dimensional]:checked) #groups,
+#lens-data-parameters:has(input[type=radio][value=cume]:checked) #groups {
   display: block;
 }
 
@@ -151,6 +154,18 @@ body:has(#time-series-granularity option:last-child:checked) #time-series-granul
 
 #groups fieldset .duration-options { display: none; }
 #groups fieldset:has(select[id^="group."] option[data-dimension-type="Duration"]:checked) .duration-options { display: block; }
+
+#groups div[class^="meta-options-for-"] { display: none; }
+#groups fieldset:has(option[value=podcast]:checked) .meta-options-for-podcast { display: block; }
+#groups fieldset:has(option[value=episode]:checked) .meta-options-for-episode { display: block; }
+#groups fieldset:has(option[value=ua]:checked) .meta-options-for-ua { display: block; }
+#groups fieldset:has(option[value=device]:checked) .meta-options-for-device { display: block; }
+#groups fieldset:has(option[value=os]:checked) .meta-options-for-os { display: block; }
+#groups fieldset:has(option[value=country]:checked) .meta-options-for-country { display: block; }
+#groups fieldset:has(option[value=subdiv]:checked) .meta-options-for-subdiv { display: block; }
+#groups fieldset:has(option[value=city]:checked) .meta-options-for-city { display: block; }
+#groups fieldset:has(option[value=metro]:checked) .meta-options-for-metro { display: block; }
+
 
 #time-series-compare { display: none; }
 #lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #time-series-compare {

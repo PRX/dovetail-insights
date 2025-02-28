@@ -329,5 +329,17 @@ module Results
         member_descriptor
       end
     end
+
+    def group_meta_descriptor(group, group_member_descriptor, meta_property_name)
+      # In the query, the exhibit property was SELECTed using an AS with a
+      # particular format, to prevent collisions
+      meta_as = :"#{group.as}_meta_#{meta_property_name}"
+
+      # Look for any row in the results that include the original member
+      sample_row = rows.find { |row| row[group.as] == group_member_descriptor }
+
+      # That row will also have the meta property value that we're looking for
+      sample_row[meta_as]
+    end
   end
 end
