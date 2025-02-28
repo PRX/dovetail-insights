@@ -164,7 +164,7 @@ module Compositions
       # query, rather than just a dimension name or something like that.
 
       def as
-        @as ||= Base64.strict_encode64(SecureRandom.uuid).to_sym
+        @as ||= :"#{dimension}_#{Base64.strict_encode64(SecureRandom.uuid)}"
       end
 
       ##
