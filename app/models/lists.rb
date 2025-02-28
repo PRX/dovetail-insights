@@ -27,6 +27,7 @@ class Lists
       end
     elsif dimension_key == "ua"
       Rails.cache.fetch("ua", expires_in: 12.hours) do
+        # Fetch all agent names. This includes UAs, OSs, and device types
         data = BigQueryClient.instance.query("SELECT agentname_id, tag FROM production.agentnames ORDER BY tag ASC")
 
         rows = []
@@ -38,6 +39,7 @@ class Lists
         device_ids = Lists.list_for("device").map { |h| h[:key] }
         exclude_ids = os_ids + device_ids
 
+        # Take out the OSs and device types to end up with use UAs
         rows.filter { |r| !exclude_ids.include?(r[r.keys[0]]) }
       end
     elsif dimension_key == "podcast"
@@ -140,6 +142,10 @@ class Lists
 
         rows
       end
+    elsif dimension_key == "season"
+      20.times.map { |i| {key: (i + 1).to_s, value: (i + 1).to_s} }
+    elsif dimension_key == "episodeNumber"
+      50.times.map { |i| {key: (i + 1).to_s, value: (i + 1).to_s} }
     end
   end
 end

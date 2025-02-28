@@ -38,6 +38,8 @@ Dimensions:
       - episode_title
       - episode_publish_timestamp
       - current_episode_age_in_seconds
+      - season_number
+      - episode_number
     SummableMetrics:
       - downloads
       - impressions
@@ -106,8 +108,26 @@ Dimensions:
     BigQuery:
       Selector: TIMESTAMP_DIFF(downloads.timestamp, episodes.published_at, SECOND)
       RequiredTables: [downloads, episodes]
-  # season:
-  # episode_number:
+  season_number:
+    Type: Token
+    QueryKey: season
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: episodes.season_number
+      Type: INT64
+      RequiredTables: [episodes]
+  episode_number:
+    Type: Token
+    QueryKey: episodeNumber
+    SummableMetrics:
+      - downloads
+      - impressions
+    BigQuery:
+      Selector: episodes.episode_number
+      Type: INT64
+      RequiredTables: [episodes]
   user_agent_id:
     Type: Token
     QueryKey: ua
