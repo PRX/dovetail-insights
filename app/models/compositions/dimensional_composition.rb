@@ -101,7 +101,7 @@ module Compositions
     end
 
     def range_includes_future
-      warnings.add(:to, :includes_future, message: "extends into the future") if abs_to > Time.now
+      warnings.add(:to, :includes_future, message: "extends into the future") if abs_to && abs_to > Time.now
     end
   end
 end

@@ -359,7 +359,7 @@ module Compositions
 
     def range_includes_future
       # This is overriding the default message provided by DimensionalComposition
-      warnings.add(:to, :includes_future, message: "extends into the future, so some intervals may include less data than you expect") if abs_to > Time.now
+      warnings.add(:to, :includes_future, message: "extends into the future, so some intervals may include less data than you expect") if abs_to && abs_to > Time.now
     end
   end
 end

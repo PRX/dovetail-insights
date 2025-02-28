@@ -88,6 +88,11 @@ Properties:
     BigQuery:
       Selector: CONCAT(cities.city_name, ' (', cities.subdivision_1_name, ')')
       RequiredTables: [cities]
+  city_name_with_state:
+    Type: String
+    BigQuery:
+      Selector: CONCAT(cities.city_name, ' (', cities.subdivision_1_name, ')')
+      RequiredTables: [cities]
   city_name_with_state_abbreviation:
     Type: String
     BigQuery:
