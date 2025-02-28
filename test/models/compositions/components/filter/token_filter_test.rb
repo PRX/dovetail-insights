@@ -54,4 +54,24 @@ class TokenFilterTest < ActiveSupport::TestCase
     @model.validate
     assert @model.errors.added?(:lt, :invalid_option)
   end
+
+  test "is invalid with bad nulls values" do
+    @model.nulls = :bogus
+    @model.validate
+    assert @model.errors.include?(:nulls)
+  end
+
+  test "not permitted nulls" do
+    @model.nulls = :follow
+    @model.validate
+    assert @model.errors.added?(:nulls, :not_permitted)
+  end
+
+  test "permitted nulls" do
+    filter = Compositions::Components::Filter.new(:feed)
+    filter.operator = :include
+    filter.values = [1, 2, 3]
+    filter.nulls = :follow
+    assert filter.valid?
+  end
 end

@@ -114,6 +114,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       Selector: episodes.season_number
       Type: INT64
@@ -124,6 +125,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       Selector: episodes.episode_number
       Type: INT64
@@ -134,6 +136,7 @@ Dimensions:
     ExhibitProperty: user_agent_name
     StaticProperties:
       - user_agent_name
+    PermitNulls: true
     SummableMetrics:
       - downloads
       - impressions
@@ -150,6 +153,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       Selector: device_types.agentname_id
       Type: INTEGER
@@ -163,6 +167,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       Selector: operating_systems.agentname_id
       Type: INTEGER
@@ -173,6 +178,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       Selector: countries.continent_code
       Type: STRING
@@ -186,6 +192,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       # Selector: countries.geoname_id
       # Type: INTEGER
@@ -202,6 +209,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       # Selector: cities.subdivision_1_iso_code
       Selector: CONCAT(cities.country_iso_code, '-', cities.subdivision_1_iso_code)
@@ -222,6 +230,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       Selector: cities.geoname_id
       RequiredTables: [cities]
@@ -234,6 +243,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       Selector: metros.code
       RequiredTables: [metros]
@@ -243,6 +253,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       Selector: cities.time_zone
       RequiredTables: [cities]
@@ -275,6 +286,7 @@ Dimensions:
     SummableMetrics:
       - downloads
       - impressions
+    PermitNulls: true
     BigQuery:
       Selector: COALESCE(feeder_feed, "Default feed")
       Type: STRING

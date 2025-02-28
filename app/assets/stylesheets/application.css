@@ -95,6 +95,11 @@ form.nochrome {
         &:has(option[value=Truncate]:checked) .truncate { display: block; }
       }
     }
+
+    .inc { display: none; }
+    .exc { display: none; }
+    fieldset:has(select:first-of-type option[value=include]:checked) .inc { display: inline; }
+    fieldset:has(select:first-of-type option[value=exclude]:checked) .exc { display: inline; }
   }
 }
 

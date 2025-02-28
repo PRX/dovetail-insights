@@ -263,8 +263,9 @@ FROM downloads_in_range AS downloads
     selector = filter_def["BigQuery"]["Selector"]
     bq_type = filter_def["BigQuery"]["Type"]
 
-    # Filters with a `from` are ranges
     if filter.from
+      # Filters with a `from` are timestamp ranges
+
       # Wrap values for timestamp fields in quotes
       from = %Q("#{filter.abs_from}")
       to = %Q("#{filter.abs_to}")
@@ -275,6 +276,7 @@ FROM downloads_in_range AS downloads
         wheres << "(#{selector} < #{from} OR #{selector} >= #{to})"
       end
     elsif filter.gte
+      # Filters with a `gte` are a duration range
       if filter.operator == :include
         wheres << "#{selector} >= #{filter.gte} AND #{selector} < #{filter.lt}"
       else
@@ -282,13 +284,17 @@ FROM downloads_in_range AS downloads
       end
     else
       # Filter on a basic list of values
-      op = filter.operator == :include ? "IN" : "NOT IN"
+      values = (bq_type == "STRING") ? filter.values.map { |v| %Q("#{v}") } : filter.values
 
-      if bq_type == "STRING"
-        wrapped_values = filter.values.map { |v| %Q("#{v}") }
-        wheres << "#{selector} #{op} (#{wrapped_values.join(", ")})"
-      else
-        wheres << "#{selector} #{op} (#{filter.values.join(", ")})"
+      if filter.operator == :include
+        # By default, only include the selected values, but if nulls=follow
+        # then we also include nulls
+        or_nulls = filter.nulls == :follow ? " OR #{selector} IS NULL" : ""
+        wheres << "(#{selector} IN (#{values.join(", ")})#{or_nulls})"
+      elsif filter.operator == :exclude
+        # By default include nulls, but if nulls=follow then exclude them
+        or_nulls = filter.nulls == :follow ? "" : " OR #{selector} IS NULL"
+        wheres << "(#{selector} NOT IN (#{values.join(", ")})#{or_nulls})"
       end
     end
   end

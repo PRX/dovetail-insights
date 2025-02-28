@@ -33,6 +33,11 @@
         <label for="filter.<%= dim_key %>.values">Values:</label>
         <input autocomplete="off" class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" type="text" placeholder="Apple, Banana, Cherry" id="filter.<%= dim_key %>.values" name="filter.<%= dim_key %>.values" value="<%= params["filter.#{dim_key}.values"] %>">
       <% end %>
+
+      <% if dimension_def["PermitNulls"] %>
+        <label for="filter.<%= dim_key %>.nulls"><span class="inc">Include</span><span class="exc">Exclude</span> NULLs:</label>
+        <input name="filter.<%= dim_key %>.nulls" id="filter.<%= dim_key %>.nulls" type="checkbox" <%= html_attributes(checked: "checked") if filter&.nulls == :follow %>>
+      <% end %>
     <% elsif ["Duration"].include? dimension_def["Type"] %>
       <br>
       <label for="filter.<%= dim_key %>.from">From:</label>

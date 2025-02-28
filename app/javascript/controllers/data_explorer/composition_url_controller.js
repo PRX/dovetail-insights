@@ -113,6 +113,13 @@ export default class extends Controller {
               .join(","),
           );
         }
+
+        const nullsCheckbox = filterChooser.querySelector(
+          "input[type='checkbox']:checked",
+        );
+        if (nullsCheckbox) {
+          filtersParams.set(nullsCheckbox.name, "follow");
+        }
       }
 
       // Filters for dimensions with a Duration type take two values, a "gte"

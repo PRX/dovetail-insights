@@ -91,4 +91,10 @@ class DurationFilterTest < ActiveSupport::TestCase
     @model.validate
     assert @model.errors.added?(:values, :invalid_option)
   end
+
+  test "is invalid with nulls" do
+    @model.nulls = :include
+    @model.validate
+    assert @model.errors.added?(:nulls, :invalid_option)
+  end
 end

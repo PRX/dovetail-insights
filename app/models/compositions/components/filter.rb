@@ -64,6 +64,8 @@ module Compositions
               filter.operator = param_value.to_sym
             elsif param_key.to_s == "filter.#{query_key}.values"
               filter.values = param_value.split(",").map { |v| v.strip }
+            elsif param_key.to_s == "filter.#{query_key}.nulls"
+              filter.nulls = param_value.to_sym
             elsif param_key.to_s == "filter.#{query_key}.from"
               filter.from = param_value.strip
             elsif param_key.to_s == "filter.#{query_key}.to"
@@ -87,14 +89,16 @@ module Compositions
       include Warnings
 
       attr_reader :dimension, :operator, :gte, :lt
-      attr_accessor :values, :extract
+      attr_accessor :values, :extract, :nulls
 
       validates :dimension, :operator, presence: true
       validates :operator, inclusion: {in: [:include, :exclude], message: "must be either include or exclude"}
+      validates :nulls, inclusion: {in: [:follow], message: "must be follow"}, if: -> { nulls }
       validate :dimension_is_defined, :uses_supported_options
       validate :token_filter_has_valid_values
       validate :timestamp_filter_only_uses_one_mode, :timestamp_filter_has_options, :timestamp_extraction_is_valid, :timestamp_range_is_complete
       validate :duration_has_range, :duration_range_is_complete, :gte_must_be_smaller_than_lt
+      validate :nulls_follow_when_permitted
 
       def initialize(dimension_name)
         raise unless dimension_name.instance_of? Symbol
@@ -152,6 +156,10 @@ module Compositions
       def uses_supported_options
         if DataSchema.dimensions.has_key? dimension.to_s
           dimension_data = DataSchema.dimensions[dimension.to_s]
+
+          if nulls && !["Token"].include?(dimension_data["Type"])
+            errors.add(:nulls, :invalid_option, message: "cannot be used with this filter")
+          end
 
           if values && !["Token", "Timestamp"].include?(dimension_data["Type"])
             errors.add(:values, :invalid_option, message: "cannot be used with this filter")
@@ -279,6 +287,18 @@ module Compositions
 
       def gte_must_be_smaller_than_lt
         errors.add(:gte, :out_of_order, message: "must precede lt") if gte && lt && gte >= lt
+      end
+
+      def nulls_follow_when_permitted
+        if nulls == :follow
+          if DataSchema.dimensions.has_key? dimension.to_s
+            dimension_data = DataSchema.dimensions[dimension.to_s]
+
+            unless dimension_data["PermitNulls"] == true
+              errors.add(:nulls, :not_permitted, message: "are not allowed")
+            end
+          end
+        end
       end
     end
   end
