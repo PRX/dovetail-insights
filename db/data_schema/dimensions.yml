@@ -41,6 +41,8 @@ Dimensions:
       - current_episode_age_in_seconds
       - season_number
       - episode_number
+    SortPropreties:
+      - episode_publish_timestamp
     SummableMetrics:
       - downloads
       - impressions
