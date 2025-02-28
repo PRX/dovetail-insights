@@ -54,6 +54,9 @@ en:
         week: Week (Sunday)
         month: Month
         year: Year
+    labels:
+      feed:
+        "__DEFAULT_FEED__": Default RSS Feed
   number:
     human:
       storage_units:

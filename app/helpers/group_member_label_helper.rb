@@ -143,6 +143,9 @@ module GroupMemberLabelHelper
       duration_label(composition, group, member_descriptor)
     elsif dimension_def["Type"] == "Timestamp"
       timestamp_label(composition, group, member_descriptor)
+    elsif I18n.exists?("groups.labels.#{group.dimension}.#{member_descriptor}")
+      # Use the localized version of this descriptor if it exists
+      t("groups.labels.#{group.dimension}.#{member_descriptor}")
     else
       composition.results.group_member_exhibition(group, member_descriptor)
     end

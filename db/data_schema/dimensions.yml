@@ -288,5 +288,5 @@ Dimensions:
       - impressions
     PermitNulls: true
     BigQuery:
-      Selector: COALESCE(feeder_feed, "Default feed")
+      Selector: COALESCE(feeder_feed, "__DEFAULT_FEED__")
       Type: STRING
