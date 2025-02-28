@@ -117,7 +117,7 @@ Dimensions:
       - impressions
     PermitNulls: true
     BigQuery:
-      Selector: episodes.season_number
+      Selector: CAST(episodes.season_number AS STRING)
       Type: INT64
       RequiredTables: [episodes]
   episode_number:
@@ -128,7 +128,7 @@ Dimensions:
       - impressions
     PermitNulls: true
     BigQuery:
-      Selector: episodes.episode_number
+      Selector: CAST(episodes.episode_number AS STRING)
       Type: INT64
       RequiredTables: [episodes]
   user_agent_id:
