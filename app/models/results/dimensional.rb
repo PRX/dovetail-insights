@@ -132,21 +132,62 @@ module Results
     # For example, (downloads, nil) would return the number of downloads not
     # associated with any country, if group 1's dimension were country.
 
-    def get_value(metric, group1_member = false, group2_member = false)
+    def get_value(metric, group_1_member_descriptor = false, group_2_member_descriptor = false)
+      @value_cache ||= {}
+      cache_key = [metric.metric, group_1_member_descriptor, group_2_member_descriptor]
+
+      # Return memoized value even if it's nil
+      return @value_cache[cache_key] if @value_cache.key?(cache_key)
+
       row = rows.find do |row|
+        # Given a query that is grouping by podcast_id and continent, +row+ may
+        # look something like this:
+        # {podcast_id_MTVjMG: 3, podcast_id_MTVjMG_podcast_name: "the memory palace", continent_code_MDZjYTB: "SA", downloads_NzQzYzJ: 128}
+        # +podcast_id_MTVjMG_podcast_name+ is podcast_name, and is included
+        # because it's the exhibit property of podcast_id
+        # If impressions were also selected for this query, the impressions for
+        # (memory palace+SA) would also be included in this row, under a key
+        # like +impressions_wxyz123+.
+        #
+        # If the results included data that did not belong to any continent,
+        # that would might look like this:
+        # {podcast_id_MTVjMG: 3, podcast_id_MTVjMG_podcast_name: "the memory palace", continent_code_MDZjYTB: nil, downloads_NzQzYzJ: 128}
+        # Note how the continent_code field is +nil+.
+        #
+        # A query only grouping by podcast_id might look like this:
+        # {podcast_id_MTVjMG: 3, MTVjMG_podcast_id_MTVjMG_podcast_namepodcast_name: "the memory palace", downloads_NzQzYzJ: 1,501}
+        #
+        # We are looking for the row that matches the given descriptors. This
+        # assumes that the appropriate number of descriptors are provided for
+        # the data. If, for example, only a group 1 podcast_id descriptor were
+        # provided for the podcast_id+continent query, this would simply return
+        # the first row for that podcast_id, which is not likely desired.
+        #
+        # Descriptors passed in for non-existent groups will be ignored.
+
         g1_test = true
         g2_test = true
 
-        g1_test = row[composition.groups[0].as] == group1_member if group1_member
-        g2_test = row[composition.groups[1].as] == group2_member if group2_member
+        # If a descriptor is provided, check to see if this row matches that
+        # value. This does **not** handles cases where the provided descriptor
+        # is +nil+.
+        g1_test = row[composition.groups[0].as] == group_1_member_descriptor if group_1_member_descriptor && composition.groups[0]
+        g2_test = row[composition.groups[1].as] == group_2_member_descriptor if group_2_member_descriptor && composition.groups[1]
 
-        g1_test = row[composition.groups[0].as].nil? if group1_member.nil? && composition.groups[0]
-        g2_test = row[composition.groups[1].as].nil? if group2_member.nil? && composition.groups[1]
+        # If the provided descriptor is +nil+, we want to find a row where the
+        # value for that group is also +nil+.
+        g1_test = row[composition.groups[0].as].nil? if group_1_member_descriptor.nil? && composition.groups[0]
+        g2_test = row[composition.groups[1].as].nil? if group_2_member_descriptor.nil? && composition.groups[1]
 
         g1_test && g2_test
       end
 
-      row && row[metric.as]
+      # If a row was found, return the value from that row for the given metric.
+      # Currently, this returns +nil+ if no value was found. It does **not**
+      # default to a value like +0+.
+      @value_cache[cache_key] = row && row[metric.as]
+
+      @value_cache[cache_key]
     end
 
     ##

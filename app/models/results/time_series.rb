@@ -71,23 +71,37 @@ module Results
       @unique_interval_descriptors
     end
 
-    def get_value(metric, interval_descriptor, group1_member = false, group2_member = false)
+    ##
+    # See Results::Dimension#get_value for a description of how this works
+
+    def get_value(metric, interval_descriptor, group_1_member_descriptor = false, group_2_member_descriptor = false)
+      @value_cache ||= {}
+      cache_key = [metric.metric, interval_descriptor, group_1_member_descriptor, group_2_member_descriptor]
+
+      # Return memoized value even if it's nil
+      return @value_cache[cache_key] if @value_cache.key?(cache_key)
+
       row = @rows.find do |row|
         granularity_test = row[composition.granularity_as] == interval_descriptor
 
         g1_test = true
         g2_test = true
 
-        g1_test = row[composition.groups[0].as] == group1_member if group1_member
-        g2_test = row[composition.groups[1].as] == group2_member if group2_member
+        g1_test = row[composition.groups[0].as] == group_1_member_descriptor if group_1_member_descriptor && composition.groups[0]
+        g2_test = row[composition.groups[1].as] == group_2_member_descriptor if group_2_member_descriptor && composition.groups[1]
 
-        g1_test = row[composition.groups[0].as].nil? if group1_member.nil? && composition.groups[0]
-        g2_test = row[composition.groups[1].as].nil? if group2_member.nil? && composition.groups[1]
+        g1_test = row[composition.groups[0].as].nil? if group_1_member_descriptor.nil? && composition.groups[0]
+        g2_test = row[composition.groups[1].as].nil? if group_2_member_descriptor.nil? && composition.groups[1]
 
         granularity_test && g1_test && g2_test
       end
 
-      row && row[metric.as]
+      # If a row was found, return the value from that row for the given metric.
+      # Currently, this returns +nil+ if no value was found. It does **not**
+      # default to a value like +0+.
+      @value_cache[cache_key] = row && row[metric.as]
+
+      @value_cache[cache_key]
     end
 
     ##
