@@ -245,7 +245,7 @@ module Compositions
         dimension_def = DataSchema.dimensions[dimension.to_s]
 
         if dimension_def && meta
-          errors.add(:meta, :invalid, message: "cannot include unsupported values") if meta.any? { |m| !dimension_def["StaticProperties"].include?(m.to_s) }
+          errors.add(:meta, :invalid, message: "cannot include unsupported values") if meta&.any? { |m| !dimension_def["StaticProperties"]&.include?(m.to_s) }
         end
       end
 
