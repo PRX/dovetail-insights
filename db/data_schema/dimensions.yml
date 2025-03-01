@@ -119,7 +119,7 @@ Dimensions:
       - impressions
     PermitNulls: true
     BigQuery:
-      Selector: CAST(episodes.season_number AS STRING)
+      Selector: LPAD(CAST(episodes.season_number AS STRING), 3, " ")
       Type: INT64
       RequiredTables: [episodes]
   episode_number:
@@ -130,7 +130,7 @@ Dimensions:
       - impressions
     PermitNulls: true
     BigQuery:
-      Selector: CAST(episodes.episode_number AS STRING)
+      Selector: LPAD(CAST(episodes.episode_number AS STRING), 3, " ")
       Type: INT64
       RequiredTables: [episodes]
   user_agent_id:
