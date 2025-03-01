@@ -119,8 +119,8 @@ Dimensions:
       - impressions
     PermitNulls: true
     BigQuery:
-      Selector: LPAD(CAST(episodes.season_number AS STRING), 3, " ")
-      Type: INT64
+      Selector: CAST(episodes.season_number AS STRING)
+      Type: STRING
       RequiredTables: [episodes]
   episode_number:
     Type: Token
@@ -130,8 +130,8 @@ Dimensions:
       - impressions
     PermitNulls: true
     BigQuery:
-      Selector: LPAD(CAST(episodes.episode_number AS STRING), 3, " ")
-      Type: INT64
+      Selector: CAST(episodes.episode_number AS STRING)
+      Type: STRING
       RequiredTables: [episodes]
   user_agent_id:
     Type: Token

@@ -261,6 +261,8 @@ module Results
     def unique_group_member_descriptors(group)
       return unless group
 
+      dimension_def = DataSchema.dimensions[group.dimension.to_s]
+
       # If the group has indices, we want to maintain the order of the
       # indices as they were defined
       if group.indices
@@ -273,7 +275,16 @@ module Results
           .uniq
           # TODO It likely makes sense to move this sorting to the view, so it
           # can reflect the final label
-          .sort { |a, b| group_member_exhibition(group, a) <=> group_member_exhibition(group, b) }
+          # TODO Use the SortProperty of the group's dimension if it exists
+          .sort do |a, b|
+            if dimension_def["ExhibitProperty"]
+              group_member_exhibition(group, a) <=> group_member_exhibition(group, b)
+            elsif a == a.to_i.to_s && b == b.to_i.to_s
+              a.to_i <=> b.to_i
+            else
+              a <=> b
+            end
+          end
       end
     end
 
@@ -331,6 +342,13 @@ module Results
     end
 
     def group_meta_descriptor(group, group_member_descriptor, meta_property_name)
+      @group_meta_descriptor_cache ||= {}
+
+      cache_key = [group.dimension.to_s, group_member_descriptor, meta_property_name]
+
+      # Return memoized value even if it's nil
+      return @group_meta_descriptor_cache[cache_key] if @group_meta_descriptor_cache.key?(cache_key)
+
       # In the query, the exhibit property was SELECTed using an AS with a
       # particular format, to prevent collisions
       meta_as = :"#{group.as}_meta_#{meta_property_name}"
@@ -339,7 +357,9 @@ module Results
       sample_row = rows.find { |row| row[group.as] == group_member_descriptor }
 
       # That row will also have the meta property value that we're looking for
-      sample_row[meta_as]
+      @group_meta_descriptor_cache[cache_key] = sample_row[meta_as]
+
+      @group_meta_descriptor_cache[cache_key]
     end
   end
 end
