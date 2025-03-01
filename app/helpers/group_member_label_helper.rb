@@ -146,6 +146,10 @@ module GroupMemberLabelHelper
     elsif I18n.exists?("groups.labels.#{group.dimension}.#{member_descriptor}")
       # Use the localized version of this descriptor if it exists
       t("groups.labels.#{group.dimension}.#{member_descriptor}")
+    elsif group.dimension == :season_number
+      "Season #{member_descriptor}"
+    elsif group.dimension == :episode_number
+      "Episode #{member_descriptor}"
     else
       composition.results.group_member_exhibition(group, member_descriptor)
     end
