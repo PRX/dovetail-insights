@@ -18,18 +18,20 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# `:app` comes from propshaft, and is all stylesheets in app/assets/**/*.css %>
+    <%# builds/ take precedence over /stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
 
-    <script src="https://unpkg.com/slim-select@latest/dist/slimselect.min.js"></script>
-    <link href="https://unpkg.com/slim-select@latest/dist/slimselect.css" rel="stylesheet"/>
-
-    <%# This will add a script tag for the importmap generated from %>
-    <%# config/importmap.rb, **and** script tags for each module that is %>
+    <%# This will add a <script> tag for the importmap generated from %>
+    <%# config/importmap.rb, **and** <script> tags for each module that is %>
     <%# pinned in config/importmap.rb %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body data-turbo="false">
+    <%= render "layouts/nav" %>
+    <%= render "layouts/subnav" %>
+    <%= render "layouts/alerts" %>
+
     <%= yield %>
   </body>
 </html>

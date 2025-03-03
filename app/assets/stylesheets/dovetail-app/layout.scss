@@ -1,0 +1,32 @@
+/**
+ * General layout
+ */
+
+body {
+  --#{$prefix}body-font-family: "Roboto", "Helvetica Neue", sans-serif;
+  --#{$prefix}body-bg: #{$gray-100};
+  --#{$prefix}body-color: #{$gray-600};
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  background-image: image-url("prx-mark-outlined.svg");
+  background-repeat: repeat;
+  background-position: top left;
+}
+
+h3 {
+  color: $black;
+}
+
+.prx-main {
+  position: relative;
+  display: block;
+}
+
+.sticky-lg-top,
+.sticky-md-top {
+  z-index: $zindex-dropdown;
+}

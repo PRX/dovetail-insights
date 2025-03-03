@@ -5,3 +5,9 @@
 // Imports slim-select styles from the npm module
 @import "slim-select/src/slim-select/slimselect";
 
+// Import local project styles
+@import "dovetail-app/shared";
+
+.bg-primary-dark {
+  background-color: $blue-dark;
+}
