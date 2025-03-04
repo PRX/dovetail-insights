@@ -38,3 +38,4 @@
 - Write some tests to check rolling window ranges down to the second
 - SortProperties don't resolve exhibit properties. Make a note somewhere that you should ensure the desired property is used directly. Meta properties also don't resolve exhibit properties, which makes it possible to display, for example, podcast ID if desired, rather than podcast name.
 - Use default_group_member_descriptor_sort for group 2 columns
+- Detect if there's a ridiculous number of rows/columns before attempting to displaying to prevent hangs

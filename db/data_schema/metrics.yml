@@ -2,6 +2,7 @@ Metrics:
   downloads:
     BigQuery:
       Selector: COUNT(DISTINCT downloads.request_uuid)
+      # TODO Add RequiredColumns and RequiredTables. Don't treat this special
   impressions:
     BigQuery:
       Selector: COUNT(*)

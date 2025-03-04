@@ -37,6 +37,28 @@ module QueryShapers
         }
       end
 
+      private
+
+      ##
+      #
+
+      def downloads_table_columns
+        # TODO Look through all active filters, groups, and metrics, and find
+        # all columns that will be needed on the downloads table to complete
+        # the query. This needs to recursively look through the join tables
+        # that filters/groups/metrics require.
+      end
+
+      ##
+      #
+
+      def impressions_table_columns
+        # TODO Look through all active filters, groups, and metrics, and find
+        # all columns that will be needed on the impressions table to complete
+        # the query. This needs to recursively look through the join tables
+        # that filters/groups/metrics require.
+      end
+
       ##
       # Collect all JOIN statements needed for **all** tables required by this
       # query, not just the ones directly touched by filters, groups, etc.
@@ -177,8 +199,6 @@ module QueryShapers
           group_bys
         end
       end
-
-      private
 
       ##
       # For a given table, returns an array of all JOIN statements necessary to
