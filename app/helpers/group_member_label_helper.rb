@@ -137,7 +137,7 @@ module GroupMemberLabelHelper
   # country, because we didn't determine the origin).
 
   def member_label(composition, group, member_descriptor)
-    return "UNKNOWN" unless member_descriptor
+    return "Indeterminate #{prop_or_dim_label(group.dimension)}" unless member_descriptor
 
     dimension_def = DataSchema.dimensions[group.dimension.to_s]
 
