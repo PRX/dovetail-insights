@@ -330,7 +330,7 @@ export default class extends Controller {
         new URLSearchParams(window.location.search).get("lens"),
       )
     ) {
-      if (this.granularityTarget.value) {
+      if (this.hasGranularityTarget && this.granularityTarget.value) {
         granularityParams.set("granularity", this.granularityTarget.value);
       }
     }

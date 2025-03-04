@@ -83,7 +83,7 @@ export default class extends Controller {
   }
 
   highlight() {
-    if (this.tableTarget) {
+    if (this.hasTableTarget) {
       const resultsTable = this.tableTarget;
 
       const spectrumsOpt = this.spectrumsTarget.value;
