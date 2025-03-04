@@ -51,10 +51,10 @@ export default class extends Controller {
   lensParamsString() {
     const lensParams = new URLSearchParams();
 
-    const selectedLens = this.lensTargets.find((radio) => radio.checked);
-    if (selectedLens) {
-      lensParams.set("lens", selectedLens.value);
-    }
+    lensParams.set(
+      "lens",
+      new URLSearchParams(window.location.search).get("lens"),
+    );
 
     return lensParams.toString();
   }
@@ -325,14 +325,20 @@ export default class extends Controller {
   timeSeriesGranularityParamsString() {
     const granularityParams = new URLSearchParams();
 
-    const selectedLens = this.lensTargets.find((radio) => radio.checked);
-    if (["timeSeries", "cume"].includes(selectedLens?.value)) {
+    if (
+      ["timeSeries", "cume"].includes(
+        new URLSearchParams(window.location.search).get("lens"),
+      )
+    ) {
       if (this.granularityTarget.value) {
         granularityParams.set("granularity", this.granularityTarget.value);
       }
     }
 
-    if (this.granularityTarget.value === "rolling") {
+    if (
+      this.hasGranularityTarget &&
+      this.granularityTarget.value === "rolling"
+    ) {
       if (this.granularityWindowTarget.value) {
         granularityParams.set("window", this.granularityWindowTarget.value);
       }

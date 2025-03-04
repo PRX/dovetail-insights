@@ -9,6 +9,8 @@ module Compositions
   # number of queries being made.
 
   class TimeSeriesComposition < DimensionalComposition
+    GRANULARITY_OPTS = %i[daily weekly monthly quarterly yearly rolling]
+
     def self.query_value
       "timeSeries"
     end
@@ -29,7 +31,7 @@ module Compositions
     validates :granularity, presence: true
     validate :rolling_must_have_window, :window_only_supported_with_rolling, :window_is_supported
     validate :each_comparison_is_valid, :comparisons_are_unique, :comparison_count_is_correct
-    validates :granularity, inclusion: {in: [:daily, :weekly, :monthly, :quarterly, :yearly, :rolling], message: "is not a supported value"}
+    validates :granularity, inclusion: {in: GRANULARITY_OPTS, message: "is not a supported value"}
     validate :comparisons_are_supported_granularity
     validate :rolling_uniques_period_exceeds_interval
     caution :first_interval_precedes_time_range, :last_interval_exceeds_time_range

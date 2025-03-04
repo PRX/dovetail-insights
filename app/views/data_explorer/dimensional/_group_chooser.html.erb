@@ -17,7 +17,7 @@
       <option
         data-dimension-type="<%= dimension_def["Type"] %>"
         value="<%= dim_key %>"
-        <%= html_attributes(selected: "selected") if params["group.#{group_num}"] == dim_key %>>
+        <%= select_eq params["group.#{group_num}"] == dim_key %>>
         <%= dim_key %>
       </option>
     <% end %>
@@ -26,8 +26,8 @@
   <div class="timestamp-options">
     <select class="mode-chooser" name="<%= "group.#{group_num}.timestamp-mode" %>">
       <option value="range">Range</option>
-      <option value="truncate" <%= html_attributes(selected: "selected") if group&.truncate %>>Truncate</option>
-      <option value="extract" <%= html_attributes(selected: "selected") if group&.extract %>>Extract</option>
+      <option value="truncate" <%= select_eq group&.truncate %>>Truncate</option>
+      <option value="extract" <%= select_eq group&.extract %>>Extract</option>
     </select>
 
     <select class="extract-options" name="<%= "group.#{group_num}.extract" %>">
@@ -40,7 +40,7 @@
       <% end %>
 
       <% Compositions::Components::Group::EXTRACT_OPTS.each do |part| %>
-        <option <%= html_attributes(value: part) %> <%= html_attributes(selected: "selected") if group&.extract == part %>><%= part.to_s.humanize %></option>
+        <option <%= html_attributes(value: part) %> <%= select_eq group&.extract == part %>><%= part.to_s.humanize %></option>
       <% end %>
     </select>
 
@@ -54,7 +54,7 @@
       <% end %>
 
       <% Compositions::Components::Group::TRUNCATE_OPTS.each do |part| %>
-        <option value="<%= part %>" <%= html_attributes(selected: "selected") if group&.truncate == part %>><%= t "groups.truncate.display.#{part}" %></option>
+        <option value="<%= part %>" <%= select_eq group&.truncate == part %>><%= t "groups.truncate.display.#{part}" %></option>
       <% end %>
     </select>
 

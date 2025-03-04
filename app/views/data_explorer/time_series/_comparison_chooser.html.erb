@@ -1,0 +1,15 @@
+<fieldset id="time-series-compare" data-data-explorer--composition-url-target="compare">
+  <legend>Time Series Compare</legend>
+
+  <% compare = @composition.try(:comparisons)&.first %>
+
+  <select name="compare">
+    <option></option>
+
+    <% [:WoW, :QoQ, :YoY].each do |p| %>
+      <option value="<%= p %>" <%= select_eq compare.try(:period) == p %>><%= p %></option>
+    <% end %>
+  </select>
+
+  <input name="compare-lookback" value="<%= compare.try(:lookback) %>">
+</fieldset>

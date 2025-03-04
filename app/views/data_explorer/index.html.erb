@@ -17,103 +17,15 @@
 
   <div id="lens">
     <div id="lens-data-parameters">
-      <fieldset id="lens-type" <%= html_attributes(class: "field_with_errors") if @composition.errors.include?(:lens) %>>
-        <legend>Lens Type</legend>
+      <%= render partial: "data_explorer/time_series/granularity_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
 
-        <% [Compositions::DimensionalComposition, Compositions::TimeSeriesComposition].each do |lens| %>
-          <% lens_type = "#{lens.query_value}" %>
-          <label for="lens-<%= lens_type %>"><%= lens_type %></label>
-          <%# TODO Don't use `params` for `checked` %>
-          <input type="radio" name="lens" id="lens-<%= lens_type %>" data-data-explorer--composition-url-target="lens" value="<%= lens_type %>" <%= html_attributes(checked: "checked") if params[:lens] == lens_type %>>
-        <% end %>
-      </fieldset>
+      <%= render partial: "data_explorer/dimensional/metrics_chooser" if @composition.is_a? Compositions::DimensionalComposition %>
 
-      <fieldset id="granularity">
-        <legend>Time Series Options</legend>
+      <%= render partial: "data_explorer/dimensional/groups_panel" if @composition.is_a? Compositions::DimensionalComposition %>
 
-        <select name="granularity" data-data-explorer--composition-url-target="granularity">
-          <% ["daily", "weekly", "monthly", "quarterly", "yearly", "rolling"].each do |g| %>
-            <option <%= html_attributes(selected: "selected") if @composition.try(:granularity).to_s == g %> value="<%= g %>"><%= g %></option>
-          <% end %>
-        </select>
+      <%= render partial: "data_explorer/time_series/comparison_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
 
-        <fieldset id="window">
-          <%= form.label :window, "Window" %>
-          <%= form.text_field :window, name: "window", class: "foo", value: to_duration_shorthand(@composition.try(:window)), data: {"data-explorer--composition-url-target": "granularityWindow"} %>
-        </fieldset>
-      </fieldset>
-
-      <fieldset
-        <%= html_attributes(class: "field_with_errors") if @composition.errors.include?(:metrics) %>
-        id="metrics">
-        <legend>Metrics</legend>
-
-        <% DataSchema.metrics.each do |metric_name, metric_def| %>
-          <% if metric_def["Type"] == "Variable" %>
-            <% checked = @composition.try(:metrics) && @composition.metrics.find {|m| m.metric == metric_name.to_sym } %>
-            <label><input type="checkbox" value="<%= metric_name %>" <%= html_attributes(checked: "checked") if checked %>> <%= metric_name %></label>
-            <% all_variables = @composition.try(:metrics) && @composition.metrics.filter {|m| m.metric == metric_name.to_sym } %>
-            <input name="<%= metric_name %>.variables" placeholder="e.g., '7' or '7, 14, 30'" <%= html_attributes(value: (all_variables||[]).map {|m| m.variable}.join(", ")) %>>
-          <% else %>
-            <% checked = @composition.try(:metrics) && @composition.metrics.find {|m| m.metric == metric_name.to_sym } %>
-            <label>
-              <input type="checkbox" data-data-explorer--composition-url-target="metric" <%= html_attributes(value: metric_name) %> <%= html_attributes(checked: "checked") if checked %>>
-              <%= metric_name %>
-            </label>
-          <% end %>
-        <% end %>
-      </fieldset>
-
-      <fieldset id="groups">
-        <legend>Groups</legend>
-
-        <% [1,2].each do |group_num| %>
-          <%= render partial: "data_explorer/dimensional/group_chooser", locals: {group_num: group_num} %>
-        <% end %>
-      </fieldset>
-
-      <fieldset id="time-series-compare" data-data-explorer--composition-url-target="compare">
-        <legend>Time Series Compare</legend>
-
-        <% compare = @composition.try(:comparisons)&.first %>
-
-        <select name="compare">
-          <option></option>
-
-          <% [:WoW, :QoQ, :YoY].each do |p| %>
-            <option value="<%= p %>" <%= html_attributes(selected: "selected") if compare.try(:period) == p %>><%= p %></option>
-          <% end %>
-        </select>
-
-        <input name="compare-lookback" value="<%= compare.try(:lookback) %>">
-      </fieldset>
-
-      <fieldset data-data-explorer--results-table-highlight-target="chooser">
-        <legend>Highlight Options</legend>
-
-        <label for="hi-scale">Scale</label>
-        <select id="hi-scale" data-data-explorer--results-table-highlight-target="scale" data-action="data-explorer--results-table-highlight#highlight">
-          <option value="log">Log</option>
-          <option value="linear">Linear</option>
-        </select>
-
-        <label for="hi-palette">Palette</label>
-        <select id="hi-palette" data-data-explorer--results-table-highlight-target="palette" data-action="data-explorer--results-table-highlight#highlight">
-          <option value="rainbow">Rainbow</option>
-          <option value="monochrome">Monochrome</option>
-        </select>
-
-        <label for="hi-spectrums">Spectrums</label>
-        <select id="hi-spectrums" data-data-explorer--results-table-highlight-target="spectrums" data-action="data-explorer--results-table-highlight#highlight">
-          <option value="all_values">All values</option>
-          <option value="per_metric">Per metric</option>
-          <option value="per_metric_group_1">Amongst group 1</option>
-          <option value="per_metric_group_2">Amongst group 2</option>
-          <option value="per_metric_interval">Amongst interval</option>
-          <option value="per_metric_group_1_delta">Group 1 over time</option>
-          <option value="per_metric_group_1_group_2_delta">Group 1+2 over time</option>
-        </select>
-      </fieldset>
+      <%= render partial: "data_explorer/highlight_chooser" %>
     </div>
 
     <div id="results">
@@ -123,6 +35,8 @@
         <% if @composition.lens == "dimensional" %>
           <%= render "data_explorer/dimensional/results" %>
         <% elsif @composition.lens == "timeSeries" %>
+          <%= render "data_explorer/time_series/results" %>
+        <% elsif @composition.lens == "cume" %>
           <%= render "data_explorer/time_series/results" %>
         <% end %>
       <% end %>

@@ -17,8 +17,8 @@
 
       <select class="<%= "field_with_errors" if filter&.errors&.include?(:operator) %>" <%= html_attributes(name: "filter.#{dim_key}") %>>
         <option></option>
-        <option value="include" <%= html_attributes(selected: "selected") if filter&.operator == :include %>>Include</option>
-        <option value="exclude" <%= html_attributes(selected: "selected") if filter&.operator == :exclude %>>Exclude</option>
+        <option value="include" <%= select_eq filter&.operator == :include %>>Include</option>
+        <option value="exclude" <%= select_eq filter&.operator == :exclude %>>Exclude</option>
       </select>
 
       <% if ["Token"].include? dimension_def["Type"] %>
@@ -27,7 +27,7 @@
           <label for="filter.<%= dim_key %>.values">Values:</label>
           <select class="token value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" <%= html_attributes(name: "filter.#{dim_key}.values", id: "filter.#{dim_key}.values") %> multiple>
             <% Lists.list_for(dim_key, @current_user_podcast_accounts).each do |item| %>
-              <option <%= html_attributes(value: item[item.keys[0]]) %> <%= html_attributes(selected: "selected") if filter&.values&.include?(item[item.keys[0]].to_s) %>><%= item[item.keys[1]] %></option>
+              <option <%= html_attributes(value: item[item.keys[0]]) %> <%= select_eq filter&.values&.include?(item[item.keys[0]].to_s) %>><%= item[item.keys[1]] %></option>
             <% end %>
           </select>
         <% else %>
@@ -54,7 +54,7 @@
         <br>
         <select class="timestamp-mode" <%= html_attributes(name: "filter.#{dim_key}.timestamp-mode") %>>
           <option value="Range">Range</option>
-          <option value="Extract" <%= html_attributes(selected: "selected") if filter&.extract %>>Extract</option>
+          <option value="Extract" <%= select_eq filter&.extract %>>Extract</option>
         </select>
 
         <div class="range">
@@ -79,7 +79,7 @@
             <option></option>
 
             <% Compositions::Components::Group::EXTRACT_OPTS.each do |part| %>
-              <option <%= html_attributes(value: part) %> <%= html_attributes(selected: "selected") if filter&.extract == part %>><%= part.to_s.humanize %></option>
+              <option <%= html_attributes(value: part) %> <%= select_eq filter&.extract == part %>><%= part.to_s.humanize %></option>
             <% end %>
           </select>
 

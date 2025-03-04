@@ -91,7 +91,6 @@ form.nochrome {
   }
 }
 
-#metrics { display: none; }
 
 #lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #metrics,
 #lens-data-parameters:has(input[type=radio][value=dimensional]:checked) #metrics,
@@ -99,7 +98,6 @@ form.nochrome {
   display: block;
 }
 
-#time-series-granularity { display: none; }
 body:has(input[name=analysis-type][value=time-series]:checked) #time-series-granularity { display: block; }
 #time-series-granularity span { display: none; }
 body:has(#time-series-granularity option:last-child:checked) #time-series-granularity span {
@@ -115,16 +113,13 @@ body:has(#time-series-granularity option:last-child:checked) #time-series-granul
   padding: 8px;
 }
 
-#granularity { display: none; }
 #lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #granularity,
 #lens-data-parameters:has(input[type=radio][value=cume]:checked) #granularity {
   display: block;
 }
 
-#window { display: none; }
 #granularity:has(option:last-child:checked) #window { display: block }
 
-#groups { display: none; }
 #lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #groups,
 #lens-data-parameters:has(input[type=radio][value=dimensional]:checked) #groups,
 #lens-data-parameters:has(input[type=radio][value=cume]:checked) #groups {
@@ -155,7 +150,6 @@ body:has(#time-series-granularity option:last-child:checked) #time-series-granul
 #groups fieldset:has(option[value=metro]:checked) .meta-options-for-metro { display: block; }
 
 
-#time-series-compare { display: none; }
 #lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #time-series-compare {
   display: block;
 }
