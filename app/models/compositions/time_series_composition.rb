@@ -36,7 +36,6 @@ module Compositions
     validate :rolling_uniques_period_exceeds_interval
     caution :first_interval_precedes_time_range, :last_interval_exceeds_time_range
 
-    # TODO Validate that comparisons are supported for the selected granularity
     # TODO Validate metrics (may be different validations than with dimensional lens)
 
     def granularity=(granularity)
@@ -46,9 +45,6 @@ module Compositions
     end
 
     def window=(window)
-      # TODO This value should be in seconds, and should support both raw input
-      # in seconds from the form, and more friendly input like "7D" and convert
-      # the days to seconds
       raise unless window.instance_of? Integer
 
       @window = window
@@ -71,8 +67,14 @@ module Compositions
     def query(a_binding)
       return unless valid?
 
-      erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "big_query", "dimensional.sql.erb")))
-      erb.result(a_binding)
+      @query ||= begin
+        shaper = QueryShapers::BigQuery::TimeSeries.new(self)
+
+        # dimensional.sql.erb is suitable for both dimensional and time series
+        # queries.
+        erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "big_query", "dimensional.sql.erb")))
+        erb.result_with_hash(shaper.to_hash)
+      end
     end
 
     ##

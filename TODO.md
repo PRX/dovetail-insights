@@ -35,3 +35,6 @@
 - Probably need to add a SortProperty, so groups can be sorted by something other than the exhibit property (thinking about episode, probably makes sense to sort by pub date by default)
 - Support accessing BQ datasets other than "production". Probably needs to parse the data_schema as ERB
 - Separate permissions for downloads and impressions
+- Fix Oauth token refresh to bring you back to page you requested that triggered the refresh
+- Change interval descriptors to be the complete range, not just one side
+- Write some tests to check rolling window ranges down to the second

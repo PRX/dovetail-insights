@@ -1,271 +1,36 @@
+DECLARE range_start TIMESTAMP DEFAULT '<%= composition.abs_from.to_s %>';
+DECLARE range_end TIMESTAMP DEFAULT '<%= composition.abs_to.to_s %>';
+
+-- NOTE: Rolling window calculations and ranges are unused with non-rolling
+-- compositions, but included to make this template less complex.
+
+-- I couldn't get any of the native range functions in BigQuery to do
+-- exactly what I wanted, so this is some manual math. The goal is to
+-- have a set of ranges, anchored to the chosen range end, and starting
+-- at or before the chosen range start, such that each range is exactly
+-- the same number of seconds
+DECLARE rolling_window_num_seconds INT64 DEFAULT <%= composition.try(:window) || 86400 %>;
+
+-- Get the total time range duration in seconds
+DECLARE range_duration_in_seconds INT64 DEFAULT TIMESTAMP_DIFF(range_end, range_start, SECOND);
+
+-- Figure out how many windows for the current rolling window setting
+-- fit into that duration (e.g., duration=10, window=3, that would give
+-- 3.333 windows)
+-- This assume windows are always defined as some number of *days*
+DECLARE num_windows_in_range FLOAT64 DEFAULT range_duration_in_seconds / rolling_window_num_seconds;
+-- Round the number of windows up, so we have a whole number of windows
+-- that covers at least the entire duration (e.g., 4 windows)
+DECLARE expanded_num_windows_in_range INT64 DEFAULT CAST(CEIL(num_windows_in_range) AS INT64);
+
+-- Get the total number of seconds in that whole number quantity of
+-- windows
+DECLARE expanded_range_duration_in_seconds INT64 DEFAULT expanded_num_windows_in_range * rolling_window_num_seconds;
+
+--
+DECLARE expanded_range_start TIMESTAMP DEFAULT TIMESTAMP_SUB(range_end, INTERVAL expanded_range_duration_in_seconds SECOND);
+
 <%
-  ##
-  # For a given table, returns an array of all JOIN statements necessary to
-  # join that table to the downloads table. This recursively walks through the
-  # schema until it gets to the downloads table.
-
-  def all_joins_for_table(table_name)
-    all_joins = []
-
-    # All tables ultimately join to downloads, so if the input is downloads, no
-    # joins are necessary
-    unless table_name == "downloads"
-      table_def = DataSchema.tables[table_name]
-      bq = table_def["BigQuery"]
-
-      # For each table that the input table joins so, see if any more joins are
-      # needed recursively. For example, if "advertisers" is the input table,
-      # it lists "campaigns" and a join, which in turn lists "impressions",
-      # which finally joins to downloads. So in order to join advertisers,
-      # joins for all three tables are required to get back to downloads.
-      bq["JoinsTo"].each do |join_table_name, join_def|
-        # As before, no joins are necessary once we're at the downloads table
-        unless join_table_name == "downloads"
-          all_joins.concat(all_joins_for_table(join_table_name))
-        end
-
-        # Joins can be defined using either a key on the join table that
-        # matches the primary key of the input table, or using an arbitrary
-        # expression
-        if join_def["Key"]
-          all_joins << "#{bq["Join"]} JOIN #{bq["Table"]} AS #{table_name} ON #{table_name}.#{bq["Key"]} = #{join_table_name}.#{join_def["Key"]}"
-        elsif join_def["Expression"]
-          all_joins << "#{bq["Join"]} JOIN #{bq["Table"]} AS #{table_name} ON #{join_def["Expression"]}"
-        end
-      end
-    end
-
-    all_joins
-  end
-
-  # Collect all the tables that are needed for filters, metrics, and groups.
-  # This only includes the tables that are *directly* required for each of
-  # these; those tables may have chained dependencies, which are handled below.
-  tables = []
-  filters.each { |filter| (DataSchema.dimensions[filter.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
-  metrics.each { |metric| (DataSchema.metrics[metric.metric.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
-  groups.each { |group| (DataSchema.dimensions[group.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
-
-  # Collect all JOIN statements needed for **all** tables required by this
-  # query, not just the ones directly touched by filters, groups, etc.
-  joins = []
-  tables.uniq.each do |table_name|
-    joins.concat(all_joins_for_table(table_name))
-  end
-
-  # Each element of +selects+ will look like "foo AS bar"
-  selects = []
-
-  #
-  if self.is_a? Compositions::TimeSeriesComposition
-    if rolling?
-      # Use the raw range tuple as the source of truth for GROUP BY, but include
-      # the start of the range as a useful value we can use elsewhere to
-      # represent each group
-      selects << "rolling_window_range AS #{granularity_as}_raw"
-      # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
-      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", RANGE_START(rolling_window_range), "UTC") AS #{granularity_as})
-    else
-      bq_granularity = case granularity
-      when :daily
-        "DAY"
-      when :weekly
-        "WEEK(SUNDAY)"
-      when :monthly
-        "MONTH"
-      when :quarterly
-        "QUARTER"
-      when :yearly
-        "YEAR"
-      end
-
-      # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
-      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", TIMESTAMP_TRUNC(downloads.timestamp, #{bq_granularity}), "UTC") AS #{granularity_as})
-    end
-  end
-
-  # Add SELECTs derived from the group selections and the modes they are
-  # operating in
-  #
-  # All of these SELECTs use a unique, derived AS, so there is no risk of
-  # collision, but they are not otherwise deduped, so it is currently possible
-  # for things to be SELECTed more than once unnecessarily
-  groups.each do |group|
-    dimension_def = DataSchema.dimensions[group.dimension.to_s]
-    selector = dimension_def["BigQuery"]["Selector"]
-
-    if group.extract
-      extract_arg = {
-        hour: "HOUR",
-        day_of_week: "DAYOFWEEK",
-        day: "DAY",
-        week: "WEEK",
-        month: "MONTH",
-        year: "YEAR"
-      }[group.extract]
-      selects << "EXTRACT(#{extract_arg} FROM #{selector}) AS #{group.as}"
-    elsif group.truncate
-      truncate_arg = {
-        week: "WEEK",
-        month: "MONTH",
-        year: "YEAR"
-      }[group.truncate]
-      # Format after truncating to get a format we are anticipating.
-      # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
-      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", TIMESTAMP_TRUNC(#{selector}, #{truncate_arg}, "UTC"), "UTC") AS #{group.as})
-    elsif group.indices
-      cases = []
-
-      group.abs_indices.each_with_index do |i, idx|
-        if dimension_def["BigQuery"]["Type"] == "TIMESTAMP"
-          # Wrap TIMESTAMPS in quotes
-          cases << "WHEN #{selector} < '#{i}' THEN '#{group.abs_indices[idx]}'"
-        else
-          cases << "WHEN #{selector} < #{i} THEN '#{group.abs_indices[idx]}'"
-        end
-      end
-
-      cases << "ELSE '#{Compositions::Components::Group::TERMINATOR_INDEX}'"
-
-      selects << "CASE \n #{cases.join("\n")} \n END AS #{group.as}"
-    else
-      selects << "#{selector} AS #{group.as}"
-    end
-
-    # Select the exhibit property for this dimension if necessary
-    if dimension_def["ExhibitProperty"]
-      exhibit_property_name = dimension_def["ExhibitProperty"]
-      property_def = DataSchema.dimensions[exhibit_property_name] || DataSchema.properties[exhibit_property_name]
-      exhibit_selector = property_def["BigQuery"]["Selector"]
-      exhibit_as = "#{group.as}_exhibit_#{exhibit_property_name}"
-
-      selects << "#{exhibit_selector} AS #{exhibit_as}"
-    end
-
-    # Select the sort properties for this dimension if necessary
-    if dimension_def["SortProperty"]
-      dimension_def["SortProperty"].each do |sort_property_name|
-        property_def = DataSchema.dimensions[sort_property_name] || DataSchema.properties[sort_property_name]
-        sort_selector = property_def["BigQuery"]["Selector"]
-        sort_as = "#{group.as}_sort_#{sort_property_name}"
-
-        selects << "#{sort_selector} AS #{sort_as}"
-      end
-    end
-
-    group.meta&.each do |meta_property|
-      property_def = DataSchema.dimensions[meta_property.to_s] || DataSchema.properties[meta_property.to_s]
-      meta_selector = property_def["BigQuery"]["Selector"]
-      meta_as = "#{group.as}_meta_#{meta_property}"
-
-      # TODO Also need exhibit property for this property?
-
-      selects << "#{meta_selector} AS #{meta_as}"
-    end
-  end
-
-  # Add a select for each metric. These are some sort of aggregation, like a
-  # COUNT() of downloads
-  # TODO Needs to handle variables/uniques
-  metrics.each do |metric|
-    metric_def = DataSchema.metrics[metric.metric.to_s]
-    selector = metric_def["BigQuery"]["Selector"]
-
-    if metric_def["Type"] && metric_def["Type"] == "Variable"
-
-    else
-      selects << "#{selector} AS #{metric.as}"
-    end
-  end
-
-  # WHEREs are added from filters, and only from filters. Different types of
-  # filters result in different types of WHERE clauses, to support things like
-  # lists, ranges, etc. Some values in WHEREs need to be quoted.
-  wheres = []
-
-  filters.each do |filter|
-    filter_def = DataSchema.dimensions[filter.dimension.to_s]
-    selector = filter_def["BigQuery"]["Selector"]
-    bq_type = filter_def["BigQuery"]["Type"]
-
-    if filter.from
-      # Filters with a `from` are timestamp ranges
-
-      # Wrap values for timestamp fields in quotes
-      from = %Q("#{filter.abs_from}")
-      to = %Q("#{filter.abs_to}")
-
-      if filter.operator == :include
-        wheres << "#{selector} >= #{from} AND #{selector} < #{to}"
-      else
-        wheres << "(#{selector} < #{from} OR #{selector} >= #{to})"
-      end
-    elsif filter.gte
-      # Filters with a `gte` are a duration range
-      if filter.operator == :include
-        wheres << "#{selector} >= #{filter.gte} AND #{selector} < #{filter.lt}"
-      else
-        wheres << "(#{selector} < #{filter.gte} OR #{selector} >= #{filter.lt})"
-      end
-    else
-      # Filter on a basic list of values
-      values = (bq_type == "STRING") ? filter.values.map { |v| %Q("#{v}") } : filter.values
-
-      if filter.operator == :include
-        # By default, only include the selected values, but if nulls=follow
-        # then we also include nulls
-        or_nulls = filter.nulls == :follow ? " OR #{selector} IS NULL" : ""
-        wheres << "(#{selector} IN (#{values.join(", ")})#{or_nulls})"
-      elsif filter.operator == :exclude
-        # By default include nulls, but if nulls=follow then exclude them
-        or_nulls = filter.nulls == :follow ? "" : " OR #{selector} IS NULL"
-        wheres << "(#{selector} NOT IN (#{values.join(", ")})#{or_nulls})"
-      end
-    end
-  end
-
-  # Each selected group adds a GROUP BY clause. Groups are the only source of
-  # GROUP BY clauses for dimensional lens, but some dimensions add multiple
-  # GROUP BY clauses, to support exhibit properties
-  group_bys = []
-
-  # Time series have additional GROUP BY clauses for the granularity. For
-  # calendar granularities, like daily/weekly/etc, one GROUP BY is added. With
-  # +rolling+, an additional GROUP BY is added which is a field that contains
-  # the ranges actually used to calculate the rolling windows. These ranges are
-  # the source of truth, whereas the +granularity_as+ field is useful for
-  # presentation, but is a less exact formatted version of the range.
-  if self.is_a? Compositions::TimeSeriesComposition
-    group_bys << "#{granularity_as}_raw" if rolling?
-    group_bys << granularity_as
-  end
-
-  groups.each do |group|
-    group_bys << group.as
-
-    dimension_def = DataSchema.dimensions[group.dimension.to_s]
-    if dimension_def["ExhibitProperty"]
-      exhibit_property_name = dimension_def["ExhibitProperty"]
-      exhibit_as = "#{group.as}_exhibit_#{exhibit_property_name}"
-
-      group_bys << exhibit_as
-    end
-
-    if dimension_def["SortProperty"]
-      dimension_def["SortProperty"].each do |sort_property_name|
-        sort_as = "#{group.as}_sort_#{sort_property_name}"
-
-        group_bys << sort_as
-      end
-    end
-
-    group.meta&.each do |meta_property|
-      meta_as = "#{group.as}_meta_#{meta_property}"
-
-      group_bys << meta_as
-    end
-  end
-
   # In the initial downloads CTE, only include columns that are required to
   # complete the query. Look for any columns on the downloads table that are
   # required directly, or any columns that are needed to JOIN other table. This
@@ -275,8 +40,8 @@
   dl_cte_selects = ["timestamp", "request_uuid"]
 
   group_and_filter_dimension_names = []
-  group_and_filter_dimension_names.concat(groups.map {|g| g.dimension.to_s }) if groups
-  group_and_filter_dimension_names.concat(filters.map {|f| f.dimension.to_s }) if filters
+  group_and_filter_dimension_names.concat(composition.groups.map {|g| g.dimension.to_s }) if composition.groups
+  group_and_filter_dimension_names.concat(composition.filters.map {|f| f.dimension.to_s }) if composition.filters
 
   group_and_filter_dimension_names.each do |dimension_name|
     dimension_def = DataSchema.dimensions[dimension_name]
@@ -293,37 +58,6 @@
     dl_cte_selects.concat(dimension_def["BigQuery"]["RequiredColumns"]) if dimension_def["BigQuery"]["RequiredColumns"]
   end
 %>
-
-DECLARE range_start TIMESTAMP DEFAULT '<%= abs_from.to_s %>';
-DECLARE range_end TIMESTAMP DEFAULT '<%= abs_to.to_s %>';
-
-<% if self.is_a?(Compositions::TimeSeriesComposition) && rolling? %>
-  -- I couldn't get any of the native range functions in BigQuery to do
-  -- exactly what I wanted, so this is some manual math. The goal is to
-  -- have a set of ranges, anchored to the chosen range end, and starting
-  -- at or before the chosen range start, such that each range is exactly
-  -- the same number of seconds
-  DECLARE rolling_window_num_seconds INT64 DEFAULT <%= window %>;
-
-  -- Get the total time range duration in seconds
-  DECLARE range_duration_in_seconds INT64 DEFAULT TIMESTAMP_DIFF(range_end, range_start, SECOND);
-
-  -- Figure out how many windows for the current rolling window setting
-  -- fit into that duration (e.g., duration=10, window=3, that would give
-  -- 3.333 windows)
-  -- This assume windows are always defined as some number of *days*
-  DECLARE num_windows_in_range FLOAT64 DEFAULT range_duration_in_seconds / rolling_window_num_seconds;
-  -- Round the number of windows up, so we have a whole number of windows
-  -- that covers at least the entire duration (e.g., 4 windows)
-  DECLARE expanded_num_windows_in_range INT64 DEFAULT CAST(CEIL(num_windows_in_range) AS INT64);
-
-  -- Get the total number of seconds in that whole number quantity of
-  -- windows
-  DECLARE expanded_range_duration_in_seconds INT64 DEFAULT expanded_num_windows_in_range * rolling_window_num_seconds;
-
-  --
-  DECLARE expanded_range_start TIMESTAMP DEFAULT TIMESTAMP_SUB(range_end, INTERVAL expanded_range_duration_in_seconds SECOND);
-<% end %>
 
 -- In order to ensure that the time range operates as expected, we make
 -- queries for downloads and impressions before doing any JOINs.
@@ -353,23 +87,21 @@ downloads_in_range AS (
   )
 <% end %>
 
-<% if self.is_a?(Compositions::TimeSeriesComposition) && rolling? %>
-  ,rolling_window_ranges AS (
-    -- This generates a set of ranges to be used on time series lenses, when
-    -- the granularity is a rolling window. It's pretty safe to set up the
-    -- CTE on all queries. This uses the window math DEFINEs from above, to
-    -- create a table with a row for each window, with a column for the start
-    -- and end.
-    SELECT *
+,rolling_window_ranges AS (
+  -- This generates a set of ranges to be used on time series lenses, when
+  -- the granularity is a rolling window. It's pretty safe to set up the
+  -- CTE on all queries. This uses the window math DEFINEs from above, to
+  -- create a table with a row for each window, with a column for the start
+  -- and end.
+  SELECT *
 
-    FROM UNNEST(
-      GENERATE_RANGE_ARRAY(
-        RANGE(expanded_range_start, range_end),
-        INTERVAL rolling_window_num_seconds SECOND
-      )
-    ) AS rolling_window_range
-  )
-<% end %>
+  FROM UNNEST(
+    GENERATE_RANGE_ARRAY(
+      RANGE(expanded_range_start, range_end),
+      INTERVAL rolling_window_num_seconds SECOND
+    )
+  ) AS rolling_window_range
+)
 
 SELECT <%= selects.join(", ") %>
 <%# TODO get this AS name from the schema %>

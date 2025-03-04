@@ -28,10 +28,12 @@ module Compositions
     def query
       return unless valid?
 
-      erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "big_query", "dimensional.sql.erb")))
-      sql = erb.result(binding)
+      @query ||= begin
+        shaper = QueryShapers::BigQuery::Dimensional.new(self)
 
-      @query ||= sql
+        erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "big_query", "dimensional.sql.erb")))
+        erb.result_with_hash(shaper.to_hash)
+      end
     end
 
     ##
