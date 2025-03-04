@@ -5,4 +5,10 @@
       <%= link_to "Admin", admin_root_path, class: "nav-link" %>
     </div>
   </nav>
+
+  <nav class="prx-app-nav navbar-nav justifty-content-end navbar-expand-md">
+    <div class="collapse navbar-collapse justify-content-start align-items-stretch" id="navbarSubNav">
+      <p>Last 48 hours: <%= number_to_human_size(@bytes) %> (<%= number_to_currency(@bytes.to_f / 2.0**40 * BIG_QUERY_PRICE_PER_TIB, precision: 5) %>)</p>
+    </div>
+  </nav>
 </div>

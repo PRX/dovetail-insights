@@ -1,0 +1,10 @@
+#time-ranger-chooser {
+  ul, p {
+    display: none;
+  }
+  &:hover ul, &:hover p { display: block; }
+
+  .field_with_errors {
+    display: inline;
+  }
+}

@@ -187,7 +187,7 @@ form:has(#granularity select[name=granularity] option[value=quarterly]:checked) 
 
 #export-btn {
   position: absolute;
-  top: 60px;
+  top: 100px;
   right: 0;
   display: block;
   border: 4px solid red;

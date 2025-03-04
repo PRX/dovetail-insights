@@ -1,0 +1,14 @@
+.filter-chooser {
+  fieldset > div {
+    display: none;
+  }
+
+  &:has(legend input:checked) fieldset > div {
+    display: inherit;
+  }
+
+  legend {
+    font-weight: bold;
+    font-size: 1rem;
+  }
+}

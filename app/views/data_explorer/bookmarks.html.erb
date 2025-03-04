@@ -1,7 +1,3 @@
-<p><%= current_user_name %></p>
-
-<a href="/data-explorer">Data Explorer</a>
-
 <ul>
   <li><a href="/data-explorer?lens=dimensional&from=now-1/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&metrics=downloads&group.1=time&group.1.extract=hour&group.2=time&group.2.extract=day_of_week">Heatmap by hour and day of the week</a></li>
   <li><a href="/data-explorer?lens=dimensional&from=now-1/M&to=now-1/M&filter.podcast=include&filter.podcast.values=3492&filter.lag=exclude&filter.lag.gte=0&filter.lag.lt=36h&metrics=downloads&group.1=time&group.1.extract=hour&group.2=time&group.2.extract=day_of_week">Heatmap by hour and day of week, excluding drop spikes (first 36 hours)</a></li>

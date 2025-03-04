@@ -115,7 +115,7 @@ export default class extends Controller {
         }
 
         const nullsCheckbox = filterChooser.querySelector(
-          "input[type='checkbox']:checked",
+          `*[name="filter.${dimensionKey}.nulls"]:checked`,
         );
         if (nullsCheckbox) {
           filtersParams.set(nullsCheckbox.name, "follow");

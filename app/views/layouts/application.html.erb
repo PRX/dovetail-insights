@@ -28,9 +28,9 @@
   </head>
 
   <body data-turbo="false">
-    <%= render "layouts/nav" %>
-    <%= render "layouts/subnav" %>
-    <%= render "layouts/alerts" %>
+    <%= render "layouts/nav" if current_user %>
+    <%= render "layouts/subnav" if current_user %>
+    <%= render "layouts/alerts" if current_user %>
 
     <%= yield %>
   </body>

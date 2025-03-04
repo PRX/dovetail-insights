@@ -2,7 +2,16 @@
   <legend>Filters</legend>
 
   <ul>
-    <% DataSchema.dimensions.each do |dimension_name, dimension_def| %>
+    <%
+      # Sort active filters to the top
+      sorted_dims = DataSchema.dimensions.sort do |a, b|
+        a_filter = @composition.filters&.find { |f| f.dimension == a[0].to_sym }
+        b_filter = @composition.filters&.find { |f| f.dimension == b[0].to_sym }
+
+        (b_filter ? 1 : 0) - (a_filter ? 1 : 0)
+      end
+    %>
+    <% sorted_dims.each do |dimension_name, dimension_def| %>
       <%= render partial: "data_explorer/filter_chooser", locals: {dimension_name: dimension_name, dimension_def: dimension_def } %>
     <% end %>
   </ul>

@@ -1,30 +1,31 @@
-<fieldset id="range">
+<fieldset id="time-ranger-chooser">
   <legend>Time Range</legend>
 
-  <%= form.label :from, "From" %><%= form.text_field :from, name: "from", data: { "data-explorer--composition-url-target": "from" } %>
+  <%= form.label :from, "From" %><%= form.text_field :from, name: :from, data: { "data-explorer--composition-url-target": :from } %>
   <br>
-  <%= form.label :to, "To" %><%= form.text_field :to, name: "to", data: { "data-explorer--composition-url-target": "to" } %>
+  <%= form.label :to, "To" %><%= form.text_field :to, name: :to, data: { "data-explorer--composition-url-target": :to } %>
+
+  <% if @composition.abs_from || @composition.abs_to %>
+    <p>
+      From exact: <%= @composition.abs_from&.strftime("%Y-%m-%dT%H:%M:%SZ") %>
+      <br>To exact: <%= @composition.abs_to&.strftime("%Y-%m-%dT%H:%M:%SZ") %>
+      <br>Desc: <%= RangeDescription.in_words(@composition.from, @composition.to) %>
+    </p>
+  <% end %>
 
   <ul>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = '2023-01-01';document.querySelector('input[name=to]').value = '2023-02-01';">Jan 2023</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = '2024-12-25T06:00:00Z';document.querySelector('input[name=to]').value = '2024-12-25T12:00:00Z';">Christmas morning</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-48h';document.querySelector('input[name=to]').value = 'now';">Last 48 hours</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-48/h';document.querySelector('input[name=to]').value = 'now-1/h';">Previous 48 hours</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-1/W';document.querySelector('input[name=to]').value = 'now-1/W';">Previous week</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-1/W+1D';document.querySelector('input[name=to]').value = 'now-1/W-1D';">M-F Previous week</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-1/M';document.querySelector('input[name=to]').value = 'now-1/M';">Previous month</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now/M';document.querySelector('input[name=to]').value = 'now/M';">This month</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now/M';document.querySelector('input[name=to]').value = 'now';">This month so far</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-6/M';document.querySelector('input[name=to]').value = 'now-1/M';">Previous 6 months</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-90/D';document.querySelector('input[name=to]').value = 'now-1/D';">Previous 90 days</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now-1/Q';document.querySelector('input[name=to]').value = 'now-1/Q';">Previous quarter</a></li>
-    <li><a href="#" onclick="document.querySelector('input[name=from]').value = 'now/Y';document.querySelector('input[name=to]').value = 'now/Y';">This year</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = '2023-01-01';document.querySelector('input[name=to]').value = '2023-02-01';">Jan 2023</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = '2024-12-25T06:00:00Z';document.querySelector('input[name=to]').value = '2024-12-25T12:00:00Z';">Christmas morning</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now-48h';document.querySelector('input[name=to]').value = 'now';">Last 48 hours</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now-48/h';document.querySelector('input[name=to]').value = 'now-1/h';">Previous 48 hours</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now-1/W';document.querySelector('input[name=to]').value = 'now-1/W';">Previous week</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now-1/W+1D';document.querySelector('input[name=to]').value = 'now-1/W-1D';">M-F Previous week</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now-1/M';document.querySelector('input[name=to]').value = 'now-1/M';">Previous month</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now/M';document.querySelector('input[name=to]').value = 'now/M';">This month</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now/M';document.querySelector('input[name=to]').value = 'now';">This month so far</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now-6/M';document.querySelector('input[name=to]').value = 'now-1/M';">Previous 6 months</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now-90/D';document.querySelector('input[name=to]').value = 'now-1/D';">Previous 90 days</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now-1/Q';document.querySelector('input[name=to]').value = 'now-1/Q';">Previous quarter</a></li>
+    <li><a href="" onclick="event.preventDefault();document.querySelector('input[name=from]').value = 'now/Y';document.querySelector('input[name=to]').value = 'now/Y';">This year</a></li>
   </ul>
-</fieldset>
-
-<fieldset>
-  <legend>Current Time Range</legend>
-  <p>From: <%= @composition.abs_from&.strftime("%Y-%m-%dT%H:%M:%SZ") %></p>
-  <p>To: <%= @composition.abs_to&.strftime("%Y-%m-%dT%H:%M:%SZ") %></p>
-  <p><%= RangeDescription.in_words(@composition.from, @composition.to) %></p>
 </fieldset>
