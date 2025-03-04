@@ -261,8 +261,6 @@ module Results
     def unique_group_member_descriptors(group)
       return unless group
 
-      dimension_def = DataSchema.dimensions[group.dimension.to_s]
-
       # If the group has indices, we want to maintain the order of the
       # indices as they were defined
       if group.indices
@@ -273,18 +271,6 @@ module Results
           .map { |row| row[group.as] } # Map each row to the member descriptor for this group
           .compact
           .uniq
-          # TODO It likely makes sense to move this sorting to the view, so it
-          # can reflect the final label
-          # TODO Use the SortProperty of the group's dimension if it exists
-          .sort do |a, b|
-            if dimension_def["ExhibitProperty"]
-              group_member_exhibition(group, a) <=> group_member_exhibition(group, b)
-            elsif a == a.to_i.to_s && b == b.to_i.to_s
-              a.to_i <=> b.to_i
-            else
-              a <=> b
-            end
-          end
       end
     end
 
@@ -294,6 +280,48 @@ module Results
 
     def group_2_unique_member_descriptors
       @group_2_unique_member_descriptors ||= unique_group_member_descriptors(composition.groups[1])
+    end
+
+    ##
+    # Looks up a descriptor for a specific property, based on the descriptor
+    # of the group's actual dimension.
+    #
+    # For example, with a group where dimension=podcast_id, when given
+    # 123 and podcast_name, this will return the podcast name for the podcast
+    # with ID=123.
+    #
+    # Can be used for things like ExhibitProperty, SortProperties, meta
+    # properties, etc, using the fingerprint to differentiate.
+
+    def group_member_descriptor_for_property(group, member_descriptor, property_name, fingerprint)
+      @group_member_descriptor_for_property ||= {}
+
+      cache_key = [group.dimension.to_s, member_descriptor, property_name, fingerprint]
+
+      # If no property is given, short circuit and memoize/return the given
+      # descriptor
+      @group_member_descriptor_for_property[cache_key] = member_descriptor unless property_name
+
+      # Return memoized value even if it's nil
+      return @group_member_descriptor_for_property[cache_key] if @group_member_descriptor_for_property.key?(cache_key)
+
+      # In the query, this property was SELECTed using an AS with a fingerprint
+      # to prevent collisions
+      as = :"#{group.as}_#{fingerprint}_#{property_name}"
+
+      # Look for any row in the results that include the original member
+      sample_row = rows.find { |row| row[group.as] == member_descriptor }
+
+      found_property_descriptor = sample_row[as]
+
+      # If for some reason the exhibt value did't come back as something
+      # useful, fallback to the member descriptor
+      property_descriptor = found_property_descriptor.blank? ? member_descriptor : found_property_descriptor
+
+      # That row will also have the meta property value that we're looking for
+      @group_member_descriptor_for_property[cache_key] = property_descriptor
+
+      @group_member_descriptor_for_property[cache_key]
     end
 
     ##
@@ -313,75 +341,15 @@ module Results
     # descriptors may become the same exhibitions.
 
     def group_member_exhibition(group, member_descriptor)
-      # TODO memoize
-      dimension_def = DataSchema.dimensions[group.dimension.to_s]
-
-      if dimension_def.has_key?("ExhibitProperty")
-        # The dimension used for this group has an exhibit property, so another
-        # field is used as its display value.
-
-        # Get the name of the exhibit property
-        exhibit_property_name = dimension_def["ExhibitProperty"]
-
-        # In the query, the exhibit property was SELECTed using an AS with a
-        # particular format, to prevent collisions
-        prop_as = :"#{group.as}_exhibit_#{exhibit_property_name}"
-
-        # Look for any row in the results that include the original member
-        sample_row = rows.find { |row| row[group.as] == member_descriptor }
-
-        # That row will also have the exhibit property value that we're looking
-        # for
-        exhibit_value = sample_row[prop_as]
-
-        # If for some reason the exhibt value did't come back as something
-        # useful, fallback to the member descriptor
-        exhibit_value.blank? ? member_descriptor : exhibit_value
-      else
-        member_descriptor
-      end
+      group_member_descriptor_for_property(group, member_descriptor, DataSchema.dimensions[group.dimension.to_s]["ExhibitProperty"], :exhibit)
     end
 
     def group_meta_descriptor(group, group_member_descriptor, meta_property_name)
-      @group_meta_descriptor_cache ||= {}
-
-      cache_key = [group.dimension.to_s, group_member_descriptor, meta_property_name]
-
-      # Return memoized value even if it's nil
-      return @group_meta_descriptor_cache[cache_key] if @group_meta_descriptor_cache.key?(cache_key)
-
-      # In the query, the exhibit property was SELECTed using an AS with a
-      # particular format, to prevent collisions
-      meta_as = :"#{group.as}_meta_#{meta_property_name}"
-
-      # Look for any row in the results that include the original member
-      sample_row = rows.find { |row| row[group.as] == group_member_descriptor }
-
-      # That row will also have the meta property value that we're looking for
-      @group_meta_descriptor_cache[cache_key] = sample_row[meta_as]
-
-      @group_meta_descriptor_cache[cache_key]
+      group_member_descriptor_for_property(group, group_member_descriptor, meta_property_name, :meta)
     end
 
     def group_sort_descriptor(group, group_member_descriptor, sort_property_name)
-      @group_sort_descriptor_cache ||= {}
-
-      cache_key = [group.dimension.to_s, group_member_descriptor, sort_property_name]
-
-      # Return memoized value even if it's nil
-      return @group_sort_descriptor_cache[cache_key] if @group_sort_descriptor_cache.key?(cache_key)
-
-      # In the query, the exhibit property was SELECTed using an AS with a
-      # particular format, to prevent collisions
-      sort_as = :"#{group.as}_sort_#{sort_property_name}"
-
-      # Look for any row in the results that include the original member
-      sample_row = rows.find { |row| row[group.as] == group_member_descriptor }
-
-      # That row will also have the meta property value that we're looking for
-      @group_sort_descriptor_cache[cache_key] = sample_row[sort_as]
-
-      @group_sort_descriptor_cache[cache_key]
+      group_member_descriptor_for_property(group, group_member_descriptor, sort_property_name, :sort)
     end
   end
 end
