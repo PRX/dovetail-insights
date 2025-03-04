@@ -67,6 +67,8 @@ module GroupMemberLabelHelper
       ["", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][member_descriptor.to_i]
     when :hour
       "#{member_descriptor}:00"
+    else
+      member_descriptor.to_s
     end
   end
 
