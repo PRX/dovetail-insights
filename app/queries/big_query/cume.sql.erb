@@ -1,0 +1,3 @@
+-- Always apply a pubDate filter with a range that matches the composition time range
+-- Always group by episode
+-- Should be able to compare episodes across a very long period, like if a show has been around for 10 years, and you want to compare the first episode to the most recent epsiode. This would require setting the composition time range to 10 years, which could result in huge query results. Enforce some sensible limits to the number of episodes that can be included in any composition once the range gets over some limit, by requiring a episode INCLUDE filter

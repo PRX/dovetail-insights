@@ -29,14 +29,12 @@
 - Maybe allow filters/groups/etc to reference the composition time range from/to?
 - Support aggregations other than TOTAL
 - Build aggregation method into metrics, so sum() becomes explicit, which allows for others down the road
-- For dimensional group 1, allow selecting other static properties to be displayed
 - If we have a value in the data some point that indicates if an episode was originally published before it was hosted on Dovetail, add a warning that the data is incomplete
 - When including "published" as a meta on episode, the value being displayed in the results has a time zone. No values in the app, internal or external, should have time zones
-- Probably need to add a SortProperty, so groups can be sorted by something other than the exhibit property (thinking about episode, probably makes sense to sort by pub date by default)
 - Support accessing BQ datasets other than "production". Probably needs to parse the data_schema as ERB
 - Separate permissions for downloads and impressions
 - Fix Oauth token refresh to bring you back to page you requested that triggered the refresh
 - Change interval descriptors to be the complete range, not just one side
 - Write some tests to check rolling window ranges down to the second
-- SortProperties don't resolve exhibit properties. Make a note somewhere that you should ensure the desired property is used directly
-- Transformers for data, like current episode age meta, should be able to display it in prettier format
+- SortProperties don't resolve exhibit properties. Make a note somewhere that you should ensure the desired property is used directly. Meta properties also don't resolve exhibit properties, which makes it possible to display, for example, podcast ID if desired, rather than podcast name.
+- Use default_group_member_descriptor_sort for group 2 columns
