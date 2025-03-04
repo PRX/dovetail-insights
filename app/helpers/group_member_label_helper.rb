@@ -123,7 +123,7 @@ module GroupMemberLabelHelper
   # to display to a user for overall ease-of-use.
   #
   # Some dimensions use their member descriptor as the user-facing label. Some
-  # define and exhibit property, which is a value from the database that is
+  # define an exhibit property, which is a value from the database that is
   # meant to be used instead of the descriptor. In some situations, the
   # descriptor or exhibitition are further refined or replaced by this helper.
   #
@@ -141,19 +141,24 @@ module GroupMemberLabelHelper
 
     dimension_def = DataSchema.dimensions[group.dimension.to_s]
 
+    exhibition = composition.results.group_member_exhibition(group, member_descriptor)
+
     if dimension_def["Type"] == "Duration"
       duration_label(composition, group, member_descriptor)
     elsif dimension_def["Type"] == "Timestamp"
       timestamp_label(composition, group, member_descriptor)
-    elsif I18n.exists?("groups.labels.#{group.dimension}.#{member_descriptor}")
+    elsif I18n.exists? "group_member_labels.replace_descriptors.#{group.dimension}.#{member_descriptor}"
       # Use the localized version of this descriptor if it exists
-      t("groups.labels.#{group.dimension}.#{member_descriptor}")
+      translate "group_member_labels.replace_descriptors.#{group.dimension}.#{member_descriptor}"
+    elsif I18n.exists? "group_member_labels.replace_exhibitions.#{group.dimension}.#{exhibition}"
+      # Use the localized version of this descriptor's exhibition if it exists
+      translate "group_member_labels.replace_exhibitions.#{group.dimension}.#{exhibition}"
     elsif group.dimension == :season_number
       "Season #{member_descriptor}"
     elsif group.dimension == :episode_number
       "Episode #{member_descriptor}"
     else
-      composition.results.group_member_exhibition(group, member_descriptor)
+      exhibition
     end
   end
 end

@@ -313,6 +313,7 @@ module Results
     # descriptors may become the same exhibitions.
 
     def group_member_exhibition(group, member_descriptor)
+      # TODO memoize
       dimension_def = DataSchema.dimensions[group.dimension.to_s]
 
       if dimension_def.has_key?("ExhibitProperty")

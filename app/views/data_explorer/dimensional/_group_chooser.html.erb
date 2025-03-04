@@ -18,7 +18,7 @@
         data-dimension-type="<%= dimension_def["Type"] %>"
         value="<%= dim_key %>"
         <%= select_eq params["group.#{group_num}"] == dim_key %>>
-        <%= dim_key %>
+        <%= I18n.exists?("dimensions.#{dimension_name}") ? t("dimensions.#{dimension_name}") : dim_key %>
       </option>
     <% end %>
   </select>
@@ -54,7 +54,7 @@
       <% end %>
 
       <% Compositions::Components::Group::TRUNCATE_OPTS.each do |part| %>
-        <option value="<%= part %>" <%= select_eq group&.truncate == part %>><%= t "groups.truncate.display.#{part}" %></option>
+        <option value="<%= part %>" <%= select_eq group&.truncate == part %>><%= t "group_choosers.truncate.display.#{part}" %></option>
       <% end %>
     </select>
 

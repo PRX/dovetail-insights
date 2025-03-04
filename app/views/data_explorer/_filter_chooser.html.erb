@@ -13,7 +13,7 @@
     <legend><input type="checkbox" id="<%= "toggle-filter.#{dim_key}" %>"><label for="<%= "toggle-filter.#{dim_key}" %>"><%= dim_key %></label></legend>
 
     <div>
-      <p><%= t "filters.hints.#{dim_key}" %></p>
+      <p><%= t "filter_choosers.hints.#{dim_key}" %></p>
 
       <select class="<%= "field_with_errors" if filter&.errors&.include?(:operator) %>" <%= html_attributes(name: "filter.#{dim_key}") %>>
         <option></option>

@@ -1,0 +1,24 @@
+en:
+  group_member_labels:
+    # You can explicitly define specific group member labels. If you list an
+    # override under `descriptors`, you must list the raw descriptor value,
+    # which may be an ID like 42. If you list an override under `exhibitions`,
+    # though, you can override by exhibit property value, like "WatchOS". But
+    # be aware that if the exhbit property value changes the override will
+    # break. Descriptor overides have priority. See `GroupMemberLabelHelper`.
+    #
+    # Note that the dimension names used here are the real dimension names from
+    # the schema, not the key that are generally presented in the app UI.
+    replace_descriptors:
+      feed:
+        "__DEFAULT_FEED__": Default RSS Feed
+      continent_code:
+        "AF": Africa
+        "AS": Asia
+        "EU": Europe
+        "NA": N Amererica
+        "OC": Oceania
+        "SA": S America
+    replace_exhibitions:
+      os_id:
+        "WatchOS": watchOS
