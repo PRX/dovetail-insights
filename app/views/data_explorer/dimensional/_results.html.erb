@@ -78,12 +78,16 @@
 
     <%# Group 1 totals %>
     <% if @tbl_show_group_1_totals %>
-      <col <%= html_attributes(span: @composition.metrics.size) %> class="totals">
+      <col span="<%= @composition.metrics.size %>" class="totals">
+    <% end %>
+
+    <% if @meta %>
+      <col span="<%= @meta.size %>">
     <% end %>
 
     <%# Group 2 members %>
     <% @expand_group_2_member_descriptors&.each do |_| %>
-      <col class="data" <%= html_attributes(span: @composition.metrics.size) %>>
+      <col class="data" span="<%= @composition.metrics.size %>">
     <% end %>
   </colgroup>
 
