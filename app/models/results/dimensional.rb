@@ -296,7 +296,7 @@ module Results
     def group_member_descriptor_for_property(group, member_descriptor, property_name, fingerprint)
       @group_member_descriptor_for_property ||= {}
 
-      cache_key = [group.dimension.to_s, member_descriptor, property_name, fingerprint]
+      cache_key = [group&.dimension&.to_s, member_descriptor, property_name, fingerprint]
 
       # If no property is given, short circuit and memoize/return the given
       # descriptor
@@ -335,7 +335,7 @@ module Results
     # descriptors may become the same exhibitions.
 
     def group_member_exhibition(group, member_descriptor)
-      group_member_descriptor_for_property(group, member_descriptor, DataSchema.dimensions[group.dimension.to_s]["ExhibitProperty"], :exhibit)
+      group_member_descriptor_for_property(group, member_descriptor, (group && DataSchema.dimensions[group.dimension.to_s]["ExhibitProperty"]), :exhibit)
     end
 
     def group_meta_descriptor(group, group_member_descriptor, meta_property_name)

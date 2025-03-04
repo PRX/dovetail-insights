@@ -4,7 +4,14 @@ import { Controller } from "@hotwired/stimulus";
 // TODO For time series comparisons, there should be an option to highlight
 // based on the change over time within a group.
 export default class extends Controller {
-  static targets = ["table", "chooser", "scale", "palette", "spectrums"];
+  static targets = [
+    "table",
+    "chooser",
+    "scale",
+    "palette",
+    "divisions",
+    "cell",
+  ];
 
   highlightValues(spectrumCellSets) {
     const paletteOpt = this.paletteTarget.value;
@@ -84,136 +91,69 @@ export default class extends Controller {
 
   highlight() {
     if (this.hasTableTarget) {
-      const resultsTable = this.tableTarget;
+      const spectrumsOpt = this.divisionsTarget.value;
 
-      const spectrumsOpt = this.spectrumsTarget.value;
+      const showDeltas = spectrumsOpt.startsWith("delta,");
+      const aspects = spectrumsOpt.replace("delta,", "").split(",");
 
-      const allCells = resultsTable.querySelectorAll("td[data-raw-value]");
-      const spectrumCellSets = [];
+      const cells = this.cellTargets;
+      const cellDivisions = [];
 
-      if (spectrumsOpt === "all_values") {
-        // Put all cells in a single set
-        spectrumCellSets.push(allCells);
-      } else if (spectrumsOpt === "per_metric") {
-        const uniqMetrics = new Set(
-          [...allCells].map((c) => c.dataset.highlightMetric),
-        );
-        uniqMetrics.forEach((metric) => {
-          spectrumCellSets.push(
-            resultsTable.querySelectorAll(
-              `td[data-highlight-metric="${metric}"]`,
-            ),
-          );
-        });
-      } else if (spectrumsOpt === "per_metric_group_1") {
-        const uniqMetrics = new Set(
-          [...allCells].map((c) => c.dataset.highlightMetric),
-        );
+      const uniques = {
+        "data-highlight-metric": new Set(
+          [...cells].map((c) => c.dataset.highlightMetric),
+        ),
+        "data-highlight-group-1": new Set(
+          [...cells].map((c) => c.getAttribute("data-highlight-group-1")),
+        ),
+        "data-highlight-group-2": new Set(
+          [...cells].map((c) => c.getAttribute("data-highlight-group-2")),
+        ),
+        "data-highlight-interval": new Set(
+          [...cells].map((c) => c.getAttribute("data-highlight-interval")),
+        ),
+      };
 
-        const uniqGroup1Members = new Set(
-          [...allCells].map((c) => c.getAttribute("data-highlight-group-1")),
-        );
+      if (!spectrumsOpt) {
+        // Put all cells in a single division
+        cellDivisions.push(cells);
+      } else {
+        const aspectUniqs = aspects.map((a) => uniques[a]);
 
-        uniqMetrics.forEach((metric) => {
-          uniqGroup1Members.forEach((member) => {
-            spectrumCellSets.push(
-              resultsTable.querySelectorAll(
-                `td[data-highlight-metric="${metric}"][data-highlight-group-1="${member}"]`,
-              ),
-            );
+        function generateCombinations(
+          arrays,
+          depth = 0,
+          path = [],
+          result = [],
+        ) {
+          if (depth === arrays.length) {
+            result.push([...path]);
+            return;
+          }
+
+          arrays[depth].forEach((uniq) => {
+            generateCombinations(arrays, depth + 1, [...path, uniq], result);
           });
-        });
-      } else if (spectrumsOpt === "per_metric_group_2") {
-        const uniqMetrics = new Set(
-          [...allCells].map((c) => c.dataset.highlightMetric),
-        );
 
-        const uniqGroup2Members = new Set(
-          [...allCells].map((c) => c.getAttribute("data-highlight-group-2")),
-        );
+          return result;
+        }
 
-        uniqMetrics.forEach((metric) => {
-          uniqGroup2Members.forEach((member) => {
-            spectrumCellSets.push(
-              resultsTable.querySelectorAll(
-                `td[data-highlight-metric="${metric}"][data-highlight-group-2="${member}"]`,
-              ),
-            );
+        generateCombinations(aspectUniqs).forEach((combo) => {
+          const selector = `td${combo.map((v, idx) => `[${aspects[idx]}="${v}"]`).join("")}`;
+          const cellsForDivision = this.tableTarget.querySelectorAll(selector);
+
+          cellsForDivision.forEach((cell) => {
+            cell.style.background = `hsla(0 0% 0% / 0)`;
           });
-        });
-      } else if (spectrumsOpt === "per_metric_interval") {
-        const uniqMetrics = new Set(
-          [...allCells].map((c) => c.dataset.highlightMetric),
-        );
 
-        const uniqGranularityMembers = new Set(
-          [...allCells].map((c) => c.getAttribute("data-highlight-interval")),
-        );
-
-        uniqMetrics.forEach((metric) => {
-          uniqGranularityMembers.forEach((member) => {
-            spectrumCellSets.push(
-              resultsTable.querySelectorAll(
-                `td[data-highlight-metric="${metric}"][data-highlight-interval="${member}"]`,
-              ),
-            );
-          });
-        });
-      } else if (spectrumsOpt === "per_metric_group_1_delta") {
-        const uniqMetrics = new Set(
-          [...allCells].map((c) => c.dataset.highlightMetric),
-        );
-
-        const uniqGroup1Members = new Set(
-          [...allCells].map((c) => c.getAttribute("data-highlight-group-1")),
-        );
-
-        uniqMetrics.forEach((metric) => {
-          uniqGroup1Members.forEach((member) => {
-            spectrumCellSets.push(
-              resultsTable.querySelectorAll(
-                `td[data-highlight-metric="${metric}"][data-highlight-group-1="${member}"]`,
-              ),
-            );
-          });
-        });
-      } else if (spectrumsOpt === "per_metric_group_1_group_2_delta") {
-        const uniqMetrics = new Set(
-          [...allCells].map((c) => c.dataset.highlightMetric),
-        );
-
-        const uniqGroup1Members = new Set(
-          [...allCells].map((c) => c.getAttribute("data-highlight-group-1")),
-        );
-
-        const uniqGroup2Members = new Set(
-          [...allCells].map((c) => c.getAttribute("data-highlight-group-2")),
-        );
-
-        uniqMetrics.forEach((metric) => {
-          uniqGroup1Members.forEach((group1Member) => {
-            uniqGroup2Members.forEach((group2Member) => {
-              spectrumCellSets.push(
-                resultsTable.querySelectorAll(
-                  `td[data-highlight-metric="${metric}"][data-highlight-group-1="${group1Member}"][data-highlight-group-2="${group2Member}"]`,
-                ),
-              );
-            });
-          });
+          cellDivisions.push(cellsForDivision);
         });
       }
 
-      resultsTable.querySelectorAll("td").forEach((cell) => {
-        cell.style.background = `hsla(0 0% 0% / 0)`;
-      });
-
-      if (
-        spectrumsOpt === "per_metric_group_1_delta" ||
-        spectrumsOpt === "per_metric_group_1_group_2_delta"
-      ) {
-        this.highlightDeltas(spectrumCellSets);
+      if (showDeltas) {
+        this.highlightDeltas(cellDivisions);
       } else {
-        this.highlightValues(spectrumCellSets);
+        this.highlightValues(cellDivisions);
       }
     }
   }

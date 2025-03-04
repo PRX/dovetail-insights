@@ -20,6 +20,7 @@
   # Show full table structure by default
   @tbl_show_metric_headers = true
   @tbl_show_metric_totals = true
+  @tbl_show_meta_headers = true
   @tbl_show_group_1_headers = true
   @tbl_show_group_1_totals = true
   @tbl_show_group_1_unknowns = true
@@ -34,6 +35,8 @@
   # groups are selected; in that case always show metrics headers since they
   # will be the only headers
   @tbl_show_metric_headers = false if @composition.groups.size > 0 && @composition.metrics.size <= 1
+
+  @tbl_show_meta_headers = false if !@composition.groups[0]&.meta
 
   # Hide group 2 headers when there is no group 2
   @tbl_show_group_2_headers = false if @composition.groups.size < 2
@@ -71,7 +74,10 @@
   @meta = @composition.groups[0]&.meta
 %>
 
-<table data-data-explorer--results-table-highlight-target="table" data-controller="data-explorer--results-table-sort">
+<table
+  data-data-explorer--results-table-highlight-target="table"
+  data-controller="data-explorer--results-table-sort">
+
   <colgroup>
     <%# Group 1 member labels %>
     <col>
@@ -92,7 +98,7 @@
   </colgroup>
 
   <thead>
-    <%= render "data_explorer/dimensional/results/table/10_group_headers" if @tbl_show_group_2_headers %>
+    <%= render "data_explorer/dimensional/results/table/10_group_headers" if @tbl_show_group_2_headers || @tbl_show_meta_headers %>
 
     <%= render "data_explorer/dimensional/results/table/20_metric_headers" if @tbl_show_metric_headers %>
   </thead>
@@ -101,9 +107,7 @@
     <%= render "data_explorer/dimensional/results/table/30_overall_and_group_2_totals_row" if @tbl_show_metric_totals || @tbl_show_group_2_totals %>
 
 
-    <%
-      sorted = default_group_member_descriptor_sort(@composition, @composition.groups[0], @expand_group_1_member_descriptors)
-    %>
+    <% sorted = default_group_member_descriptor_sort(@composition, @composition.groups[0], @expand_group_1_member_descriptors) %>
     <%= render partial: "data_explorer/dimensional/results/table/40_group_row", collection: sorted, as: :group_1_member_descriptor %>
   </tbody>
 </table>

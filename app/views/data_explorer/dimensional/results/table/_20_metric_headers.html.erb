@@ -1,4 +1,4 @@
-<tr class="metrics-headers">
+<tr>
   <%= tag.td if @tbl_show_group_1_headers %>
 
   <% if @tbl_show_group_1_totals %>
@@ -13,7 +13,10 @@
 
   <% @expand_group_2_member_descriptors.each do |_| %>
     <% @composition.metrics.each do |metric| %>
-      <th scope="col"><%= metric.metric %></th>
+      <th scope="col">
+        <%= metric.metric %>
+        <button class="sort-toggle" data-action="data-explorer--results-table-sort#sort">↕</button>
+      </th>
     <% end %>
   <% end %>
 </tr>

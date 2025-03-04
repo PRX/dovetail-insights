@@ -1,11 +1,13 @@
 <% value = @composition.results.get_value_comparison(comparison, lookback, metric, interval_descriptor, group_1_member_descriptor, group_2_member_descriptor) %>
 
 <td
+  data-data-explorer--results-table-highlight-target="cell"
   data-highlight-metric="<%= metric.metric %>"
   data-highlight-interval="<%= interval_descriptor %>"
   data-highlight-group-1="<%= group_1_member_descriptor %>"
   data-highlight-group-2="<%= group_2_member_descriptor %>"
   data-highlight-comparison="<%= "#{comparison&.period}-#{lookback}" %>"
   data-raw-value="<%= value %>">
+
   <%= number_with_delimiter(value) %>
 </td>

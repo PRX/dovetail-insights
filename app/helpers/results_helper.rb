@@ -40,14 +40,12 @@ module ResultsHelper
       colspan: (th_scope == :colgroup) ? composition.metrics.size : 1,
       scope: th_scope,
       data: {
-        "member-descriptor": member_descriptor || "__nil__",
-        "member-exhibition": composition.results.group_member_exhibition(group, member_descriptor) || "__nil__",
-        "member-label": member_label(composition, group, member_descriptor)
+        "member-descriptor": member_descriptor || "__nil__"
       }
     }
 
     content_tag(:th, opts) do
-      member_label(composition, group, member_descriptor) unless skip_content
+      member_label(composition, group, member_descriptor) unless skip_content || !group
     end
   end
 

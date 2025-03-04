@@ -7,26 +7,30 @@
   <%# the NULL value are the same, and we display the NULL value %>
   <% if @tbl_show_group_1_totals %>
     <% @composition.metrics.each do |metric| %>
-      <%# Don't display a total for this group 1 member if group 2 is not summable for this metric %>
-      <% if !@composition.groups[1] || @composition.groups[1]&.summable?(metric) %>
-        <% total = @composition.results.get_total(metric, @composition.groups[0], group_1_member_descriptor) %>
-        <% min = @composition.results.get_min(metric, @composition.groups[0], group_1_member_descriptor) || 0 %>
-        <% max = @composition.results.get_max(metric, @composition.groups[0], group_1_member_descriptor) || 0 %>
-        <% range = (max||0) - (min||0) %>
-        <% mean = @composition.results.get_arith_mean(metric, group_1_member_descriptor) || 0 %>
+      <%
+        # Don't display a total for this group 1 member if group 2 is not summable for this metric
+        if !@composition.groups[1] || @composition.groups[1]&.summable?(metric)
+          total = @composition.results.get_total(metric, @composition.groups[0], group_1_member_descriptor)
+          min = @composition.results.get_min(metric, @composition.groups[0], group_1_member_descriptor) || 0
+          max = @composition.results.get_max(metric, @composition.groups[0], group_1_member_descriptor) || 0
+          range = (max||0) - (min||0)
+          mean = @composition.results.get_arith_mean(metric, group_1_member_descriptor) || 0
 
-        <% title = "Mean: #{number_with_delimiter(mean)}\nMin: #{number_with_delimiter(min)}\nMax: #{number_with_delimiter(max)}\nRange: #{number_with_delimiter(range)}" %>
+          title = [
+            "Mean: #{number_with_delimiter(mean)}",
+            "Min: #{number_with_delimiter(min)}",
+            "Max: #{number_with_delimiter(max)}",
+            "Range: #{number_with_delimiter(range)}"
+          ]
 
-        <td title="<%= title %>"><%= number_with_delimiter total %></td>
-      <% else %>
-        <% title = "When grouping by #{@composition.groups[1].dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting." %>
+          text = number_with_delimiter total
+        else
+          text = "n/a"
+          title = "When grouping by #{@composition.groups[1].dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
+        end
+      %>
 
-        <td
-          title="<%= title %>">
-
-          n/a
-        </td>
-      <% end %>
+      <td class="totals" title="<%= title %>"><%= text %></td>
     <% end %>
   <% end %>
 
@@ -43,6 +47,7 @@
       <% value = @composition.results.get_value(metric, group_1_member_descriptor, group_2_member_descriptor) %>
 
       <td
+        data-data-explorer--results-table-highlight-target="cell"
         data-highlight-metric="<%= metric.metric %>"
         data-highlight-group-1="<%= group_1_member_descriptor || "__nil__" %>"
         data-highlight-group-2="<%= group_2_member_descriptor || "__nil__" %>"
