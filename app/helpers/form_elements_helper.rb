@@ -1,7 +1,9 @@
 module FormElementsHelper
   ##
   # Returns `selected="selected"` when the condition is true. The condition can
-  # either be a single boolean, or two values which will be compared
+  # either be a single boolean, or two values which will be compared.
+  #
+  # This is intended to be used within an <option> tag.
 
   def select_eq(bool_or_expected, actual = nil)
     if actual

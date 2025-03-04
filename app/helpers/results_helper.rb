@@ -1,4 +1,12 @@
 module ResultsHelper
+  ##
+  # Given a group and a set of member descriptors from the results, returns all
+  # those descriptors sorted in the most appropriate way for a default display
+  # to the user.
+  #
+  # This factors in things like sort properties, labels, and other things that
+  # may change the order compared to the raw descriptors.
+
   def default_group_member_descriptor_sort(compostion, group, member_descriptors)
     member_descriptors.sort_by do |member_descriptor|
       if group

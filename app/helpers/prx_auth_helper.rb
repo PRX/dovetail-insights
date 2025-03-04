@@ -1,6 +1,6 @@
 module PrxAuthHelper
   ##
-  # Boolean indicating if the current user has acces to the given app
+  # Boolean indicating if the current user has access to the given app
 
   def current_user_app?(name)
     current_user && current_user_app(name).present?
