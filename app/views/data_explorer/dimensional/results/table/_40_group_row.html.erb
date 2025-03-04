@@ -26,7 +26,7 @@
           text = number_with_delimiter total
         else
           text = "n/a"
-          title = "When grouping by #{@composition.groups[1].dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
+          title = "When grouping by #{prop_or_dim_label @composition.groups[1].dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
         end
       %>
 
