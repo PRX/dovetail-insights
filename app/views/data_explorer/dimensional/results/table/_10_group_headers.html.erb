@@ -6,10 +6,7 @@
   <% end %>
 
   <% @meta&.each do |meta| %>
-    <td>
-      <%= prop_or_dim_label(meta) %>
-      <button class="sort-toggle" data-action="data-explorer--results-table-sort#sort">↕</button>
-    </td>
+    <td><%= prop_or_dim_label(meta) %></td>
   <% end %>
 
   <% @display_group_2_member_descriptors.each do |group_2_member_descriptor| %>

@@ -1,4 +1,4 @@
-<tr>
+<tr data-data-explorer--results-table-sort-target="row">
   <%# First cell in the row is a header with the group member name %>
   <%= group_table_header_tag(@composition, @composition.groups[0], group_1_member_descriptor, :row) if @tbl_show_group_1_headers %>
 
@@ -51,6 +51,9 @@
         data-highlight-metric="<%= metric.metric %>"
         data-highlight-group-1="<%= group_1_member_descriptor || "__nil__" %>"
         data-highlight-group-2="<%= group_2_member_descriptor || "__nil__" %>"
+        data-sort-metric="<%= metric.metric %>"
+        data-sort-group-1-member-descriptor="<%= group_1_member_descriptor || "__nil__" %>"
+        data-sort-group-2-member-descriptor="<%= group_2_member_descriptor || "__nil__" %>"
         data-raw-value="<%= value %>">
 
         <%= number_with_delimiter(value) %>

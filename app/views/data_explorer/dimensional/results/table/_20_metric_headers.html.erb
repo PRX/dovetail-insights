@@ -13,10 +13,7 @@
 
   <% @display_group_2_member_descriptors.each do |_| %>
     <% @composition.metrics.each do |metric| %>
-      <th scope="col">
-        <%= metric.metric %>
-        <button class="sort-toggle" data-action="data-explorer--results-table-sort#sort">↕</button>
-      </th>
+      <th scope="col"><%= metric.metric %></th>
     <% end %>
   <% end %>
 </tr>

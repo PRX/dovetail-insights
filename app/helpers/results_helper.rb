@@ -43,10 +43,13 @@ module ResultsHelper
 
   def group_table_header_tag(composition, group, member_descriptor, th_scope, skip_content = false)
     opts = {
-      colspan: (th_scope == :colgroup) ? composition.metrics.size : 1,
+      colspan: (th_scope == :colgroup) ? composition.metrics&.size : 1,
       scope: th_scope,
       data: {
-        "member-descriptor": member_descriptor || "__nil__"
+        action: "click->data-explorer--results-table-sort#sort",
+        "sort-group-dimension": group&.dimension,
+        "sort-group-2-member-descriptor": member_descriptor || "__nil__", # TODO
+        "sort-metric": (composition.metrics&.size == 1) ? composition.metrics[0].metric : nil
       }
     }
 

@@ -313,7 +313,7 @@ module Results
       sample_row = rows.find { |row| row[group.as] == member_descriptor }
 
       # That row will also have the meta property value that we're looking for
-      @group_member_descriptor_for_property[cache_key] = sample_row[as]
+      @group_member_descriptor_for_property[cache_key] = sample_row.dig(as) || ""
 
       @group_member_descriptor_for_property[cache_key]
     end
