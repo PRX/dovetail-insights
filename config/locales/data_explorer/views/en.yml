@@ -1,5 +1,6 @@
 en:
   dimensions:
+    # Schema Properties can also go in here
     current_episode_age_in_seconds: current episode age
     device_type_id: device type
     download_timestamp: download time

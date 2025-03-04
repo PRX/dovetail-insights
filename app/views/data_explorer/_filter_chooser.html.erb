@@ -13,7 +13,7 @@
     <legend>
       <input type="checkbox" id="<%= "toggle-filter.#{dim_key}" %>">
       <label for="<%= "toggle-filter.#{dim_key}" %>">
-        <%= I18n.exists?("dimensions.#{dimension_name}") ? t("dimensions.#{dimension_name}").titleize : dim_key.titleize %>
+        <%= prop_or_dim_label(dimension_name) %>
       </label>
     </legend>
 
