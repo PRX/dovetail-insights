@@ -57,6 +57,11 @@ DECLARE expanded_range_start TIMESTAMP DEFAULT TIMESTAMP_SUB(range_end, INTERVAL
 
     dl_cte_selects.concat(dimension_def["BigQuery"]["RequiredColumns"]) if dimension_def["BigQuery"]["RequiredColumns"]
   end
+
+  composition.metrics.each do |metric|
+    metric_def = DataSchema.metrics[metric.metric.to_s]
+    dl_cte_selects.concat(metric_def["BigQuery"]["RequiredColumns"]) if metric_def["BigQuery"]["RequiredColumns"]
+  end
 %>
 
 -- In order to ensure that the time range operates as expected, we make

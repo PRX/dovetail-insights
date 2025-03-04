@@ -8,8 +8,8 @@ Metrics:
       RequiredTables:
         - impressions
   uniques:
-    # TODO Needs a property to indicate these can't be totaled
     BigQuery:
       Selector: COUNT(DISTINCT downloads.listener_id)
+      RequiredColumns: [listener_id] # TODO is it safe to not have a table indicated on this?
   # rolling_uniques:
   #   Type: Variable
