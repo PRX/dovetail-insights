@@ -312,14 +312,8 @@ module Results
       # Look for any row in the results that include the original member
       sample_row = rows.find { |row| row[group.as] == member_descriptor }
 
-      found_property_descriptor = sample_row[as]
-
-      # If for some reason the exhibt value did't come back as something
-      # useful, fallback to the member descriptor
-      property_descriptor = found_property_descriptor.blank? ? member_descriptor : found_property_descriptor
-
       # That row will also have the meta property value that we're looking for
-      @group_member_descriptor_for_property[cache_key] = property_descriptor
+      @group_member_descriptor_for_property[cache_key] = sample_row[as]
 
       @group_member_descriptor_for_property[cache_key]
     end
