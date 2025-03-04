@@ -33,6 +33,8 @@ class DataExplorerController < ApplicationController
       Compositions::DimensionalComposition.from_params(params)
     when Compositions::TimeSeriesComposition.query_value
       Compositions::TimeSeriesComposition.from_params(params)
+    when Compositions::CumeComposition.query_value
+      Compositions::CumeComposition.from_params(params)
     else
       Compositions::BaseComposition.from_params(params)
     end
