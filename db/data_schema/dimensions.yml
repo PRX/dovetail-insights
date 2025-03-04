@@ -292,4 +292,5 @@ Dimensions:
     PermitNulls: true
     BigQuery:
       Selector: COALESCE(feeder_feed, "__DEFAULT_FEED__")
+      RequiredColumns: [feeder_feed]
       Type: STRING
