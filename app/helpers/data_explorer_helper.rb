@@ -29,24 +29,4 @@ module DataExplorerHelper
       value
     end
   end
-
-  ##
-  # Build a <th> tag for the given descriptor. +skip_content+ can be used to
-  # produce an empty tag.
-
-  def group_table_header_tag(composition, group, member_descriptor, th_scope, skip_content = false)
-    opts = {
-      colspan: (th_scope == :colgroup) ? composition.metrics.size : 1,
-      scope: th_scope,
-      data: {
-        "member-descriptor": member_descriptor || "__nil__",
-        "member-exhibition": composition.results.group_member_exhibition(group, member_descriptor) || "__nil__",
-        "member-label": member_label(composition, group, member_descriptor)
-      }
-    }
-
-    content_tag(:th, opts) do
-      member_label(composition, group, member_descriptor) unless skip_content
-    end
-  end
 end

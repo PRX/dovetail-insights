@@ -31,7 +31,8 @@
   <% end %>
 
   <% @meta&.each do |meta| %>
-    <td><%= @composition.results.group_meta_descriptor(@composition.groups[0], group_1_member_descriptor, meta) %></td>
+    <% meta_descriptor = @composition.results.group_meta_descriptor(@composition.groups[0], group_1_member_descriptor, meta) %>
+    <td><%= meta_descriptor_label(@composition.groups[0], meta_descriptor) %></td>
   <% end %>
 
   <% @expand_group_2_member_descriptors.each do |group_2_member_descriptor| %>
