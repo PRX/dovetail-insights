@@ -48,14 +48,43 @@ DECLARE range_start TIMESTAMP DEFAULT '<%= abs_from.to_s %>';
 DECLARE range_end TIMESTAMP DEFAULT '<%= abs_to.to_s %>';
 
 -- In order to ensure that the time range operates as expected, we make
--- queries for downloads and impressions before doing any JOINs. These
--- require a selection of podcast IDs, which is mostly just a safety
--- valve during development, to make sure I don't accidentally make a lot
--- of hugely expesnive queries
--- TODO Apply filters here when possible to make things more efficient
+-- queries for downloads and impressions before doing any JOINs. Reducing the
+-- number of columns reduces cost, but filtering does not.
+<%
+  cte_selects = ["timestamp", "request_uuid"]
+
+  # For each group, only include columns from the dt_downloads table that are
+  # required to join to other tables needed for that group
+  groups.each do |group|
+    dimension_def = DataSchema.dimensions[group.dimension.to_s]
+    req_tables = dimension_def["BigQuery"]["RequiredTables"]
+    req_tables.each do |table_name|
+      table_def = DataSchema.tables[table_name]
+      if table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
+        frn_key = table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
+
+        cte_selects << frn_key
+      end
+    end
+  end
+
+  # Do the same for filters
+  filters.each do |filter|
+    filter_def = DataSchema.dimensions[filter.dimension.to_s]
+    req_tables = filter_def["BigQuery"]["RequiredTables"]
+    req_tables.each do |table_name|
+      table_def = DataSchema.tables[table_name]
+      if table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
+        frn_key = table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
+
+        cte_selects << frn_key
+      end
+    end
+  end
+%>
 WITH
 downloads_in_range AS (
-  SELECT *
+  SELECT <%= cte_selects.uniq.join(", ") %>
 
   FROM production.dt_downloads AS downloads
 
