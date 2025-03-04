@@ -15,7 +15,7 @@ module IntervalLabelHelper
     # Compose an appropriately formatted string based on the chosen granularity
     case composition.granularity
     when :daily
-      time.strftime("%F")
+      time.strftime("%a %F")
     when :weekly
       "Week of #{time.strftime("%F")}"
     when :monthly
