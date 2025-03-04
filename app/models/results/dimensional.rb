@@ -362,5 +362,26 @@ module Results
 
       @group_meta_descriptor_cache[cache_key]
     end
+
+    def group_sort_descriptor(group, group_member_descriptor, sort_property_name)
+      @group_sort_descriptor_cache ||= {}
+
+      cache_key = [group.dimension.to_s, group_member_descriptor, sort_property_name]
+
+      # Return memoized value even if it's nil
+      return @group_sort_descriptor_cache[cache_key] if @group_sort_descriptor_cache.key?(cache_key)
+
+      # In the query, the exhibit property was SELECTed using an AS with a
+      # particular format, to prevent collisions
+      sort_as = :"#{group.as}_sort_#{sort_property_name}"
+
+      # Look for any row in the results that include the original member
+      sample_row = rows.find { |row| row[group.as] == group_member_descriptor }
+
+      # That row will also have the meta property value that we're looking for
+      @group_sort_descriptor_cache[cache_key] = sample_row[sort_as]
+
+      @group_sort_descriptor_cache[cache_key]
+    end
   end
 end

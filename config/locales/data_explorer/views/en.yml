@@ -2,6 +2,9 @@ en:
   dimensions:
     current_episode_age_in_seconds: current episode age
     device_type_id: device type
+    download_timestamp: download time
+    download_local_timestamp: local download time
+    episode_age_at_download_in_seconds: episode age at download
     episode_number: episode number
     episode_publish_timestamp: episode drop date
     metro_id: media market (DMA)
@@ -9,29 +12,27 @@ en:
     season_number: season number
     subdivision_iso_code: state/province/region
     time_zone: time zone
-    user_agent_id: apps & browsers
+    user_agent_id: app & browser
   filter_choosers:
     hints:
-      # Use dimension keys, not dimension names
-      # TODO should use names to be consistent
-      podcast: Include/exclude data for specific podcasts (e.g., Include only data for Podcast A and Podcast B)
-      episode: Include/exclude data for specific episodes
-      time: Include/exclude data for downloads in a specific time range. All dates and times in UTC
-      localTime: Include/exclude data for downloads in a specific time range, with times converted from UTC to their wall clock time (e.g., 9 AM ET and 9 AM PT become the same time). Note that this does distort reality, but can be useful for certain types of analysis.
-      published: Include/exclude data for episodes published during a specific time range. All dates and times in UTC
-      age: Include/exclude data for episodes based on the current age of the episode (e.g., Exclude data for episodes published in the last 7 days)
-      lag: Include/exclude data for episodes based on the age of the episode when the data was generated (e.g., Include data only when the download/impression/etc occurred within 48 hours of the episode being released, regardless of how long ago it was released)
-      ua: Include/exclude data for specific user agents (e.g., Include data only for Apple Podcasts and Spotify)
-      device: Include/exclude data for specific device types (e.g., Exclude data for mobile apps)
-      os: Include/exclude data for specific operating systems (e.g., Include data only for Android)
-      continent: Include/exclude data for specific continents (e.g., Exclude data from North America)
-      country: Include/exclude data for specific countries (e.g., Include data only from Spain and Portugal)
-      subdiv: Include/exclude data for specific regions (states, provinces, etc)
-      city: Include/exclude data for specific cities
-      metro: Include/exclude data for specific DMA metro regions
-      tz: Include/exclude data for specific time zones (e.g., Include data only from Eastern time zone in the US)
-      campaign: Include/exclude data for activity related to a specific campaign (e.g., Include download/impression/etc data only for downloads that included ads for certain campaigns)
-      advertiser: Include/exclude data for activity related to a specific advertiser (e.g., Include download/impression/etc data only for downloads that included ads from certain advertisers
+      podcast_id: Include/exclude data for specific podcasts (e.g., Include only data for Podcast A and Podcast B)
+      episode_id: Include/exclude data for specific episodes
+      download_timestamp: Include/exclude data for downloads in a specific time range. All dates and times in UTC
+      download_local_timestamp: Include/exclude data for downloads in a specific time range, with times converted from UTC to their wall clock time (e.g., 9 AM ET and 9 AM PT become the same time). Note that this does distort reality, but can be useful for certain types of analysis.
+      episode_publish_timestamp: Include/exclude data for episodes published during a specific time range. All dates and times in UTC
+      current_episode_age_in_seconds: Include/exclude data for episodes based on the current age of the episode (e.g., Exclude data for episodes published in the last 7 days)
+      episode_age_at_download_in_seconds: Include/exclude data for episodes based on the age of the episode when the data was generated (e.g., Include data only when the download/impression/etc occurred within 48 hours of the episode being released, regardless of how long ago it was released)
+      user_agent_id: Include/exclude data for specific user agents (e.g., Include data only for Apple Podcasts and Spotify)
+      device_type_id: Include/exclude data for specific device types (e.g., Exclude data for mobile apps)
+      os_id: Include/exclude data for specific operating systems (e.g., Include data only for Android)
+      continent_code: Include/exclude data for specific continents (e.g., Exclude data from North America)
+      country_id: Include/exclude data for specific countries (e.g., Include data only from Spain and Portugal)
+      subdivision_iso_code: Include/exclude data for specific regions (states, provinces, etc)
+      city_id: Include/exclude data for specific cities
+      metro_id: Include/exclude data for specific DMA metro regions
+      time_zone: Include/exclude data for specific time zones (e.g., Include data only from Eastern time zone in the US)
+      campaign_id: Include/exclude data for activity related to a specific campaign (e.g., Include download/impression/etc data only for downloads that included ads for certain campaigns)
+      advertiser_id: Include/exclude data for activity related to a specific advertiser (e.g., Include download/impression/etc data only for downloads that included ads from certain advertisers
       feed: Include/exclude data for specific RSS feeds
   group_choosers:
     truncate:

@@ -18,7 +18,9 @@
   <% end %>
 
   <% @meta&.each do |meta| %>
-    <td><%= meta %></td>
+    <td>
+      <%= I18n.exists?("dimensions.#{meta}") ? t("dimensions.#{meta}").titleize : meta.titleize %>
+    </td>
   <% end %>
 
   <% @expand_group_2_member_descriptors.each do |group_2_member_descriptor| %>

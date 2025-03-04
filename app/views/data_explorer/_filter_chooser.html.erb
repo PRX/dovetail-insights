@@ -10,10 +10,15 @@
     <%= html_attributes(class: "field_with_errors") if filter.try(:invalid?) %>
     <%= html_attributes(class: "active") if filter.try(:valid?) %>>
 
-    <legend><input type="checkbox" id="<%= "toggle-filter.#{dim_key}" %>"><label for="<%= "toggle-filter.#{dim_key}" %>"><%= dim_key %></label></legend>
+    <legend>
+      <input type="checkbox" id="<%= "toggle-filter.#{dim_key}" %>">
+      <label for="<%= "toggle-filter.#{dim_key}" %>">
+        <%= I18n.exists?("dimensions.#{dimension_name}") ? t("dimensions.#{dimension_name}").titleize : dim_key.titleize %>
+      </label>
+    </legend>
 
     <div>
-      <p><%= t "filter_choosers.hints.#{dim_key}" %></p>
+      <p><%= t "filter_choosers.hints.#{dimension_name}" %></p>
 
       <select class="<%= "field_with_errors" if filter&.errors&.include?(:operator) %>" <%= html_attributes(name: "filter.#{dim_key}") %>>
         <option></option>

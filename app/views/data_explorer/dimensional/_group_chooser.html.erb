@@ -18,7 +18,7 @@
         data-dimension-type="<%= dimension_def["Type"] %>"
         value="<%= dim_key %>"
         <%= select_eq params["group.#{group_num}"] == dim_key %>>
-        <%= I18n.exists?("dimensions.#{dimension_name}") ? t("dimensions.#{dimension_name}") : dim_key %>
+        <%= I18n.exists?("dimensions.#{dimension_name}") ? t("dimensions.#{dimension_name}").titleize : dim_key.titleize %>
       </option>
     <% end %>
   </select>
@@ -120,7 +120,7 @@
                 id="<%= x %>"
                 <%= html_attributes(checked: "checked") if group && group.meta&.include?(static_property_name.to_sym) %>
                 <%= html_attributes(name: "group.#{group_num}.meta") %>>
-              <%= static_property_key %>
+              <%= I18n.exists?("dimensions.#{static_property_name}") ? t("dimensions.#{static_property_name}").titleize : static_property_key.titleize %>
             </label>
           <% end %>
         </div>

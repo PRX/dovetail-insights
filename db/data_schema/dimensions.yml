@@ -31,17 +31,18 @@ Dimensions:
   episode_id:
     Type: Token
     QueryKey: episode
-    ExhibitProperty: episode_title_with_pubdate_prefix
+    # ExhibitProperty: episode_title_with_pubdate_prefix
+    ExhibitProperty: episode_title
     StaticProperties:
       - podcast_id
       - podcast_name
       - episode_title
-      - episode_title_with_pubdate_prefix
+      # - episode_title_with_pubdate_prefix
       - episode_publish_timestamp
       - current_episode_age_in_seconds
       - season_number
       - episode_number
-    SortPropreties:
+    SortProperties:
       - episode_publish_timestamp
     SummableMetrics:
       - downloads

@@ -96,6 +96,10 @@
   <tbody>
     <%= render "data_explorer/dimensional/results/table/30_overall_and_group_2_totals_row" if @tbl_show_metric_totals || @tbl_show_group_2_totals %>
 
-    <%= render partial: "data_explorer/dimensional/results/table/40_group_row", collection: @expand_group_1_member_descriptors, as: :group_1_member_descriptor %>
+
+    <%
+      sorted = default_group_member_descriptor_sort(@composition, @composition.groups[0], @expand_group_1_member_descriptors)
+    %>
+    <%= render partial: "data_explorer/dimensional/results/table/40_group_row", collection: sorted, as: :group_1_member_descriptor %>
   </tbody>
 </table>

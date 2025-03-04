@@ -100,7 +100,7 @@ module QueryShapers
           end
 
           # Select the sort properties for this dimension if necessary
-          dimension_def["SortProperty"]&.each do |sort_property_name|
+          dimension_def["SortProperties"]&.each do |sort_property_name|
             property_def = DataSchema.dimensions[sort_property_name] || DataSchema.properties[sort_property_name]
             sort_selector = property_def["BigQuery"]["Selector"]
             sort_as = "#{group.as}_sort_#{sort_property_name}"
@@ -221,7 +221,7 @@ module QueryShapers
             group_bys << exhibit_as
           end
 
-          dimension_def["SortProperty"]&.each do |sort_property_name|
+          dimension_def["SortProperties"]&.each do |sort_property_name|
             sort_as = "#{group.as}_sort_#{sort_property_name}"
 
             group_bys << sort_as

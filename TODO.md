@@ -38,3 +38,5 @@
 - Fix Oauth token refresh to bring you back to page you requested that triggered the refresh
 - Change interval descriptors to be the complete range, not just one side
 - Write some tests to check rolling window ranges down to the second
+- SortProperties don't resolve exhibit properties. Make a note somewhere that you should ensure the desired property is used directly
+- Transformers for data, like current episode age meta, should be able to display it in prettier format
