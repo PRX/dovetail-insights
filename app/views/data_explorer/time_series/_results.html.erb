@@ -34,8 +34,8 @@
   @expand_group_1_member_descriptors = @composition.results.group_1_unique_member_descriptors || []
   @expand_group_1_member_descriptors << nil #if @tbl_show_group_1_unknowns
 
-  @expand_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
-  @expand_group_2_member_descriptors << nil #if @tbl_show_group_2_unknowns
+  @display_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
+  @display_group_2_member_descriptors << nil #if @tbl_show_group_2_unknowns
 %>
 
 <table data-data-explorer--results-table-highlight-target="table">

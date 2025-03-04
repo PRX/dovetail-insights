@@ -39,7 +39,7 @@
     <td><%= meta_descriptor_label(@composition.groups[0], meta_descriptor) %></td>
   <% end %>
 
-  <% @expand_group_2_member_descriptors.each do |group_2_member_descriptor| %>
+  <% @display_group_2_member_descriptors.each do |group_2_member_descriptor| %>
     <% @composition.metrics.each do |metric| %>
       <%# If this is the nil, and there's no need to show unknowns, skip it %>
       <% next if !group_2_member_descriptor && !@tbl_show_group_2_unknowns %>

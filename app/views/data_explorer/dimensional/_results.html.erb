@@ -65,11 +65,13 @@
 
   # Create a set of each group's members, plus `nil` to represent values that
   # don't belong to any member of that group (if necessary)
-  @expand_group_1_member_descriptors = @composition.results.group_1_unique_member_descriptors || []
-  @expand_group_1_member_descriptors << nil if @tbl_show_group_1_unknowns
+  @display_group_1_member_descriptors = @composition.results.group_1_unique_member_descriptors || []
+  @display_group_1_member_descriptors << nil if @tbl_show_group_1_unknowns
+  @display_group_1_member_descriptors = default_group_member_descriptor_sort(@composition, @composition.groups[0], @display_group_1_member_descriptors)
 
-  @expand_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
-  @expand_group_2_member_descriptors << nil if @tbl_show_group_2_unknowns
+  @display_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
+  @display_group_2_member_descriptors << nil if @tbl_show_group_2_unknowns
+  @display_group_2_member_descriptors = default_group_member_descriptor_sort(@composition, @composition.groups[1], @display_group_2_member_descriptors)
 
   @meta = @composition.groups[0]&.meta
 %>
@@ -92,7 +94,7 @@
     <% end %>
 
     <%# Group 2 members %>
-    <% @expand_group_2_member_descriptors&.each do |_| %>
+    <% @display_group_2_member_descriptors&.each do |_| %>
       <col class="data" span="<%= @composition.metrics.size %>">
     <% end %>
   </colgroup>
@@ -107,7 +109,6 @@
     <%= render "data_explorer/dimensional/results/table/30_overall_and_group_2_totals_row" if @tbl_show_metric_totals || @tbl_show_group_2_totals %>
 
 
-    <% sorted = default_group_member_descriptor_sort(@composition, @composition.groups[0], @expand_group_1_member_descriptors) %>
-    <%= render partial: "data_explorer/dimensional/results/table/40_group_row", collection: sorted, as: :group_1_member_descriptor %>
+    <%= render partial: "data_explorer/dimensional/results/table/40_group_row", collection: @display_group_1_member_descriptors, as: :group_1_member_descriptor %>
   </tbody>
 </table>
