@@ -7,15 +7,26 @@
   def all_joins_for_table(table_name)
     all_joins = []
 
+    # All tables ultimately join to downloads, so if the input is downloads, no
+    # joins are necessary
     unless table_name == "downloads"
       table_def = DataSchema.tables[table_name]
       bq = table_def["BigQuery"]
 
+      # For each table that the input table joins so, see if any more joins are
+      # needed recursively. For example, if "advertisers" is the input table,
+      # it lists "campaigns" and a join, which in turn lists "impressions",
+      # which finally joins to downloads. So in order to join advertisers,
+      # joins for all three tables are required to get back to downloads.
       bq["JoinsTo"].each do |join_table_name, join_def|
+        # As before, no joins are necessary once we're at the downloads table
         unless join_table_name == "downloads"
           all_joins.concat(all_joins_for_table(join_table_name))
         end
 
+        # Joins can be defined using either a key on the join table that
+        # matches the primary key of the input table, or using an arbitrary
+        # expression
         if join_def["Key"]
           all_joins << "#{bq["Join"]} JOIN #{bq["Table"]} AS #{table_name} ON #{table_name}.#{bq["Key"]} = #{join_table_name}.#{join_def["Key"]}"
         elsif join_def["Expression"]
@@ -35,15 +46,17 @@
   metrics.each { |metric| (DataSchema.metrics[metric.metric.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
   groups.each { |group| (DataSchema.dimensions[group.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
 
-  # Collection all JOIN statements needed for **all** tables required by this
+  # Collect all JOIN statements needed for **all** tables required by this
   # query, not just the ones directly touched by filters, groups, etc.
   joins = []
   tables.uniq.each do |table_name|
     joins.concat(all_joins_for_table(table_name))
   end
 
+  # Each element of +selects+ will look like "foo AS bar"
   selects = []
 
+  #
   if self.is_a? Compositions::TimeSeriesComposition
     if rolling?
       # Use the raw range tuple as the source of truth for GROUP BY, but include
@@ -151,8 +164,9 @@
     end
   end
 
-  # -- TODO Needs to handle variables/uniques
-  # With a valid composition, there should never be any duplication of these
+  # Add a select for each metric. These are some sort of aggregation, like a
+  # COUNT() of downloads
+  # TODO Needs to handle variables/uniques
   metrics.each do |metric|
     metric_def = DataSchema.metrics[metric.metric.to_s]
     selector = metric_def["BigQuery"]["Selector"]
@@ -215,6 +229,12 @@
   # GROUP BY clauses, to support exhibit properties
   group_bys = []
 
+  # Time series have additional GROUP BY clauses for the granularity. For
+  # calendar granularities, like daily/weekly/etc, one GROUP BY is added. With
+  # +rolling+, an additional GROUP BY is added which is a field that contains
+  # the ranges actually used to calculate the rolling windows. These ranges are
+  # the source of truth, whereas the +granularity_as+ field is useful for
+  # presentation, but is a less exact formatted version of the range.
   if self.is_a? Compositions::TimeSeriesComposition
     group_bys << "#{granularity_as}_raw" if rolling?
     group_bys << granularity_as
@@ -321,6 +341,7 @@ downloads_in_range AS (
 
 <% if joins.uniq.join(" ").include?("impressions_in_range") %>
   ,impressions_in_range AS (
+    -- TODO determine selects for this like we did with downloads
     SELECT *
 
     FROM production.dt_impressions AS impressions
