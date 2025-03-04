@@ -20,7 +20,6 @@
   <% @meta&.each do |meta| %>
     <td>
       <%= prop_or_dim_label(meta) %>
-      <%= I18n.exists?("dimensions.#{meta}") ? t("dimensions.#{meta}").titleize : meta.titleize %>
     </td>
   <% end %>
 
