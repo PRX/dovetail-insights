@@ -40,10 +40,10 @@
           text = number_with_delimiter(total)
 
           title = [
-            "Mean: #{number_with_delimiter(mean)}","
-            Min: #{number_with_delimiter(min)}","
-            Max: #{number_with_delimiter(max)}","
-            Range: #{number_with_delimiter(range)}"
+            "Mean: #{number_with_delimiter(mean)}",
+            "Min: #{number_with_delimiter(min)}",
+            "Max: #{number_with_delimiter(max)}",
+            "Range: #{number_with_delimiter(range)}"
           ].join("\n")
         else
           title = "When grouping by #{@composition.groups[0]&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
