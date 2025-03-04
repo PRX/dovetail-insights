@@ -71,7 +71,7 @@ module Compositions
     def query(a_binding)
       return unless valid?
 
-      erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "big_query", "time_series.sql.erb")))
+      erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "big_query", "dimensional.sql.erb")))
       erb.result(a_binding)
     end
 

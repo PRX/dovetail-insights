@@ -1,20 +1,8 @@
-<% podcast_filter = filters.find {|f| f.dimension == :podcast_id } %>
-
--- Pre calculate joins, so we know all the tables we need as early as possible
-
--- Need to JOIN on any tables that are needed for SELECTs, GROUP BYs, or WHEREs
--- figure out how to choose the best one to use given the rest of the query
 <%
-  tables = []
-
-  # Collect all the tables that are needed for filters, metrics, and groups.
-  # This only includes the tables that are *directly* required for each of
-  # these; those tables may have chained dependencies, which are handled below.
-  filters.each { |filter| (DataSchema.dimensions[filter.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
-  metrics.each { |metric| (DataSchema.metrics[metric.metric.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
-  groups.each { |group| (DataSchema.dimensions[group.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
-
-  joins = []
+  ##
+  # For a given table, returns an array of all JOIN statements necessary to
+  # join that table to the downloads table. This recursively walks through the
+  # schema until it gets to the downloads table.
 
   def all_joins_for_table(table_name)
     all_joins = []
@@ -39,80 +27,49 @@
     all_joins
   end
 
+  # Collect all the tables that are needed for filters, metrics, and groups.
+  # This only includes the tables that are *directly* required for each of
+  # these; those tables may have chained dependencies, which are handled below.
+  tables = []
+  filters.each { |filter| (DataSchema.dimensions[filter.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
+  metrics.each { |metric| (DataSchema.metrics[metric.metric.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
+  groups.each { |group| (DataSchema.dimensions[group.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
+
+  # Collection all JOIN statements needed for **all** tables required by this
+  # query, not just the ones directly touched by filters, groups, etc.
+  joins = []
   tables.uniq.each do |table_name|
     joins.concat(all_joins_for_table(table_name))
   end
-%>
 
-DECLARE range_start TIMESTAMP DEFAULT '<%= abs_from.to_s %>';
-DECLARE range_end TIMESTAMP DEFAULT '<%= abs_to.to_s %>';
-
--- In order to ensure that the time range operates as expected, we make
--- queries for downloads and impressions before doing any JOINs. Reducing the
--- number of columns reduces cost, but filtering does not.
-<%
-  cte_selects = ["timestamp", "request_uuid"]
-
-  # For each group, only include columns from the dt_downloads table that are
-  # required to join to other tables needed for that group
-  groups.each do |group|
-    dimension_def = DataSchema.dimensions[group.dimension.to_s]
-    req_tables = dimension_def["BigQuery"]["RequiredTables"]
-    req_tables.each do |table_name|
-      table_def = DataSchema.tables[table_name]
-      if table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
-        frn_key = table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
-
-        cte_selects << frn_key
-      end
-    end
-  end
-
-  # Do the same for filters
-  filters.each do |filter|
-    filter_def = DataSchema.dimensions[filter.dimension.to_s]
-    req_tables = filter_def["BigQuery"]["RequiredTables"]
-    req_tables.each do |table_name|
-      table_def = DataSchema.tables[table_name]
-      if table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
-        frn_key = table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
-
-        cte_selects << frn_key
-      end
-    end
-  end
-%>
-WITH
-downloads_in_range AS (
-  SELECT <%= cte_selects.uniq.join(", ") %>
-
-  FROM production.dt_downloads AS downloads
-
-  WHERE
-    downloads.timestamp >= range_start AND downloads.timestamp < range_end
-    AND downloads.is_duplicate = FALSE
-    AND downloads.feeder_podcast IS NOT NULL
-    AND downloads.feeder_podcast IN (<%= podcast_filter&.values&.join(", ") %>)
-  )
-
-<% if joins.uniq.join(" ").include?("impressions_in_range") %>
-  ,impressions_in_range AS (
-    SELECT *
-
-    FROM production.dt_impressions AS impressions
-
-    WHERE
-      impressions.timestamp >= range_start AND impressions.timestamp < range_end
-      AND impressions.is_duplicate = FALSE
-      AND impressions.feeder_podcast IS NOT NULL
-      AND impressions.feeder_podcast IN (<%= podcast_filter&.values&.join(", ") %>)
-  )
-<% end %>
-
--- SELECT ----------------------------------------------------------------------
-
-<%
   selects = []
+
+  if self.is_a? Compositions::TimeSeriesComposition
+    if rolling?
+      # Use the raw range tuple as the source of truth for GROUP BY, but include
+      # the start of the range as a useful value we can use elsewhere to
+      # represent each group
+      selects << "rolling_window_range AS #{granularity_as}_raw"
+      # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
+      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", RANGE_START(rolling_window_range), "UTC") AS #{granularity_as})
+    else
+      bq_granularity = case granularity
+      when :daily
+        "DAY"
+      when :weekly
+        "WEEK(SUNDAY)"
+      when :monthly
+        "MONTH"
+      when :quarterly
+        "QUARTER"
+      when :yearly
+        "YEAR"
+      end
+
+      # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
+      selects << %Q(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", TIMESTAMP_TRUNC(downloads.timestamp, #{bq_granularity}), "UTC") AS #{granularity_as})
+    end
+  end
 
   # Add SELECTs derived from the group selections and the modes they are
   # operating in
@@ -172,6 +129,17 @@ downloads_in_range AS (
       selects << "#{exhibit_selector} AS #{exhibit_as}"
     end
 
+    # Select the sort properties for this dimension if necessary
+    if dimension_def["SortProperty"]
+      dimension_def["SortProperty"].each do |sort_property_name|
+        property_def = DataSchema.dimensions[sort_property_name] || DataSchema.properties[sort_property_name]
+        sort_selector = property_def["BigQuery"]["Selector"]
+        sort_as = "#{group.as}_sort_#{sort_property_name}"
+
+        selects << "#{sort_selector} AS #{sort_as}"
+      end
+    end
+
     group.meta&.each do |meta_property|
       property_def = DataSchema.dimensions[meta_property.to_s] || DataSchema.properties[meta_property.to_s]
       meta_selector = property_def["BigQuery"]["Selector"]
@@ -195,28 +163,7 @@ downloads_in_range AS (
       selects << "#{selector} AS #{metric.as}"
     end
   end
-%>
 
-SELECT <%= selects.join(", ") %>
-
--- END SELECT ------------------------------------------------------------------
-
--- FROM ------------------------------------------------------------------------
-
--- TODO get this AS name from the schema
-FROM downloads_in_range AS downloads
-
--- END FROM --------------------------------------------------------------------
-
--- JOINS -----------------------------------------------------------------------
-
-<%= joins.uniq.join("\n") %>
-
--- END JOINS -------------------------------------------------------------------
-
--- WHERE -----------------------------------------------------------------------
-
-<%
   # WHEREs are added from filters, and only from filters. Different types of
   # filters result in different types of WHERE clauses, to support things like
   # lists, ranges, etc. Some values in WHEREs need to be quoted.
@@ -262,19 +209,16 @@ FROM downloads_in_range AS downloads
       end
     end
   end
-%>
 
-WHERE <%= wheres.join(" AND ") %>
-
--- END WHERE -------------------------------------------------------------------
-
--- GROUP BY --------------------------------------------------------------------
-
-<%
   # Each selected group adds a GROUP BY clause. Groups are the only source of
   # GROUP BY clauses for dimensional lens, but some dimensions add multiple
   # GROUP BY clauses, to support exhibit properties
   group_bys = []
+
+  if self.is_a? Compositions::TimeSeriesComposition
+    group_bys << "#{granularity_as}_raw" if rolling?
+    group_bys << granularity_as
+  end
 
   groups.each do |group|
     group_bys << group.as
@@ -287,15 +231,128 @@ WHERE <%= wheres.join(" AND ") %>
       group_bys << exhibit_as
     end
 
+    if dimension_def["SortProperty"]
+      dimension_def["SortProperty"].each do |sort_property_name|
+        sort_as = "#{group.as}_sort_#{sort_property_name}"
+
+        group_bys << sort_as
+      end
+    end
+
     group.meta&.each do |meta_property|
-      property_def = DataSchema.dimensions[meta_property.to_s] || DataSchema.properties[meta_property.to_s]
       meta_as = "#{group.as}_meta_#{meta_property}"
 
       group_bys << meta_as
     end
   end
+
+  # In the initial downloads CTE, only include columns that are required to
+  # complete the query. Look for any columns on the downloads table that are
+  # required directly, or any columns that are needed to JOIN other table. This
+  # reduces the amount of data processes, which saves a significant amount of
+  # money.
+
+  dl_cte_selects = ["timestamp", "request_uuid"]
+
+  group_and_filter_dimension_names = []
+  group_and_filter_dimension_names.concat(groups.map {|g| g.dimension.to_s }) if groups
+  group_and_filter_dimension_names.concat(filters.map {|f| f.dimension.to_s }) if filters
+
+  group_and_filter_dimension_names.each do |dimension_name|
+    dimension_def = DataSchema.dimensions[dimension_name]
+    req_tables = dimension_def["BigQuery"]["RequiredTables"]
+    req_tables&.filter {|t| t != "downloads" }&.each do |table_name|
+      table_def = DataSchema.tables[table_name]
+      if table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
+        frn_key = table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
+
+        dl_cte_selects << frn_key
+      end
+    end
+
+    dl_cte_selects.concat(dimension_def["BigQuery"]["RequiredColumns"]) if dimension_def["BigQuery"]["RequiredColumns"]
+  end
 %>
 
-<%= "GROUP BY #{group_bys.join(", ")}" if group_bys.present? %>
+DECLARE range_start TIMESTAMP DEFAULT '<%= abs_from.to_s %>';
+DECLARE range_end TIMESTAMP DEFAULT '<%= abs_to.to_s %>';
 
--- END GROUP BY ----------------------------------------------------------------
+<% if self.is_a?(Compositions::TimeSeriesComposition) && rolling? %>
+  -- I couldn't get any of the native range functions in BigQuery to do
+  -- exactly what I wanted, so this is some manual math. The goal is to
+  -- have a set of ranges, anchored to the chosen range end, and starting
+  -- at or before the chosen range start, such that each range is exactly
+  -- the same number of seconds
+  DECLARE rolling_window_num_seconds INT64 DEFAULT <%= window %>;
+
+  -- Get the total time range duration in seconds
+  DECLARE range_duration_in_seconds INT64 DEFAULT TIMESTAMP_DIFF(range_end, range_start, SECOND);
+
+  -- Figure out how many windows for the current rolling window setting
+  -- fit into that duration (e.g., duration=10, window=3, that would give
+  -- 3.333 windows)
+  -- This assume windows are always defined as some number of *days*
+  DECLARE num_windows_in_range FLOAT64 DEFAULT range_duration_in_seconds / rolling_window_num_seconds;
+  -- Round the number of windows up, so we have a whole number of windows
+  -- that covers at least the entire duration (e.g., 4 windows)
+  DECLARE expanded_num_windows_in_range INT64 DEFAULT CAST(CEIL(num_windows_in_range) AS INT64);
+
+  -- Get the total number of seconds in that whole number quantity of
+  -- windows
+  DECLARE expanded_range_duration_in_seconds INT64 DEFAULT expanded_num_windows_in_range * rolling_window_num_seconds;
+
+  --
+  DECLARE expanded_range_start TIMESTAMP DEFAULT TIMESTAMP_SUB(range_end, INTERVAL expanded_range_duration_in_seconds SECOND);
+<% end %>
+
+-- In order to ensure that the time range operates as expected, we make
+-- queries for downloads and impressions before doing any JOINs.
+WITH
+downloads_in_range AS (
+  SELECT <%= dl_cte_selects.uniq.join(", ") %>
+
+  FROM production.dt_downloads AS downloads
+
+  WHERE
+    downloads.timestamp >= range_start AND downloads.timestamp < range_end
+    AND downloads.is_duplicate = FALSE
+    AND downloads.feeder_podcast IS NOT NULL
+  )
+
+<% if joins.uniq.join(" ").include?("impressions_in_range") %>
+  ,impressions_in_range AS (
+    SELECT *
+
+    FROM production.dt_impressions AS impressions
+
+    WHERE
+      impressions.timestamp >= range_start AND impressions.timestamp < range_end
+      AND impressions.is_duplicate = FALSE
+      AND impressions.feeder_podcast IS NOT NULL
+  )
+<% end %>
+
+<% if self.is_a?(Compositions::TimeSeriesComposition) && rolling? %>
+  ,rolling_window_ranges AS (
+    -- This generates a set of ranges to be used on time series lenses, when
+    -- the granularity is a rolling window. It's pretty safe to set up the
+    -- CTE on all queries. This uses the window math DEFINEs from above, to
+    -- create a table with a row for each window, with a column for the start
+    -- and end.
+    SELECT *
+
+    FROM UNNEST(
+      GENERATE_RANGE_ARRAY(
+        RANGE(expanded_range_start, range_end),
+        INTERVAL rolling_window_num_seconds SECOND
+      )
+    ) AS rolling_window_range
+  )
+<% end %>
+
+SELECT <%= selects.join(", ") %>
+<%# TODO get this AS name from the schema %>
+FROM downloads_in_range AS downloads
+<%= joins.uniq.join("\n") %>
+WHERE <%= wheres.join(" AND ") %>
+<%= "GROUP BY #{group_bys.join(", ")}" if group_bys.present? %>
