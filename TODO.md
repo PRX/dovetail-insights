@@ -34,3 +34,4 @@
 - When including "published" as a meta on episode, the value being displayed in the results has a time zone. No values in the app, internal or external, should have time zones
 - Probably need to add a SortProperty, so groups can be sorted by something other than the exhibit property (thinking about episode, probably makes sense to sort by pub date by default)
 - Support accessing BQ datasets other than "production". Probably needs to parse the data_schema as ERB
+- Separate permissions for downloads and impressions

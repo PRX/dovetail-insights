@@ -6,7 +6,7 @@
   <select name="compare">
     <option></option>
 
-    <% [:WoW, :QoQ, :YoY].each do |p| %>
+    <% Compositions::Components::Comparison::POP_COMPARISON_OPTS.each do |p| %>
       <option value="<%= p %>" <%= select_eq compare.try(:period) == p %>><%= p %></option>
     <% end %>
   </select>

@@ -3,6 +3,8 @@ module Compositions
     class Comparison
       include ActiveModel::Model
 
+      POP_COMPARISON_OPTS = %i[WoW QoQ YoY]
+
       ##
       # Returns an array of **all** comparisons that are present in the given
       # params.
@@ -42,7 +44,7 @@ module Compositions
       private
 
       def period_is_supported
-        unless [:WoW, :QoQ, :YoY].include? period
+        unless POP_COMPARISON_OPTS.include? period
           errors.add(:comparison, "#{period} is not a valid comparison")
         end
       end
