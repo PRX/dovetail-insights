@@ -17,6 +17,8 @@ module QueryShapers
         year: "YEAR"
       }
 
+      attr_reader :composition
+
       def initialize(composition)
         raise unless composition.is_a? Compositions::BaseComposition
 
@@ -29,7 +31,7 @@ module QueryShapers
 
       def to_hash
         @to_hash ||= {
-          composition: @composition,
+          composition: composition,
           selects: selects,
           joins: joins,
           wheres: wheres,

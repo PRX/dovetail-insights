@@ -123,9 +123,12 @@ downloads_in_range AS (
   ) AS rolling_window_range
 )
 
-SELECT <%= selects.join(", ") %>
+SELECT <%= selects.join(",\n\t") %>
 <%# TODO get this AS name from the schema %>
 FROM downloads_in_range AS downloads
+
 <%= joins.uniq.join("\n") %>
-WHERE <%= wheres.join(" AND ") %>
-<%= "GROUP BY #{group_bys.join(", ")}" if group_bys.present? %>
+
+WHERE <%= wheres.join("\n\tAND ") %>
+
+<%= "GROUP BY #{group_bys.join(",\n\t")}" if group_bys.present? %>
