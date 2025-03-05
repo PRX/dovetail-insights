@@ -228,28 +228,37 @@ table {
   } */
 
   tr:hover {
-    border: red 10px solid;
+    th {
+      background-color: red;
+
+      &::before {
+        content: "▶ "
+      }
+    }
   }
 }
 
-table:has(td:nth-child(1):hover) tr td:nth-child(1),
-table:has(td:nth-child(2):hover) tr td:nth-child(2),
-table:has(td:nth-child(3):hover) tr td:nth-child(3),
-table:has(td:nth-child(4):hover) tr td:nth-child(4),
-table:has(td:nth-child(5):hover) tr td:nth-child(5),
-table:has(td:nth-child(6):hover) tr td:nth-child(6),
-table:has(td:nth-child(7):hover) tr td:nth-child(7),
-table:has(td:nth-child(8):hover) tr td:nth-child(8),
-table:has(td:nth-child(9):hover) tr td:nth-child(9),
-table:has(td:nth-child(10):hover) tr td:nth-child(10),
-table:has(td:nth-child(11):hover) tr td:nth-child(11),
-table:has(td:nth-child(12):hover) tr td:nth-child(12),
-table:has(td:nth-child(13):hover) tr td:nth-child(13),
-table:has(td:nth-child(14):hover) tr td:nth-child(14),
-table:has(td:nth-child(15):hover) tr td:nth-child(15),
-table:has(td:nth-child(16):hover) tr td:nth-child(16),
-table:has(td:nth-child(17):hover) tr td:nth-child(17)
+table:has(td:nth-child(1):hover) tr th:nth-child(1),
+table:has(td:nth-child(2):hover) tr th:nth-child(2),
+table:has(td:nth-child(3):hover) tr th:nth-child(3),
+table:has(td:nth-child(4):hover) tr th:nth-child(4),
+table:has(td:nth-child(5):hover) tr th:nth-child(5),
+table:has(td:nth-child(6):hover) tr th:nth-child(6),
+table:has(td:nth-child(7):hover) tr th:nth-child(7),
+table:has(td:nth-child(8):hover) tr th:nth-child(8),
+table:has(td:nth-child(9):hover) tr th:nth-child(9),
+table:has(td:nth-child(10):hover) tr th:nth-child(10),
+table:has(td:nth-child(11):hover) tr th:nth-child(11),
+table:has(td:nth-child(12):hover) tr th:nth-child(12),
+table:has(td:nth-child(13):hover) tr th:nth-child(13),
+table:has(td:nth-child(14):hover) tr th:nth-child(14),
+table:has(td:nth-child(15):hover) tr th:nth-child(15),
+table:has(td:nth-child(16):hover) tr th:nth-child(16),
+table:has(td:nth-child(17):hover) tr th:nth-child(17)
 {
-  border-left: red 10px solid;
-  border-right: red 10px solid;
+  background-color: red;
+
+  &::before {
+    content: "▶ "
+  }
 }
