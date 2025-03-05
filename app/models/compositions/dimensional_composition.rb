@@ -32,7 +32,7 @@ module Compositions
         shaper = QueryShapers::BigQuery::Dimensional.new(self)
 
         erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "big_query", "dimensional.sql.erb")))
-        erb.result_with_hash(shaper.to_hash)
+        erb.result_with_hash(shaper.to_hash).gsub(/\n{3,}/, "\n\n")
       end
     end
 
