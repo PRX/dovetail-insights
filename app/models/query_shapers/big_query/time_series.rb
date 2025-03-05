@@ -14,6 +14,16 @@ module QueryShapers
         yearly: "YEAR"
       }
 
+      def columns_for_table(table_name)
+        columns = super
+
+        # Time series queries require timestamps, even if no parameters would
+        # otherwise, to be able to GROUP BY timestamp
+        columns << "timestamp" if ["downloads", "impressions"].include?(table_name)
+
+        columns.uniq
+      end
+
       ##
       # tktk
 
