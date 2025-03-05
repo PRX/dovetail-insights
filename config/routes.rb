@@ -19,6 +19,7 @@ Rails.application.routes.draw do
 
   get "/data-explorer", to: "data_explorer#index", as: :data_explorer
   get "/data-explorer/export", to: "data_explorer#export"
+  get "/data-explorer/sql", to: "data_explorer#sql"
 
   get "/.well-known/change-password", to: redirect("https://#{ENV["ID_HOST"]}/.well-known/change-password", status: 302)
 
