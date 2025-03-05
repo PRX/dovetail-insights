@@ -70,7 +70,7 @@ module Compositions
       # query, rather than just a metric name or something like that.
 
       def as
-        @as ||= :"#{metric}_#{Base64.strict_encode64(SecureRandom.uuid)}"
+        @as ||= :"#{metric}_#{ShortRandom.value(self)}"
       end
 
       def as_json(options = {})

@@ -51,7 +51,7 @@ module Compositions
     end
 
     def granularity_as
-      @granularity_as ||= Base64.strict_encode64(SecureRandom.uuid).to_sym
+      @granularity_as ||= ShortRandom.value(self)
     end
 
     def rolling?
