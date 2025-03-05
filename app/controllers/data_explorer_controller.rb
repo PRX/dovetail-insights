@@ -15,6 +15,10 @@ class DataExplorerController < ApplicationController
     @bytes = CompositionResultMetadataLog.where(current_user.user_id).where("created_at >= ?", 48.hours.ago).pluck(:total_bytes_processed).reduce(0, :+)
   end
 
+  def bookmarks
+    @bytes = CompositionResultMetadataLog.where(current_user.user_id).where("created_at >= ?", 48.hours.ago).pluck(:total_bytes_processed).reduce(0, :+)
+  end
+
   def export
     if @composition.valid?
       send_data(
