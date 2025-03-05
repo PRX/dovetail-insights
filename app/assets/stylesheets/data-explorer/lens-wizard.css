@@ -1,6 +1,18 @@
 #lens-wizard {
   width: 768px;
   height: 480px;
+  background-color: #003a57;
+
+  &::backdrop {
+    background-image: linear-gradient(
+      45deg,
+      magenta,
+      rebeccapurple,
+      dodgerblue,
+      green
+    );
+    opacity: 0.85;
+  }
 
   ul {
     list-style: none;
@@ -15,17 +27,30 @@
     gap: 20px;
 
     li {
-      background-color: red;
+      border: 2px solid #333;
+      background-color: white;
       width: 348px;
       height: 206px;
       margin: 0;
-      padding: 0;
-      border: 0;
+      padding: 8px;
+      outline: none;
 
       a {
         display: block;
         width: 100%;
         height: 100%;
+        color: inherit;
+        outline: none;
+
+        h1 {
+          font-weight: 900;
+          font-size: 1.75rem;
+        }
+
+        p {
+          font-size: 0.9rem;
+          font-weight: normal;
+        }
       }
     }
   }
