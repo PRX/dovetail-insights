@@ -96,7 +96,7 @@ module QueryShapers
           end
 
           group&.meta&.each do |m|
-            meta_def = DataSchema.dimensions[m.dimension.to_s]
+            meta_def = DataSchema.dimensions[m.to_s]
 
             if meta_def.dig("BigQuery", "RequiredColumns").key?(table_name)
               cols = meta_def.dig("BigQuery", "RequiredColumns", table_name)
@@ -136,13 +136,15 @@ module QueryShapers
       # "campaigns", "impressions", "downloads"]
 
       def all_tables_for_table(table_name)
-        tables = [table_name]
+        tables = []
 
         table_def = DataSchema.tables[table_name]
         table_def&.dig("BigQuery", "JoinsTo")&.each do |join_table_name, join_def|
           tables.concat all_tables_for_table(join_table_name)
           tables << join_table_name
         end
+
+        tables << table_name
 
         tables.uniq
       end
