@@ -35,11 +35,117 @@ module QueryShapers
           selects: selects,
           joins: joins,
           wheres: wheres,
-          group_bys: group_bys
+          group_bys: group_bys,
+          downloads_table_columns: columns_for_table("downloads"),
+          impressions_table_columns: columns_for_table("impressions")
         }
       end
 
       private
+
+      ##
+      # Returns all tables required to complete the query, based on parameters
+      # like filters, groups, and metrics.
+
+      def all_tables
+        # Gather all the tables required directly by filters, metrics, and groups
+        direct_tables = []
+        direct_tables.concat composition.filters.flat_map { |f| DataSchema.dimensions[f.dimension.to_s]["BigQuery"]["RequiredColumns"].keys }
+        direct_tables.concat composition.metrics.flat_map { |m| DataSchema.metrics[m.metric.to_s]["BigQuery"]["RequiredColumns"].keys }
+        direct_tables.concat composition.groups.flat_map { |g| DataSchema.dimensions[g.dimension.to_s]["BigQuery"]["RequiredColumns"].keys } if @composition.groups
+
+        # Remove duplicates
+        direct_tables.uniq!
+
+        # Recursively gather any other tables those tables depend upon
+        direct_tables.flat_map { |t| all_tables_for_table(t) }.uniq
+      end
+
+      ##
+      # tktk
+
+      def columns_for_table(table_name)
+        columns = []
+
+        composition.metrics.each do |metric|
+          metric_def = DataSchema.metrics[metric.metric.to_s]
+
+          if metric_def.dig("BigQuery", "RequiredColumns").key?(table_name)
+            cols = metric_def.dig("BigQuery", "RequiredColumns", table_name)
+            columns.concat(cols) if cols
+          end
+        end
+
+        # TODO Need to include exhibit/sort/etc
+        composition.filters.each do |filter|
+          dimension_def = DataSchema.dimensions[filter.dimension.to_s]
+
+          if dimension_def.dig("BigQuery", "RequiredColumns").key?(table_name)
+            cols = dimension_def.dig("BigQuery", "RequiredColumns", table_name)
+            columns.concat(cols) if cols
+          end
+        end
+
+        # TODO Need to include exhibit/sort/etc
+        composition.groups.each do |group|
+          dimension_def = DataSchema.dimensions[group.dimension.to_s]
+
+          if dimension_def.dig("BigQuery", "RequiredColumns").key?(table_name)
+            cols = dimension_def.dig("BigQuery", "RequiredColumns", table_name)
+            columns.concat(cols) if cols
+          end
+
+          group&.meta&.each do |m|
+            meta_def = DataSchema.dimensions[m.dimension.to_s]
+
+            if meta_def.dig("BigQuery", "RequiredColumns").key?(table_name)
+              cols = meta_def.dig("BigQuery", "RequiredColumns", table_name)
+              columns.concat(cols) if cols
+            end
+          end
+        end
+
+        all_tables.each do |t|
+          table_def = DataSchema.tables[t]
+
+          if table_def&.dig("BigQuery", "JoinsTo", table_name)&.key?("Key")
+            foreign_key = table_def["BigQuery"]["JoinsTo"][table_name]["Key"]
+            columns << foreign_key
+          elsif table_def&.dig("BigQuery", "JoinsTo", table_name)&.key?("Expression")
+            if table_def["BigQuery"]["JoinsTo"][table_name]["RequiredColumns"].key?(table_name)
+              columns.concat(table_def["BigQuery"]["JoinsTo"][table_name]["RequiredColumns"][table_name])
+            end
+          end
+        end
+
+        columns.uniq
+      end
+
+      ##
+      # For the given table, returns a list of all tables required for that
+      # table to be useful in a query, including the given table itself.
+      #
+      # Examples
+      #
+      # When table_name = "downloads", since downloads has no table
+      # dependencies, this returns ["downloads"].
+      #
+      # When table = "advertisers", the advertisers table joins to the
+      # campaigns table, which joins to the impressions table, which joins to
+      # the downloads table, so this returns all of those ["advertisers",
+      # "campaigns", "impressions", "downloads"]
+
+      def all_tables_for_table(table_name)
+        tables = [table_name]
+
+        table_def = DataSchema.tables[table_name]
+        table_def&.dig("BigQuery", "JoinsTo")&.each do |join_table_name, join_def|
+          tables.concat all_tables_for_table(join_table_name)
+          tables << join_table_name
+        end
+
+        tables.uniq
+      end
 
       ##
       #
@@ -66,13 +172,32 @@ module QueryShapers
       # query, not just the ones directly touched by filters, groups, etc.
 
       def joins
-        tables.uniq.flat_map { |table_name| all_joins_for_table(table_name) }
+        # tables.uniq.flat_map { |table_name| all_joins_for_table(table_name) }
+        joins = []
+
+        all_tables.each do |table_name|
+          table_def = DataSchema.tables[table_name]
+          table_def&.dig("BigQuery", "JoinsTo")&.each do |join_table_name, join_def|
+            join_type = table_def["BigQuery"]["Join"]
+            big_query_table_name = table_def["BigQuery"]["Table"]
+            primary_key = table_def["BigQuery"]["Key"]
+            foreign_key = join_def["Key"]
+
+            # Joins can be defined using either a key on the join table that
+            # matches the primary key of the input table, or using an arbitrary
+            # expression
+            if join_def["Key"]
+              joins << "#{join_type} JOIN #{big_query_table_name} AS #{table_name} ON #{table_name}.#{primary_key} = #{join_table_name}.#{foreign_key}"
+            elsif join_def["Expression"]
+              joins << "#{join_type} JOIN #{big_query_table_name} AS #{table_name} ON #{join_def["Expression"]}"
+            end
+          end
+        end
+
+        joins
       end
 
-      ##
-      # tktk
-
-      def selects
+      def group_selects
         selects = []
 
         # Add SELECTs derived from the group selections and the modes they are
@@ -119,19 +244,39 @@ module QueryShapers
           selects << group.meta.map { |m| simple_select_for_prop_or_dim(group, m, :meta) } if group.meta
         end
 
-        # Add a select for each metric. These are some sort of aggregation, like a
-        # COUNT() of downloads
-        # TODO Needs to handle variables/uniques
-        @composition.metrics.each do |metric|
+        selects
+      end
+
+      ##
+      # Returns the SELECT statements needed to compute the results of the
+      # composition's chosen metrics
+
+      def metric_selects
+        selects = []
+
+        composition.metrics.each do |metric|
           metric_def = DataSchema.metrics[metric.metric.to_s]
           selector = metric_def["BigQuery"]["Selector"]
 
           if metric_def["Type"] && metric_def["Type"] == "Variable"
-
+            # TODO
           else
             selects << "#{selector} AS #{metric.as}"
           end
         end
+
+        selects
+      end
+
+      ##
+      # Returns an array of strings, where each string is part of a SELECT
+      # statement in the query, like ["foo AS bar", "name AS full_name"].
+
+      def selects
+        selects = []
+
+        selects.concat group_selects
+        selects.concat metric_selects
 
         selects
       end
@@ -190,69 +335,24 @@ module QueryShapers
       # GROUP BY clauses, to support exhibit properties, meta properties, etc
 
       def group_bys
-        @composition.groups.flat_map do |group|
+        composition.groups.flat_map do |group|
+          # Always GROUP BY the group's dimension, using the unique AS value
           group_bys = [group.as]
 
+          # The group's dimension may bring along some additonal columns that
+          # get SELECTed, like an exhibit property or sort property. Since they
+          # are being SELECTed, we also have to GROUP them.
           dimension_def = DataSchema.dimensions[group.dimension.to_s]
           group_bys << simple_group_by_for_prop_or_dim(group, dimension_def["ExhibitProperty"], :exhibit) if dimension_def["ExhibitProperty"]
           group_bys << dimension_def["SortProperties"].map { |p| simple_group_by_for_prop_or_dim(group, p, :sort) } if dimension_def["SortProperties"]
+
+          # Similarly, additional columns may be chosen to include in the
+          # results (static properties of the group's dimension), which will be
+          # SELECTed and thus must be GROUPed.
           group_bys << group.meta.map { |m| simple_group_by_for_prop_or_dim(group, m, :meta) } if group.meta
 
           group_bys
         end
-      end
-
-      ##
-      # For a given table, returns an array of all JOIN statements necessary to
-      # join that table to the downloads table. This recursively walks through the
-      # schema until it gets to the downloads table.
-
-      def all_joins_for_table(table_name)
-        all_joins = []
-
-        # All tables ultimately join to downloads, so if the input is downloads, no
-        # joins are necessary
-        unless table_name == "downloads"
-          table_def = DataSchema.tables[table_name]
-          bq = table_def["BigQuery"]
-
-          # For each table that the input table joins so, see if any more joins are
-          # needed recursively. For example, if "advertisers" is the input table,
-          # it lists "campaigns" and a join, which in turn lists "impressions",
-          # which finally joins to downloads. So in order to join advertisers,
-          # joins for all three tables are required to get back to downloads.
-          bq["JoinsTo"].each do |join_table_name, join_def|
-            # As before, no joins are necessary once we're at the downloads table
-            unless join_table_name == "downloads"
-              all_joins.concat(all_joins_for_table(join_table_name))
-            end
-
-            # Joins can be defined using either a key on the join table that
-            # matches the primary key of the input table, or using an arbitrary
-            # expression
-            if join_def["Key"]
-              all_joins << "#{bq["Join"]} JOIN #{bq["Table"]} AS #{table_name} ON #{table_name}.#{bq["Key"]} = #{join_table_name}.#{join_def["Key"]}"
-            elsif join_def["Expression"]
-              all_joins << "#{bq["Join"]} JOIN #{bq["Table"]} AS #{table_name} ON #{join_def["Expression"]}"
-            end
-          end
-        end
-
-        all_joins
-      end
-
-      ##
-      # Collect all the tables that are needed for filters, metrics, and groups.
-      # This only includes the tables that are *directly* required for each of
-      # these; those tables may have chained dependencies, which are handled below.
-
-      def tables
-        tables = []
-        @composition.filters.each { |filter| (DataSchema.dimensions[filter.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
-        @composition.metrics.each { |metric| (DataSchema.metrics[metric.metric.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
-        @composition.groups.each { |group| (DataSchema.dimensions[group.dimension.to_s]["BigQuery"]["RequiredTables"] || []).each { |t| tables << t } }
-
-        tables
       end
 
       ##

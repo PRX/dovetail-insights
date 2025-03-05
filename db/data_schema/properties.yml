@@ -37,79 +37,95 @@ Properties:
     Type: String
     BigQuery:
       Selector: episodes.title
-      RequiredTables: [episodes]
+      RequiredColumns:
+        episodes: [title]
   episode_title_with_pubdate_prefix:
     Type: String
     BigQuery:
       Selector: CONCAT(COALESCE(FORMAT_TIMESTAMP("%Y-%m-%d", episodes.published_at, "UTC"), "Date n/a"), ' ', episodes.title)
-      RequiredTables: [episodes]
+      RequiredColumns:
+        episodes: [title, published_at]
   podcast_name:
     Type: String
     BigQuery:
       Selector: podcasts.title
-      RequiredTables: [podcasts]
+      RequiredColumns:
+        podcasts: [title]
   user_agent_name:
     Type: String
     BigQuery:
       Selector: user_agents.tag
-      RequiredTables: [user_agents]
+      RequiredColumns:
+        user_agents: [tag]
   device_type_name:
     Type: String
     BigQuery:
       Selector: device_types.tag
-      RequiredTables: [device_types]
+      RequiredColumns:
+        device_types: [tag]
   os_name:
     Type: String
     BigQuery:
       Selector: operating_systems.tag
-      RequiredTables: [operating_systems]
+      RequiredColumns:
+        operating_systems: [tag]
   country_name:
     Type: String
     BigQuery:
       Selector: countries.country_name
-      RequiredTables: [countries]
+      RequiredColumns:
+        countries: [country_name]
   country_iso_code:
     Type: String
     BigQuery:
       Selector: countries.country_iso_code
-      RequiredTables: [countries]
+      RequiredColumns:
+        countries: [country_iso_code]
   subdivision_name:
     Type: String
     BigQuery:
       Selector: cities.subdivision_1_name
-      RequiredTables: [cities]
+      RequiredColumns:
+        cities: [subdivision_1_name]
   city_name:
     Type: String
     BigQuery:
       Selector: cities.city_name
-      RequiredTables: [cities]
+      RequiredColumns:
+        cities: [city_name]
   city_name_with_full_state:
     Type: String
     BigQuery:
       Selector: CONCAT(cities.city_name, ' (', cities.subdivision_1_name, ')')
-      RequiredTables: [cities]
+      RequiredColumns:
+        cities: [city_name, subdivision_1_name]
   city_name_with_state:
     Type: String
     BigQuery:
       Selector: CONCAT(cities.city_name, ' (', cities.subdivision_1_name, ')')
-      RequiredTables: [cities]
+      RequiredColumns:
+        cities: [city_name, subdivision_1_name]
   city_name_with_state_abbreviation:
     Type: String
     BigQuery:
       Selector: CONCAT(cities.city_name, ' (', cities.subdivision_1_iso_code, ')')
-      RequiredTables: [cities]
+      RequiredColumns:
+        cities: [city_name, subdivision_1_iso_code]
   metro_name:
     Type: String
     BigQuery:
       Selector: metros.label
-      RequiredTables: [metros]
+      RequiredColumns:
+        metros: [label]
   campaign_name:
     Type: String
     BigQuery:
       Selector: campaigns.name
-      RequiredTables: [campaigns]
+      RequiredColumns:
+        campaigns: [name]
   advertiser_name:
     Type: String
     BigQuery:
       Selector: advertisers.name
-      RequiredTables: [advertisers]
+      RequiredColumns:
+        advertisers: [name]

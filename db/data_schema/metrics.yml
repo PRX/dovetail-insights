@@ -2,15 +2,18 @@ Metrics:
   downloads:
     BigQuery:
       Selector: COUNT(DISTINCT downloads.request_uuid)
-      # TODO Add RequiredColumns and RequiredTables. Don't treat this special
+      RequiredColumns:
+        downloads: [request_uuid]
   impressions:
     BigQuery:
       Selector: COUNT(*)
-      RequiredTables:
-        - impressions
+      RequiredColumns:
+        impressions: []
   uniques:
     BigQuery:
       Selector: COUNT(DISTINCT downloads.listener_id)
-      RequiredColumns: [listener_id] # TODO is it safe to not have a table indicated on this?
+      RequiredColumns:
+        downloads: [listener_id]
+
   # rolling_uniques:
   #   Type: Variable

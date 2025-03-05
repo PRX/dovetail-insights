@@ -15,6 +15,9 @@
 #
 # The properties of each dimension, like Type, help the app determine how a
 # user should be able to interact with each dimension.
+#
+# All tables referenced in these definitions are virtual tables defined in
+# tables.yml
 Dimensions:
   podcast_id:
     Type: Token
@@ -27,7 +30,8 @@ Dimensions:
       - impressions
     BigQuery:
       Selector: podcasts.id
-      RequiredTables: [podcasts]
+      RequiredColumns:
+        podcasts: [id]
   episode_id:
     Type: Token
     QueryKey: episode
@@ -50,7 +54,8 @@ Dimensions:
     BigQuery:
       Selector: episodes.id
       Type: STRING
-      RequiredTables: [episodes]
+      RequiredColumns:
+        episodes: [id]
   download_timestamp:
     Type: Timestamp
     QueryKey: time
@@ -60,7 +65,8 @@ Dimensions:
     BigQuery:
       Selector: downloads.timestamp
       Type: TIMESTAMP
-      RequiredTables: [downloads]
+      RequiredColumns:
+        downloads: [timestamp]
   download_local_timestamp:
     Type: Timestamp
     QueryKey: localTime
@@ -83,7 +89,10 @@ Dimensions:
       # incorrect.
       Selector: PARSE_TIMESTAMP("%FT%T%z", FORMAT_TIMESTAMP("%FT%T+00", downloads.timestamp, COALESCE(cities.time_zone, countries.time_zone)), "UTC")
       Type: TIMESTAMP
-      RequiredTables: [downloads, countries, cities]
+      RequiredColumns:
+        downloads: [timestamp]
+        countries: [time_zone]
+        cities: [time_zone]
   episode_publish_timestamp:
     Type: Timestamp
     QueryKey: published
@@ -93,7 +102,8 @@ Dimensions:
     BigQuery:
       Selector: episodes.published_at
       Type: TIMESTAMP
-      RequiredTables: [episodes]
+      RequiredColumns:
+        episodes: [published_at]
   current_episode_age_in_seconds:
     Type: Duration
     QueryKey: age
@@ -102,7 +112,8 @@ Dimensions:
       - impressions
     BigQuery:
       Selector: TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), episodes.published_at, SECOND)
-      RequiredTables: [downloads, episodes]
+      RequiredColumns:
+        episodes: [published_at]
   episode_age_at_download_in_seconds:
     Type: Duration
     QueryKey: lag
@@ -111,7 +122,9 @@ Dimensions:
       - impressions
     BigQuery:
       Selector: TIMESTAMP_DIFF(downloads.timestamp, episodes.published_at, SECOND)
-      RequiredTables: [downloads, episodes]
+      RequiredColumns:
+        downloads: [timestamp]
+        episodes: [published_at]
   season_number:
     Type: Token
     QueryKey: season
@@ -122,7 +135,8 @@ Dimensions:
     BigQuery:
       Selector: CAST(episodes.season_number AS STRING)
       Type: STRING
-      RequiredTables: [episodes]
+      RequiredColumns:
+        episodes: [season_number]
   episode_number:
     Type: Token
     QueryKey: episodeNumber
@@ -133,7 +147,8 @@ Dimensions:
     BigQuery:
       Selector: CAST(episodes.episode_number AS STRING)
       Type: STRING
-      RequiredTables: [episodes]
+      RequiredColumns:
+        episodes: [episode_number]
   user_agent_id:
     Type: Token
     QueryKey: ua
@@ -147,7 +162,8 @@ Dimensions:
     BigQuery:
       Selector: user_agents.agentname_id
       Type: INTEGER
-      RequiredTables: [user_agents]
+      RequiredColumns:
+        user_agents: [agentname_id]
   device_type_id:
     Type: Token
     QueryKey: device
@@ -161,7 +177,8 @@ Dimensions:
     BigQuery:
       Selector: device_types.agentname_id
       Type: INTEGER
-      RequiredTables: [device_types]
+      RequiredColumns:
+        device_types: [agentname_id]
   os_id:
     Type: Token
     QueryKey: os
@@ -175,7 +192,8 @@ Dimensions:
     BigQuery:
       Selector: operating_systems.agentname_id
       Type: INTEGER
-      RequiredTables: [operating_systems]
+      RequiredColumns:
+        operating_systems: [agentname_id]
   continent_code:
     Type: Token
     QueryKey: continent
@@ -186,7 +204,8 @@ Dimensions:
     BigQuery:
       Selector: countries.continent_code
       Type: STRING
-      RequiredTables: [countries]
+      RequiredColumns:
+        countries: [continent_code]
   country_id:
     Type: Token
     QueryKey: country
@@ -198,11 +217,10 @@ Dimensions:
       - impressions
     PermitNulls: true
     BigQuery:
-      # Selector: countries.geoname_id
-      # Type: INTEGER
       Selector: countries.country_iso_code
       Type: STRING
-      RequiredTables: [countries]
+      RequiredColumns:
+        countries: [country_iso_code]
   subdivision_iso_code:
     Type: Token
     QueryKey: subdiv
@@ -215,10 +233,10 @@ Dimensions:
       - impressions
     PermitNulls: true
     BigQuery:
-      # Selector: cities.subdivision_1_iso_code
       Selector: CONCAT(cities.country_iso_code, '-', cities.subdivision_1_iso_code)
       Type: STRING
-      RequiredTables: [cities]
+      RequiredColumns:
+        cities: [country_iso_code, subdivision_1_iso_code]
   city_id:
     Type: Token
     QueryKey: city
@@ -237,7 +255,8 @@ Dimensions:
     PermitNulls: true
     BigQuery:
       Selector: cities.geoname_id
-      RequiredTables: [cities]
+      RequiredColumns:
+        cities: [geoname_id]
   metro_id:
     Type: Token
     QueryKey: metro
@@ -250,7 +269,8 @@ Dimensions:
     PermitNulls: true
     BigQuery:
       Selector: metros.code
-      RequiredTables: [metros]
+      RequiredColumns:
+        metros: [code]
   time_zone:
     Type: Token
     QueryKey: tz
@@ -260,7 +280,8 @@ Dimensions:
     PermitNulls: true
     BigQuery:
       Selector: cities.time_zone
-      RequiredTables: [cities]
+      RequiredColumns:
+        cities: [time_zone]
   campaign_id:
     Type: Token
     QueryKey: campaign
@@ -271,7 +292,8 @@ Dimensions:
       - impressions
     BigQuery:
       Selector: campaigns.id
-      RequiredTables: [campaigns]
+      RequiredColumns:
+        campaigns: [id]
   advertiser_id:
     Type: Token
     QueryKey: advertiser
@@ -282,7 +304,8 @@ Dimensions:
       - impressions
     BigQuery:
       Selector: advertisers.id
-      RequiredTables: [advertisers]
+      RequiredColumns:
+        advertisers: [id]
   feed:
     Type: Token
     QueryKey: feed
@@ -292,6 +315,7 @@ Dimensions:
       - impressions
     PermitNulls: true
     BigQuery:
-      Selector: COALESCE(feeder_feed, "__DEFAULT_FEED__")
-      RequiredColumns: [feeder_feed]
+      Selector: COALESCE(downloads.feeder_feed, "__DEFAULT_FEED__")
+      RequiredColumns:
+        downloads: [feeder_feed]
       Type: STRING

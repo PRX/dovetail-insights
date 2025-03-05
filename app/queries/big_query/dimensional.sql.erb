@@ -42,46 +42,12 @@ DECLARE expanded_range_duration_in_seconds INT64 DEFAULT expanded_num_windows_in
 DECLARE expanded_range_start TIMESTAMP DEFAULT TIMESTAMP_SUB(range_end, INTERVAL expanded_range_duration_in_seconds SECOND);
 
 <%
-  # In the initial downloads CTE, only include columns that are required to
-  # complete the query. Look for any columns on the downloads table that are
-  # required directly, or any columns that are needed to JOIN other table. This
-  # reduces the amount of data processes, which saves a significant amount of
-  # money.
-
-  dl_cte_selects = ["timestamp", "request_uuid"]
-
-  group_and_filter_dimension_names = []
-  group_and_filter_dimension_names.concat(composition.groups.map {|g| g.dimension.to_s }) if composition.groups
-  group_and_filter_dimension_names.concat(composition.filters.map {|f| f.dimension.to_s }) if composition.filters
-
-  group_and_filter_dimension_names.each do |dimension_name|
-    dimension_def = DataSchema.dimensions[dimension_name]
-    req_tables = dimension_def["BigQuery"]["RequiredTables"]
-    req_tables&.filter {|t| t != "downloads" }&.each do |table_name|
-      table_def = DataSchema.tables[table_name]
-      if table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
-        frn_key = table_def.dig("BigQuery", "JoinsTo", "downloads", "Key")
-
-        dl_cte_selects << frn_key
-      end
-    end
-
-    dl_cte_selects.concat(dimension_def["BigQuery"]["RequiredColumns"]) if dimension_def["BigQuery"]["RequiredColumns"]
-  end
-
-  composition.metrics.each do |metric|
-    metric_def = DataSchema.metrics[metric.metric.to_s]
-    dl_cte_selects.concat(metric_def["BigQuery"]["RequiredColumns"]) if metric_def["BigQuery"]["RequiredColumns"]
-  end
-%>
-
-<%
   # In order to ensure that the time range operates as expected, we make
   # queries for downloads and impressions before doing any JOINs.
 %>
 WITH
 downloads_in_range AS (
-  SELECT <%= dl_cte_selects.uniq.join(", ") %>
+  SELECT <%= downloads_table_columns.join(", ") %>
 
   FROM production.dt_downloads AS downloads
 
@@ -92,17 +58,16 @@ downloads_in_range AS (
   )
 
 <% if joins.uniq.join(" ").include?("impressions_in_range") %>
-  ,impressions_in_range AS (
-    -- TODO determine selects for this like we did with downloads
-    SELECT *
+,impressions_in_range AS (
+  SELECT <%= impressions_table_columns.join(", ") %>
 
-    FROM production.dt_impressions AS impressions
+  FROM production.dt_impressions AS impressions
 
-    WHERE
-      impressions.timestamp >= range_start AND impressions.timestamp < range_end
-      AND impressions.is_duplicate = FALSE
-      AND impressions.feeder_podcast IS NOT NULL
-  )
+  WHERE
+    impressions.timestamp >= range_start AND impressions.timestamp < range_end
+    AND impressions.is_duplicate = FALSE
+    AND impressions.feeder_podcast IS NOT NULL
+)
 <% end %>
 
 <%

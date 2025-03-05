@@ -1,10 +1,14 @@
 Tables:
+  dowloads: {}
   impressions:
     BigQuery:
       JoinsTo:
         downloads:
           # In the expression, use only schema table names; no BigQuery table names
           Expression: impressions.request_uuid = downloads.request_uuid AND TIMESTAMP_TRUNC(downloads.timestamp, DAY, "UTC") = TIMESTAMP_TRUNC(impressions.timestamp, DAY, "UTC")
+          RequiredColumns:
+            downloads: [request_uuid, timestamp]
+            impressions: [timestamp]
       Join: LEFT
       Table: impressions_in_range
   podcasts:
