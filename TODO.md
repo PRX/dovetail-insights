@@ -37,5 +37,10 @@
 - Change interval descriptors to be the complete range, not just one side
 - Write some tests to check rolling window ranges down to the second
 - SortProperties don't resolve exhibit properties. Make a note somewhere that you should ensure the desired property is used directly. Meta properties also don't resolve exhibit properties, which makes it possible to display, for example, podcast ID if desired, rather than podcast name.
-- Use default_group_member_descriptor_sort for group 2 columns
 - Detect if there's a ridiculous number of rows/columns before attempting to displaying to prevent hangs
+  - For high cardinality dimensions, like City, block by default, and only allow if certain conditions are met, like a country or region filter is applied with only a single value
+  - Maybe support for "Top N" filters, which get all the data back, but only make some of it available to the UI
+- May want to have an option that allows enforcing empty rows (i.e., display all possible group members, even if there is no data)
+  - For some dimensions, it is tricky/expensive to generate the list of members
+- With 0 groups in time series, or 1 group in dimensional, allow values in the table to be displayed as a percent
+- Look into using pipe syntax for BigQuery queries https://cloud.google.com/bigquery/docs/pipe-syntax-guide
