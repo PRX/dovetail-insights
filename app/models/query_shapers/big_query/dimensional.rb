@@ -50,9 +50,36 @@ module QueryShapers
       def all_tables
         # Gather all the tables required directly by filters, metrics, and groups
         direct_tables = []
-        direct_tables.concat composition.filters.flat_map { |f| DataSchema.dimensions[f.dimension.to_s]["BigQuery"]["RequiredColumns"].keys }
+
+        # Look at each filter, and include all tables that are required by the
+        # dimension.
+        direct_tables.concat composition.filters.flat_map { |f| DataSchemaUtil.field_definition(f.dimension)["BigQuery"]["RequiredColumns"].keys }
+
+        # Look at each metric, and include all tables that are required
         direct_tables.concat composition.metrics.flat_map { |m| DataSchema.metrics[m.metric.to_s]["BigQuery"]["RequiredColumns"].keys }
-        direct_tables.concat composition.groups.flat_map { |g| DataSchema.dimensions[g.dimension.to_s]["BigQuery"]["RequiredColumns"].keys } if @composition.groups
+
+        # Look at each group, and include all tables that are required by the
+        # group dimension, by the exhibit property, and by any meta properties
+        if @composition.groups
+          direct_tables.concat(composition.groups.flat_map do |group|
+            tables = []
+
+            dimension_def = DataSchemaUtil.field_definition(group.dimension)
+            tables.concat dimension_def["BigQuery"]["RequiredColumns"].keys
+
+            if dimension_def["ExhibitField"]
+              exhibit_def = DataSchemaUtil.field_definition(dimension_def["ExhibitField"])
+              tables.concat exhibit_def["BigQuery"]["RequiredColumns"].keys
+            end
+
+            group&.meta&.each do |meta_name|
+              meta_def = DataSchemaUtil.field_definition(meta_name)
+              tables.concat meta_def["BigQuery"]["RequiredColumns"].keys
+            end
+
+            tables
+          end)
+        end
 
         # Remove duplicates
         direct_tables.uniq!
@@ -62,7 +89,10 @@ module QueryShapers
       end
 
       ##
-      # tktk
+      # For all the composition parameters (filters, groups, metrics, etc),
+      # find all the physical BigQuery columns that are required for the given
+      # table name
+      # TODO This needs some refactoring
 
       def columns_for_table(table_name)
         columns = []
@@ -76,9 +106,8 @@ module QueryShapers
           end
         end
 
-        # TODO Need to include exhibit/sort/etc
         composition.filters.each do |filter|
-          dimension_def = DataSchema.dimensions[filter.dimension.to_s]
+          dimension_def = DataSchemaUtil.field_definition(filter.dimension)
 
           if dimension_def.dig("BigQuery", "RequiredColumns").key?(table_name)
             cols = dimension_def.dig("BigQuery", "RequiredColumns", table_name)
@@ -88,18 +117,35 @@ module QueryShapers
 
         # TODO Need to include exhibit/sort/etc
         composition.groups.each do |group|
-          dimension_def = DataSchema.dimensions[group.dimension.to_s]
+          dimension_def = DataSchemaUtil.field_definition(group.dimension)
 
           if dimension_def.dig("BigQuery", "RequiredColumns").key?(table_name)
             cols = dimension_def.dig("BigQuery", "RequiredColumns", table_name)
             columns.concat(cols) if cols
           end
 
-          group&.meta&.each do |m|
-            meta_def = DataSchema.dimensions[m.to_s]
+          exhibit_name = dimension_def["ExhibitField"]
+          if exhibit_name
+            exhibit_def = DataSchemaUtil.field_definition(exhibit_name)
+            if exhibit_def.dig("BigQuery", "RequiredColumns").key?(table_name)
+              cols = exhibit_def.dig("BigQuery", "RequiredColumns", table_name)
+              columns.concat(cols) if cols
+            end
+          end
 
-            if meta_def.dig("BigQuery", "RequiredColumns").key?(table_name)
-              cols = meta_def.dig("BigQuery", "RequiredColumns", table_name)
+          dimension_def["SortFields"]&.each do |sort_field_name|
+            sort_def = DataSchemaUtil.field_definition(sort_field_name)
+            if sort_def.dig("BigQuery", "RequiredColumns").key?(table_name)
+              cols = sort_def.dig("BigQuery", "RequiredColumns", table_name)
+              columns.concat(cols) if cols
+            end
+          end
+
+          group&.meta&.each do |meta_field_name|
+            field_def = DataSchemaUtil.field_definition(meta_field_name)
+
+            if field_def.dig("BigQuery", "RequiredColumns").key?(table_name)
+              cols = field_def.dig("BigQuery", "RequiredColumns", table_name)
               columns.concat(cols) if cols
             end
           end
@@ -150,31 +196,10 @@ module QueryShapers
       end
 
       ##
-      #
-
-      def downloads_table_columns
-        # TODO Look through all active filters, groups, and metrics, and find
-        # all columns that will be needed on the downloads table to complete
-        # the query. This needs to recursively look through the join tables
-        # that filters/groups/metrics require.
-      end
-
-      ##
-      #
-
-      def impressions_table_columns
-        # TODO Look through all active filters, groups, and metrics, and find
-        # all columns that will be needed on the impressions table to complete
-        # the query. This needs to recursively look through the join tables
-        # that filters/groups/metrics require.
-      end
-
-      ##
       # Collect all JOIN statements needed for **all** tables required by this
       # query, not just the ones directly touched by filters, groups, etc.
 
       def joins
-        # tables.uniq.flat_map { |table_name| all_joins_for_table(table_name) }
         joins = []
 
         all_tables.each do |table_name|
@@ -196,7 +221,7 @@ module QueryShapers
           end
         end
 
-        joins
+        joins.uniq
       end
 
       def group_selects
@@ -209,7 +234,7 @@ module QueryShapers
         # collision, but they are not otherwise deduped, so it is currently possible
         # for things to be SELECTed more than once unnecessarily
         @composition.groups.each do |group|
-          dimension_def = DataSchema.dimensions[group.dimension.to_s]
+          dimension_def = DataSchemaUtil.field_definition(group.dimension)
           selector = dimension_def["BigQuery"]["Selector"]
 
           if group.extract
@@ -239,11 +264,11 @@ module QueryShapers
             selects << "#{selector} AS #{group.as}"
           end
 
-          # Make additional selects for things like ExhibitProperty,
-          # SortProperties, and meta properties
-          selects << simple_select_for_prop_or_dim(group, dimension_def["ExhibitProperty"], :exhibit) if dimension_def["ExhibitProperty"]
-          selects << dimension_def["SortProperties"].map { |p| simple_select_for_prop_or_dim(group, p, :sort) } if dimension_def["SortProperties"]
-          selects << group.meta.map { |m| simple_select_for_prop_or_dim(group, m, :meta) } if group.meta
+          # Make additional selects for things like ExhibitField,
+          # SortFields, and meta properties
+          selects << simple_select_for_prop_or_dim(group, dimension_def["ExhibitField"], :exhibit) if dimension_def["ExhibitField"]
+          selects.concat dimension_def["SortFields"].map { |p| simple_select_for_prop_or_dim(group, p, :sort) } if dimension_def["SortFields"]
+          selects.concat group.meta.map { |m| simple_select_for_prop_or_dim(group, m, :meta) } if group.meta
         end
 
         selects
@@ -280,7 +305,7 @@ module QueryShapers
         selects.concat group_selects
         selects.concat metric_selects
 
-        selects
+        selects.uniq
       end
 
       ##
@@ -290,9 +315,9 @@ module QueryShapers
 
       def wheres
         @composition.filters.map do |filter|
-          filter_def = DataSchema.dimensions[filter.dimension.to_s]
-          selector = filter_def["BigQuery"]["Selector"]
-          bq_type = filter_def["BigQuery"]["Type"]
+          dimension_def = DataSchemaUtil.field_definition(filter.dimension)
+          selector = dimension_def["BigQuery"]["Selector"]
+          bq_type = dimension_def["BigQuery"]["Type"]
 
           if filter.from
             # Filters with a `from` are timestamp ranges
@@ -344,9 +369,9 @@ module QueryShapers
           # The group's dimension may bring along some additonal columns that
           # get SELECTed, like an exhibit property or sort property. Since they
           # are being SELECTed, we also have to GROUP them.
-          dimension_def = DataSchema.dimensions[group.dimension.to_s]
-          group_bys << simple_group_by_for_prop_or_dim(group, dimension_def["ExhibitProperty"], :exhibit) if dimension_def["ExhibitProperty"]
-          group_bys << dimension_def["SortProperties"].map { |p| simple_group_by_for_prop_or_dim(group, p, :sort) } if dimension_def["SortProperties"]
+          dimension_def = DataSchemaUtil.field_definition(group.dimension)
+          group_bys << simple_group_by_for_prop_or_dim(group, dimension_def["ExhibitField"], :exhibit) if dimension_def["ExhibitField"]
+          group_bys << dimension_def["SortFields"].map { |p| simple_group_by_for_prop_or_dim(group, p, :sort) } if dimension_def["SortFields"]
 
           # Similarly, additional columns may be chosen to include in the
           # results (static properties of the group's dimension), which will be
@@ -363,17 +388,17 @@ module QueryShapers
       #
       # This is meant to be used for properties associated with groups, not for
       # selecting the group dimensions themselves. For example, things like
-      # ExhibitProperty, SortProperties, meta properties, etc.
+      # ExhibitField, SortFields, meta properties, etc.
       #
       # Takes a fingerprint that helps ensure the AS is unique, even if the
       # same column is selected for multiple purposes.
 
       def simple_select_for_prop_or_dim(group, prop_or_dim, fingerprint)
-        property_def = DataSchema.dimensions[prop_or_dim.to_s] || DataSchema.properties[prop_or_dim.to_s]
-        selector = property_def["BigQuery"]["Selector"]
+        field_def = DataSchemaUtil.field_definition(prop_or_dim)
+        selector = field_def["BigQuery"]["Selector"]
         as = "#{group.as}_#{fingerprint}_#{prop_or_dim}"
 
-        if property_def["Type"] == "Timestamp"
+        if field_def["Type"] == "Timestamp"
           # All date/time descriptors should use YYYY-MM-DDThh:mm:ssZ
           %(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", #{selector}, "UTC") AS #{as})
         else
