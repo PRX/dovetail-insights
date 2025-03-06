@@ -43,7 +43,7 @@ module Compositions
             #
             # For example, the QueryKey may be +podcast+ while the dimension
             # name is +podcast_id+.
-            dimension_name = DataSchema.dimensions.find { |k, v| v["QueryKey"] == query_key }&.dig(0) || query_key
+            dimension_name = DataSchemaUtil.field_name_for_query_key(query_key)
 
             # Create a new filter for this dimension if we haven't seen it before
             filter = if filters.has_key? dimension_name
@@ -155,7 +155,7 @@ module Compositions
 
       def uses_supported_options
         if DataSchema.dimensions.has_key? dimension.to_s
-          dimension_data = DataSchema.dimensions[dimension.to_s]
+          dimension_data = DataSchemaUtil.field_definition(dimension)
 
           if nulls && !["Token"].include?(dimension_data["Type"])
             errors.add(:nulls, :invalid_option, message: "cannot be used with this filter")
@@ -193,7 +193,7 @@ module Compositions
 
       def token_filter_has_valid_values
         if DataSchema.dimensions.has_key? dimension.to_s
-          dimension_data = DataSchema.dimensions[dimension.to_s]
+          dimension_data = DataSchemaUtil.field_definition(dimension)
 
           if dimension_data["Type"] == "Token"
             if !values || values.empty?
@@ -209,7 +209,7 @@ module Compositions
 
       def timestamp_filter_only_uses_one_mode
         if DataSchema.dimensions.has_key? dimension.to_s
-          dimension_data = DataSchema.dimensions[dimension.to_s]
+          dimension_data = DataSchemaUtil.field_definition(dimension)
 
           if dimension_data["Type"] == "Timestamp"
             if (from || to) && extract
@@ -225,7 +225,7 @@ module Compositions
 
       def timestamp_filter_has_options
         if DataSchema.dimensions.has_key? dimension.to_s
-          dimension_data = DataSchema.dimensions[dimension.to_s]
+          dimension_data = DataSchemaUtil.field_definition(dimension)
 
           if dimension_data["Type"] == "Timestamp"
             unless from || to || extract || values
@@ -266,7 +266,7 @@ module Compositions
 
       def duration_has_range
         if DataSchema.dimensions.has_key? dimension.to_s
-          dimension_data = DataSchema.dimensions[dimension.to_s]
+          dimension_data = DataSchemaUtil.field_definition(dimension)
 
           if dimension_data["Type"] == "Duration"
             errors.add(:gte, :missing_values, message: "are required") if !gte
@@ -292,7 +292,7 @@ module Compositions
       def nulls_follow_when_permitted
         if nulls == :follow
           if DataSchema.dimensions.has_key? dimension.to_s
-            dimension_data = DataSchema.dimensions[dimension.to_s]
+            dimension_data = DataSchemaUtil.field_definition(dimension)
 
             unless dimension_data["PermitNulls"] == true
               errors.add(:nulls, :not_permitted, message: "are not allowed")

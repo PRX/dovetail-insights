@@ -22,7 +22,7 @@ module Results
         composition.groups.each do |group|
           headers << group.dimension
 
-          dimension_def = DataSchema.dimensions[group.dimension.to_s]
+          dimension_def = DataSchemaUtil.field_definition(group.dimension)
           if dimension_def.has_key?("ExhibitProperty")
             exhibit_property_name = dimension_def["ExhibitProperty"]
 
@@ -51,7 +51,7 @@ module Results
             row = []
             row << member
 
-            dimension_def = DataSchema.dimensions[composition.groups[0].dimension.to_s]
+            dimension_def = DataSchemaUtil.field_definition(composition.groups[0].dimension)
             if dimension_def.has_key?("ExhibitProperty")
               row << group_member_exhibition(composition.groups[0], member)
             end
@@ -335,7 +335,7 @@ module Results
     # descriptors may become the same exhibitions.
 
     def group_member_exhibition(group, member_descriptor)
-      group_member_descriptor_for_property(group, member_descriptor, (group && DataSchema.dimensions[group.dimension.to_s]["ExhibitProperty"]), :exhibit)
+      group_member_descriptor_for_property(group, member_descriptor, (group && DataSchemaUtil.field_definition(group.dimension)["ExhibitProperty"]), :exhibit)
     end
 
     def group_meta_descriptor(group, group_member_descriptor, meta_property_name)

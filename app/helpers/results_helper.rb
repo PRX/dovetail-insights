@@ -10,7 +10,7 @@ module ResultsHelper
   def default_group_member_descriptor_sort(compostion, group, member_descriptors)
     member_descriptors.sort_by do |member_descriptor|
       if group
-        dimension_def = DataSchema.dimensions[group.dimension.to_s]
+        dimension_def = DataSchemaUtil.field_definition(group.dimension)
 
         # Return an array that sort_by will use for sorting. The first element
         # is always explicitly controlled within this method, other values

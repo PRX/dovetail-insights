@@ -110,7 +110,7 @@
 
         <div <%= html_attributes(class: "meta-options-for-#{dim_key}") %>>
           <% dimension_def["StaticProperties"]&.filter {|p| p != dimension_def["ExhibitProperty"] }&.each do |static_property_name| %>
-            <% static_property_def = DataSchema.dimensions[static_property_name] || DataSchema.properties[static_property_name] %>
+            <% static_property_def = DataSchemaUtil.field_definition(static_property_name) %>
             <% static_property_key = static_property_def["QueryKey"] || static_property_name %>
             <% x = "meta-#{static_property_key}-#{dim_key}" %>
             <label for="<%= x %>">

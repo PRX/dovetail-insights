@@ -139,7 +139,7 @@ module GroupMemberLabelHelper
   def member_label(composition, group, member_descriptor)
     return "Indeterminate #{prop_or_dim_label(group.dimension)}" unless member_descriptor
 
-    dimension_def = DataSchema.dimensions[group.dimension.to_s]
+    dimension_def = DataSchemaUtil.field_definition(group.dimension)
 
     exhibition = composition.results.group_member_exhibition(group, member_descriptor)
 

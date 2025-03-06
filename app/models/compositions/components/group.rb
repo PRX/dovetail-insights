@@ -78,7 +78,8 @@ module Compositions
               # actual dimension defined in the schema. We want to use the true
               # dimension name, so look it up if necessary. If there's no match,
               # use the key as given.
-              dimension_name = DataSchema.dimensions.find { |k, v| v["QueryKey"] == param_value }&.dig(0) || param_value
+              dimension_name = DataSchemaUtil.dimension_name_for_query_key(param_value) || param_value
+              p dimension_name
 
               groups[group_index] = new(dimension_name.to_sym)
             end
@@ -126,7 +127,15 @@ module Compositions
                 end
               end
             elsif param_key == "group.#{group_number}.meta"
-              group.meta = param_value.split(",", -1).map { |i| (DataSchema.dimensions.find { |k, v| v["QueryKey"] == i.strip }&.dig(0) || i.strip).to_sym }
+              # Convert the given query key to the actual field name
+              group.meta = param_value.split(",", -1).map do |query_key|
+                # This returns an array like [key, value]
+                field_name = DataSchemaUtil.field_name_for_query_key(query_key.strip)
+
+                # Return the matched name, or the original input if there was
+                # no match
+                (field_name || query_key.strip).to_sym
+              end
             end
           end
         end
@@ -175,7 +184,7 @@ module Compositions
       # for the dimension of this group.
 
       def summable?(metric)
-        dimension_def = DataSchema.dimensions[dimension.to_s]
+        dimension_def = DataSchemaUtil.field_definition(dimension)
 
         (dimension_def["SummableMetrics"] || []).include?(metric.metric.to_s)
       end
@@ -222,7 +231,7 @@ module Compositions
       # Dimensions with a Token type don't support any group options
 
       def no_options_for_token_type
-        dimension_def = DataSchema.dimensions[dimension.to_s]
+        dimension_def = DataSchemaUtil.field_definition(dimension)
 
         if dimension_def && dimension_def["Type"] == "Token"
           errors.add(:extract, :option_mismatch, message: "option is not valid with dimenson #{dimension}") if extract
@@ -242,7 +251,7 @@ module Compositions
       end
 
       def metas_are_valid_for_dimension
-        dimension_def = DataSchema.dimensions[dimension.to_s]
+        dimension_def = DataSchemaUtil.field_definition(dimension)
 
         if dimension_def && meta
           errors.add(:meta, :invalid, message: "cannot include unsupported values") if meta&.any? { |m| !dimension_def["StaticProperties"]&.include?(m.to_s) }
@@ -254,7 +263,7 @@ module Compositions
       # indices, and that option is required
 
       def duration_type_has_only_indices
-        dimension_def = DataSchema.dimensions[dimension.to_s]
+        dimension_def = DataSchemaUtil.field_definition(dimension)
 
         if dimension_def && dimension_def["Type"] == "Duration"
           errors.add(:indices, :option_mismatch, message: "are required with dimenson #{dimension}") unless indices
@@ -268,7 +277,7 @@ module Compositions
       # only one can be used at a time.
 
       def timestamp_type_has_single_option
-        dimension_def = DataSchema.dimensions[dimension.to_s]
+        dimension_def = DataSchemaUtil.field_definition(dimension)
 
         if dimension_def && dimension_def["Type"] == "Timestamp"
           errors.add(:extract, :option_conflict, message: "option cannot be used with other options") if extract && (truncate || indices)
@@ -278,7 +287,7 @@ module Compositions
       end
 
       def timestamp_type_has_some_option
-        dimension_def = DataSchema.dimensions[dimension.to_s]
+        dimension_def = DataSchemaUtil.field_definition(dimension)
 
         if dimension_def && dimension_def["Type"] == "Timestamp"
           errors.add(:dimension, :invalid_option, message: "group requires configurations") unless extract || truncate || indices
@@ -308,7 +317,7 @@ module Compositions
       end
 
       def duration_indices_are_valid
-        dimension_def = DataSchema.dimensions[dimension.to_s]
+        dimension_def = DataSchemaUtil.field_definition(dimension)
 
         if dimension_def && dimension_def["Type"] == "Duration" && indices
           indices.each do |i|
@@ -322,7 +331,7 @@ module Compositions
       end
 
       def timestamp_indices_are_valid
-        dimension_def = DataSchema.dimensions[dimension.to_s]
+        dimension_def = DataSchemaUtil.field_definition(dimension)
 
         if dimension_def && dimension_def["Type"] == "Timestamp" && indices
           indices.each do |i|
