@@ -101,20 +101,16 @@ Properties:
         cities: [city_name]
   city_name_with_full_state:
     Type: String
+    QueryKey: cityNameWithState
     BigQuery:
-      Selector: CONCAT(cities.city_name, ' (', cities.subdivision_1_name, ')')
-      RequiredColumns:
-        cities: [city_name, subdivision_1_name]
-  city_name_with_state:
-    Type: String
-    BigQuery:
-      Selector: CONCAT(cities.city_name, ' (', cities.subdivision_1_name, ')')
+      Selector: CONCAT(cities.city_name, ', ', cities.subdivision_1_name)
       RequiredColumns:
         cities: [city_name, subdivision_1_name]
   city_name_with_state_abbreviation:
     Type: String
+    QueryKey: cityNameWithStateAbr
     BigQuery:
-      Selector: CONCAT(cities.city_name, ' (', cities.subdivision_1_iso_code, ')')
+      Selector: CONCAT(cities.city_name, ', ', cities.subdivision_1_iso_code)
       RequiredColumns:
         cities: [city_name, subdivision_1_iso_code]
   metro_name:

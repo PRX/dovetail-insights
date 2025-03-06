@@ -247,7 +247,7 @@ Dimensions:
       - subdivision_iso_code
       - subdivision_name
       - city_name
-      - city_name_with_state
+      - city_name_with_full_state
       - city_name_with_state_abbreviation
     SummableMetrics:
       - downloads

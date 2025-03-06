@@ -11,7 +11,8 @@ en:
     metro_id: media market (DMA)
     os_id: operating system
     season_number: season number
-    subdivision_iso_code: state/province/region
+    subdivision_iso_code: state/province/region code
+    subdivision_name: state/province/region name
     time_zone: time zone
     user_agent_id: app & browser
   filter_choosers:
