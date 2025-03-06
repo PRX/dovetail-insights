@@ -17,18 +17,18 @@ module ResultsHelper
         # should follow that.
         if !member_descriptor
           # Force null groups to the bottom
-          [99]
+          ["9".rjust(30, "9")]
         elsif dimension_def["SortFields"].present?
-          [0, *dimension_def["SortFields"].map do |sort_property_name|
-            @composition.results.group_sort_descriptor(group, member_descriptor, sort_property_name)
+          ["0", *dimension_def["SortFields"].map do |sort_property_name|
+            @composition.results.group_sort_descriptor(group, member_descriptor, sort_property_name).to_s.rjust(30, "9")
           end]
         elsif member_descriptor == member_descriptor.to_i.to_s
           # If this descriptor looks like an integer, treat it as an actual
           # integer to get 1,2,10 rather than 1,10,2
-          [0, member_descriptor.to_i]
+          ["0", member_descriptor.to_s.rjust(30, "0")]
         else
           # Otherwise, sort by the final label
-          [0, member_label(@composition, group, member_descriptor)]
+          ["0", member_label(@composition, group, member_descriptor).rjust(30, "0")]
         end
       end
     end
