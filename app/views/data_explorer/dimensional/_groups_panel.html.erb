@@ -1,4 +1,6 @@
-<fieldset id="groups">
+<fieldset
+  <%= html_attributes(class: "field_with_errors") if @composition.errors.include?(:groups) %>
+  id="groups">
   <legend>Groups</legend>
 
   <% [1,2].each do |group_num| %>
