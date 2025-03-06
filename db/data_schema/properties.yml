@@ -35,6 +35,7 @@
 Properties:
   episode_title:
     Type: String
+    QueryKey: episodeTitle
     BigQuery:
       Selector: episodes.title
       RequiredColumns:
@@ -47,6 +48,7 @@ Properties:
         episodes: [title, published_at]
   podcast_name:
     Type: String
+    QueryKey: podcastName
     BigQuery:
       Selector: podcasts.title
       RequiredColumns:
@@ -71,24 +73,28 @@ Properties:
         operating_systems: [tag]
   country_name:
     Type: String
+    QueryKey: countryName
     BigQuery:
       Selector: countries.country_name
       RequiredColumns:
         countries: [country_name]
   country_iso_code:
     Type: String
+    QueryKey: countryCode
     BigQuery:
       Selector: countries.country_iso_code
       RequiredColumns:
         countries: [country_iso_code]
   subdivision_name:
     Type: String
+    QueryKey: regionName
     BigQuery:
       Selector: cities.subdivision_1_name
       RequiredColumns:
         cities: [subdivision_1_name]
   city_name:
     Type: String
+    QueryKey: cityName
     BigQuery:
       Selector: cities.city_name
       RequiredColumns:
@@ -113,18 +119,21 @@ Properties:
         cities: [city_name, subdivision_1_iso_code]
   metro_name:
     Type: String
+    QueryKey: metroName
     BigQuery:
       Selector: metros.label
       RequiredColumns:
         metros: [label]
   campaign_name:
     Type: String
+    QueryKey: countryName
     BigQuery:
       Selector: campaigns.name
       RequiredColumns:
         campaigns: [name]
   advertiser_name:
     Type: String
+    QueryKey: advertiserName
     BigQuery:
       Selector: advertisers.name
       RequiredColumns:
