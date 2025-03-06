@@ -37,7 +37,7 @@
 - Fix Oauth token refresh to bring you back to page you requested that triggered the refresh
 - Change interval descriptors to be the complete range, not just one side
 - Write some tests to check rolling window ranges down to the second
-- SortProperties don't resolve exhibit properties. Make a note somewhere that you should ensure the desired property is used directly. Meta properties also don't resolve exhibit properties, which makes it possible to display, for example, podcast ID if desired, rather than podcast name.
+- SortFields don't resolve exhibit properties. Make a note somewhere that you should ensure the desired property is used directly. Meta properties also don't resolve exhibit properties, which makes it possible to display, for example, podcast ID if desired, rather than podcast name.
 - Detect if there's a ridiculous number of rows/columns before attempting to displaying to prevent hangs
   - For high cardinality dimensions, like City, block by default, and only allow if certain conditions are met, like a country or region filter is applied with only a single value
   - Maybe support for "Top N" filters, which get all the data back, but only make some of it available to the UI

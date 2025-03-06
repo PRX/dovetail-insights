@@ -22,8 +22,8 @@ Dimensions:
   podcast_id:
     Type: Token
     QueryKey: podcast
-    ExhibitProperty: podcast_name
-    StaticProperties:
+    ExhibitField: podcast_name
+    StaticFields:
       - podcast_name
     SummableMetrics:
       - downloads
@@ -35,9 +35,9 @@ Dimensions:
   episode_id:
     Type: Token
     QueryKey: episode
-    # ExhibitProperty: episode_title_with_pubdate_prefix
-    ExhibitProperty: episode_title
-    StaticProperties:
+    # ExhibitField: episode_title_with_pubdate_prefix
+    ExhibitField: episode_title
+    StaticFields:
       - podcast_id
       - podcast_name
       - episode_title
@@ -46,7 +46,7 @@ Dimensions:
       - current_episode_age_in_seconds
       - season_number
       - episode_number
-    SortProperties:
+    SortFields:
       - episode_publish_timestamp
     SummableMetrics:
       - downloads
@@ -152,8 +152,8 @@ Dimensions:
   user_agent_id:
     Type: Token
     QueryKey: ua
-    ExhibitProperty: user_agent_name
-    StaticProperties:
+    ExhibitField: user_agent_name
+    StaticFields:
       - user_agent_name
     PermitNulls: true
     SummableMetrics:
@@ -167,8 +167,8 @@ Dimensions:
   device_type_id:
     Type: Token
     QueryKey: device
-    ExhibitProperty: device_type_name
-    StaticProperties:
+    ExhibitField: device_type_name
+    StaticFields:
       - device_type_name
     SummableMetrics:
       - downloads
@@ -182,8 +182,8 @@ Dimensions:
   os_id:
     Type: Token
     QueryKey: os
-    ExhibitProperty: os_name
-    StaticProperties:
+    ExhibitField: os_name
+    StaticFields:
       - os_name
     SummableMetrics:
       - downloads
@@ -209,8 +209,8 @@ Dimensions:
   country_id:
     Type: Token
     QueryKey: country
-    ExhibitProperty: country_name
-    StaticProperties:
+    ExhibitField: country_name
+    StaticFields:
       - country_name
     SummableMetrics:
       - downloads
@@ -224,8 +224,8 @@ Dimensions:
   subdivision_iso_code:
     Type: Token
     QueryKey: subdiv
-    ExhibitProperty: subdivision_name
-    StaticProperties:
+    ExhibitField: subdivision_name
+    StaticFields:
       - subdivision_name
       - continent_code
     SummableMetrics:
@@ -240,8 +240,8 @@ Dimensions:
   city_id:
     Type: Token
     QueryKey: city
-    ExhibitProperty: city_name_with_state_abbreviation
-    StaticProperties:
+    ExhibitField: city_name_with_state_abbreviation
+    StaticFields:
       - continent_code
       - country_name
       - subdivision_iso_code
@@ -260,8 +260,8 @@ Dimensions:
   metro_id:
     Type: Token
     QueryKey: metro
-    ExhibitProperty: metro_name
-    StaticProperties:
+    ExhibitField: metro_name
+    StaticFields:
       - metro_name
     SummableMetrics:
       - downloads
@@ -285,8 +285,8 @@ Dimensions:
   campaign_id:
     Type: Token
     QueryKey: campaign
-    ExhibitProperty: campaign_name
-    StaticProperties:
+    ExhibitField: campaign_name
+    StaticFields:
       - campaign_name
     SummableMetrics:
       - impressions
@@ -297,8 +297,8 @@ Dimensions:
   advertiser_id:
     Type: Token
     QueryKey: advertiser
-    ExhibitProperty: advertiser_name
-    StaticProperties:
+    ExhibitField: advertiser_name
+    StaticFields:
       - advertiser_name
     SummableMetrics:
       - impressions
@@ -309,7 +309,7 @@ Dimensions:
   feed:
     Type: Token
     QueryKey: feed
-    StaticProperties: []
+    StaticFields: []
     SummableMetrics:
       - downloads
       - impressions

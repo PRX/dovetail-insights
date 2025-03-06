@@ -23,8 +23,8 @@ module Results
           headers << group.dimension
 
           dimension_def = DataSchemaUtil.field_definition(group.dimension)
-          if dimension_def.has_key?("ExhibitProperty")
-            exhibit_property_name = dimension_def["ExhibitProperty"]
+          if dimension_def.has_key?("ExhibitField")
+            exhibit_property_name = dimension_def["ExhibitField"]
 
             headers << exhibit_property_name
           end
@@ -52,7 +52,7 @@ module Results
             row << member
 
             dimension_def = DataSchemaUtil.field_definition(composition.groups[0].dimension)
-            if dimension_def.has_key?("ExhibitProperty")
+            if dimension_def.has_key?("ExhibitField")
               row << group_member_exhibition(composition.groups[0], member)
             end
 
@@ -290,7 +290,7 @@ module Results
     # 123 and podcast_name, this will return the podcast name for the podcast
     # with ID=123.
     #
-    # Can be used for things like ExhibitProperty, SortProperties, meta
+    # Can be used for things like ExhibitField, SortFields, meta
     # properties, etc, using the fingerprint to differentiate.
 
     def group_member_descriptor_for_property(group, member_descriptor, property_name, fingerprint)
@@ -335,7 +335,7 @@ module Results
     # descriptors may become the same exhibitions.
 
     def group_member_exhibition(group, member_descriptor)
-      group_member_descriptor_for_property(group, member_descriptor, (group && DataSchemaUtil.field_definition(group.dimension)["ExhibitProperty"]), :exhibit)
+      group_member_descriptor_for_property(group, member_descriptor, (group && DataSchemaUtil.field_definition(group.dimension)["ExhibitField"]), :exhibit)
     end
 
     def group_meta_descriptor(group, group_member_descriptor, meta_property_name)

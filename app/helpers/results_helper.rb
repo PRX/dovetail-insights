@@ -18,8 +18,8 @@ module ResultsHelper
         if !member_descriptor
           # Force null groups to the bottom
           [99]
-        elsif dimension_def["SortProperties"].present?
-          [0, *dimension_def["SortProperties"].map do |sort_property_name|
+        elsif dimension_def["SortFields"].present?
+          [0, *dimension_def["SortFields"].map do |sort_property_name|
             @composition.results.group_sort_descriptor(group, member_descriptor, sort_property_name)
           end]
         elsif member_descriptor == member_descriptor.to_i.to_s
