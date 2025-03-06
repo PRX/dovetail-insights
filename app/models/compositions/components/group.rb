@@ -254,7 +254,7 @@ module Compositions
         dimension_def = DataSchemaUtil.field_definition(dimension)
 
         if dimension_def && meta
-          errors.add(:meta, :invalid, message: "cannot include unsupported values") if meta&.any? { |m| !dimension_def["StaticFields"]&.include?(m.to_s) }
+          errors.add(:meta, :invalid, message: "cannot include unsupported values") if meta&.any? { |meta_field_name| !dimension_def["StaticFields"]&.include?(meta_field_name.to_s) && meta_field_name != dimension }
         end
       end
 

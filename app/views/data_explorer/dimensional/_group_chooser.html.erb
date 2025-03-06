@@ -109,10 +109,27 @@
         <% dim_key = dimension_def["QueryKey"] || dimension_name %>
 
         <div <%= html_attributes(class: "meta-options-for-#{dim_key}") %>>
+          <%# If this dimension has an exhibit field, we want to include the dimension itself %>
+          <%# as meta option, so that the user can include the raw, non-exhibit value if they want %>
+          <% if dimension_def["ExhibitField"] %>
+            <% x = "meta-#{dimension_name}-#{dimension_name}" %>
+            <label for="<%= x %>">
+              <input
+                type="checkbox"
+                value="<%= dim_key %>"
+                id="<%= x %>"
+                <%= html_attributes(checked: "checked") if group && group.meta&.include?(dimension_name.to_sym) %>
+                <%= html_attributes(name: "group.#{group_num}.meta") %>>
+              <%= prop_or_dim_label(dimension_name) %> (raw)
+            </label>
+          <% end %>
+
+          <%# List all the static fields for this dimension, but exclude the exhibit field, since it %>
+          <%# will already be displayed. %>
           <% dimension_def["StaticFields"]&.filter {|p| p != dimension_def["ExhibitField"] }&.each do |static_property_name| %>
             <% static_property_def = DataSchemaUtil.field_definition(static_property_name) %>
             <% static_property_key = static_property_def["QueryKey"] || static_property_name %>
-            <% x = "meta-#{static_property_key}-#{dim_key}" %>
+            <% x = "meta-#{static_property_name}-#{dimension_name}" %>
             <label for="<%= x %>">
               <input
                 type="checkbox"

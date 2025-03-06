@@ -59,7 +59,13 @@ module ResultsHelper
   end
 
   ##
+  # Returns a value suitable for displaying to the user for the input. This may
+  # include formatting/overriding/etc, but it does **not** use the exhibit
+  # field for the associated meta field.
   #
+  # For example, if the input value is an episode UUID coming from the
+  # `episode_id` field, this would not replace that value with the episode's
+  # name. The point of this is to display the raw value.
 
   def meta_descriptor_label(group, meta_value)
     meta_value
