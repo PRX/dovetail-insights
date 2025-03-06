@@ -98,7 +98,7 @@ class Lists
 
         rows.filter { |r| r[r.keys[0]].present? }
       end
-    elsif dimension_key == "subdivX"
+    elsif dimension_key == "subdiv"
       Rails.cache.fetch("subdiv6", expires_in: 12.hours) do
         data = BigQueryClient.instance.query("SELECT CONCAT(country_iso_code, '-', subdivision_1_iso_code) AS t1, CONCAT(subdivision_1_name, ', ', country_name) AS t2 FROM production.geonames WHERE subdivision_1_iso_code <> '' AND subdivision_2_iso_code IS NULL AND city_name IS NULL GROUP BY subdivision_1_iso_code, subdivision_1_name, country_name, country_iso_code ORDER BY subdivision_1_name ASC, country_name ASC")
 
