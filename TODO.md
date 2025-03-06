@@ -14,8 +14,9 @@
   - The values available for these filters for any given user should probably be cached somewhere.
 - Add validations for values that must be authorized, like podcast_id.
   - The app needs to ensure that it will never query a database for resources that the user isn't authorized to access. The UI should only present authorized values, but check them again before the query is actually sent.
-- Finalize dimension names
+- Finalize dimension and property names in schema
   - These need to be consistent because changing them would break saved URLs, reports, etc
+- Finalize query keys in schema
 - If the user adds an exclude filter on an impression dimension (like advertiser), but only selects downloads as a metric, ensure that all downloads associated with that advertiser are excluded, even if there are other impression rows for that download for other advertisers.
 - When using EXTRACT on timestamps, it may be helpful to be able to decide if the extract should use the timezone or not. If a user is extracting, for example, on download time, they likely would expect a download at 5 PM ET and 5 PM PT to be treated the same way, but when using EXTRACT without a timezone, they would get treated more like midnight at 2 AM.
   - Need to verify what happens with downloads that don't have a timezone
@@ -44,3 +45,5 @@
   - For some dimensions, it is tricky/expensive to generate the list of members
 - With 0 groups in time series, or 1 group in dimensional, allow values in the table to be displayed as a percent
 - Look into using pipe syntax for BigQuery queries https://cloud.google.com/bigquery/docs/pipe-syntax-guide
+- Group metas in URL should use query keys, not dimension or property names
+- If a group's dimension has an exhibit values, the dimension itself should be available as a meta

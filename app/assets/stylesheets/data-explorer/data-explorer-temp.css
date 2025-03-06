@@ -230,10 +230,6 @@ table {
   tr:hover {
     th {
       background-color: red;
-
-      &::before {
-        content: "▶ "
-      }
     }
   }
 }
@@ -257,8 +253,4 @@ table:has(td:nth-child(16):hover) tr th:nth-child(16),
 table:has(td:nth-child(17):hover) tr th:nth-child(17)
 {
   background-color: red;
-
-  &::before {
-    content: "▶ "
-  }
 }
