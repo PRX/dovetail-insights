@@ -1,5 +1,19 @@
 import { Controller } from "@hotwired/stimulus";
 
+function generateCombinations(arrays, depth = 0, path = [], result = []) {
+  if (depth === arrays.length) {
+    result.push([...path]);
+    return;
+  }
+
+  arrays[depth].forEach((uniq) => {
+    generateCombinations(arrays, depth + 1, [...path, uniq], result);
+  });
+
+  // eslint-disable-next-line consistent-return
+  return result;
+}
+
 // TODO Proof of concept
 // TODO For time series comparisons, there should be an option to highlight
 // based on the change over time within a group.
@@ -121,24 +135,6 @@ export default class extends Controller {
         cellDivisions.push(cells);
       } else {
         const aspectUniqs = aspects.map((a) => uniques[a]);
-
-        function generateCombinations(
-          arrays,
-          depth = 0,
-          path = [],
-          result = [],
-        ) {
-          if (depth === arrays.length) {
-            result.push([...path]);
-            return;
-          }
-
-          arrays[depth].forEach((uniq) => {
-            generateCombinations(arrays, depth + 1, [...path, uniq], result);
-          });
-
-          return result;
-        }
 
         generateCombinations(aspectUniqs).forEach((combo) => {
           const selector = `td${combo.map((v, idx) => `[${aspects[idx]}="${v}"]`).join("")}`;
