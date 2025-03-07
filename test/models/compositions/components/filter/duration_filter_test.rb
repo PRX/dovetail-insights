@@ -15,7 +15,7 @@ class DurationFilterTest < ActiveSupport::TestCase
   end
 
   test "shorthand expansion" do
-    params = ActionController::Parameters.new("filter.podcast_id.gte": "1D")
+    params = ActionController::Parameters.new("filter.podcast.gte": "1D")
     filter = Compositions::Components::Filter.all_from_params(params).first
     assert_equal 86400, filter.gte
   end
