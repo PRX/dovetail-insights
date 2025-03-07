@@ -195,11 +195,17 @@ module Results
     # the total just for that member. If not, it will be the total for the
     # metric across the entire result.
 
-    def get_total(metric, group = false, member = false)
-      if group && member.nil?
+    def calc_sum(metric, group = false, member_descriptor = false)
+      @calc_sum_cache ||= {}
+      cache_key = [metric.metric, group, member_descriptor]
+
+      # Return memoized value even if it's nil
+      return @calc_sum_cache[cache_key] if @calc_sum_cache.key?(cache_key)
+
+      @calc_sum_cache[cache_key] = if group && member_descriptor.nil?
         rows.filter { |row| row[group.as].nil? }.inject(0) { |sum, row| sum + row[metric.as] }
-      elsif group && member
-        rows.filter { |row| row[group.as] == member }.inject(0) { |sum, row| sum + row[metric.as] }
+      elsif group && member_descriptor
+        rows.filter { |row| row[group.as] == member_descriptor }.inject(0) { |sum, row| sum + row[metric.as] }
       else
         rows.inject(0) { |sum, row| sum + row[metric.as] }
       end

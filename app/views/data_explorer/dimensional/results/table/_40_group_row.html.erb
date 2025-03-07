@@ -10,20 +10,25 @@
       <%
         # Don't display a total for this group 1 member if group 2 is not summable for this metric
         if !@composition.groups[1] || @composition.groups[1]&.summable?(metric)
-          total = @composition.results.get_total(metric, @composition.groups[0], group_1_member_descriptor)
+          sum = @composition.results.calc_sum(metric, @composition.groups[0], group_1_member_descriptor)
           min = @composition.results.get_min(metric, @composition.groups[0], group_1_member_descriptor) || 0
           max = @composition.results.get_max(metric, @composition.groups[0], group_1_member_descriptor) || 0
           range = (max||0) - (min||0)
           mean = @composition.results.get_arith_mean(metric, group_1_member_descriptor) || 0
 
+          total_sum = @composition.results.calc_sum(metric)
+          sum_as_percent = ((sum / total_sum.to_f) * 100).round(2)
+
           title = [
+            "Total #{metric.metric} for #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)}: #{sum}",
+            "#{sum_as_percent}% of overall total",
             "Mean: #{number_with_delimiter(mean)}",
             "Min: #{number_with_delimiter(min)}",
             "Max: #{number_with_delimiter(max)}",
             "Range: #{number_with_delimiter(range)}"
           ].join("\n")
 
-          text = number_with_delimiter total
+          text = number_with_delimiter sum
         else
           text = "n/a"
           title = "When grouping by #{prop_or_dim_label @composition.groups[1].dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
@@ -46,6 +51,20 @@
 
       <% value = @composition.results.get_value(metric, group_1_member_descriptor, group_2_member_descriptor) %>
 
+      <% group_1_member_sum = @composition.results.calc_sum(metric, @composition.groups[0], group_1_member_descriptor) %>
+      <% percent_of_group_1 = ((value.to_f / group_1_member_sum) * 100).round(2) %>
+      <% group_2_member_sum = @composition.results.calc_sum(metric, @composition.groups[1], group_2_member_descriptor) %>
+      <% percent_of_group_2 = ((value.to_f / group_2_member_sum) * 100).round(2) %>
+      <% total_sum = @composition.results.calc_sum(metric) %>
+
+      <%
+        title = [
+          "#{metric.metric} for #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)} and #{member_label(@composition, @composition.groups[1], group_2_member_descriptor)}: #{value}",
+          "#{percent_of_group_1}% of #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)}",
+          "#{percent_of_group_2}% of #{member_label(@composition, @composition.groups[1], group_2_member_descriptor)}"
+        ].join("\n")
+      %>
+
       <td
         data-data-explorer--results-table-highlight-target="cell"
         data-highlight-metric="<%= metric.metric %>"
@@ -54,7 +73,8 @@
         data-sort-metric="<%= metric.metric %>"
         data-sort-group-1-member-descriptor="<%= group_1_member_descriptor || "__nil__" %>"
         data-sort-group-2-member-descriptor="<%= group_2_member_descriptor || "__nil__" %>"
-        data-raw-value="<%= value %>">
+        data-raw-value="<%= value %>"
+        title="<%= title %>">
 
         <%= number_with_delimiter(value) %>
       </td>
