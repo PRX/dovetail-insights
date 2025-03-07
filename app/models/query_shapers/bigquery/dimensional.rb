@@ -53,7 +53,7 @@ module QueryShapers
 
         # Look at each filter, and include all tables that are required by the
         # dimension.
-        direct_tables.concat composition.filters.flat_map { |f| DataSchemaUtil.field_definition(f.dimension)["BigQuery"]["RequiredColumns"].keys }
+        direct_tables.concat composition.enabled_filters.flat_map { |f| DataSchemaUtil.field_definition(f.dimension)["BigQuery"]["RequiredColumns"].keys }
 
         # Look at each metric, and include all tables that are required
         direct_tables.concat composition.metrics.flat_map { |m| DataSchema.metrics[m.metric.to_s]["BigQuery"]["RequiredColumns"].keys }
@@ -106,7 +106,7 @@ module QueryShapers
           end
         end
 
-        composition.filters.each do |filter|
+        composition.enabled_filters.each do |filter|
           dimension_def = DataSchemaUtil.field_definition(filter.dimension)
 
           if dimension_def.dig("BigQuery", "RequiredColumns").key?(table_name)
@@ -314,7 +314,7 @@ module QueryShapers
       # lists, ranges, etc. Some values in WHEREs need to be quoted.
 
       def wheres
-        @composition.filters.map do |filter|
+        composition.enabled_filters.map do |filter|
           dimension_def = DataSchemaUtil.field_definition(filter.dimension)
           selector = dimension_def["BigQuery"]["Selector"]
           bq_type = dimension_def["BigQuery"]["Type"]

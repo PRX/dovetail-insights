@@ -54,6 +54,10 @@ module Compositions
       @filters = filters
     end
 
+    def enabled_filters
+      filters.filter { |f| !f.disabled }
+    end
+
     def as_json(options = {})
       obj = {}
 

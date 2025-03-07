@@ -76,6 +76,8 @@ module Compositions
               filter.lt = DurationShorthand.expand(param_value.strip)
             elsif param_key.to_s == "filter.#{query_key}.extract"
               filter.extract = param_value.to_sym
+            elsif param_key.to_s == "filter.#{query_key}.disabled"
+              filter.disabled = true
             end
           end
         end
@@ -88,7 +90,7 @@ module Compositions
       include Ranging
       include Warnings
 
-      attr_reader :dimension, :operator, :gte, :lt
+      attr_reader :dimension, :operator, :gte, :lt, :disabled
       attr_accessor :values, :extract, :nulls
 
       validates :dimension, :operator, presence: true
