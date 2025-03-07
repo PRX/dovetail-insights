@@ -12,23 +12,22 @@ module ResultsHelper
       if group
         dimension_def = DataSchemaUtil.field_definition(group.dimension)
 
-        # Return an array that sort_by will use for sorting. The first element
-        # is always explicitly controlled within this method, other values
-        # should follow that.
         if !member_descriptor
           # Force null groups to the bottom
-          ["9".rjust(30, "9")]
+          [99]
         elsif dimension_def["SortFields"].present?
-          ["0", *dimension_def["SortFields"].map do |sort_property_name|
-            @composition.results.group_sort_descriptor(group, member_descriptor, sort_property_name).to_s.rjust(30, "9")
+          # If the dimension has sort fields, always sort by the raw sort field
+          # values, in the order the fields are listed in the schema
+
+          [10, *dimension_def["SortFields"].map do |sort_property_name|
+            d = @composition.results.group_sort_descriptor(group, member_descriptor, sort_property_name)
+
+            # If the value appears to be a number, sort it numerically
+            (d.to_s == d.to_i.to_s) ? d.to_i : d.downcase
           end]
-        elsif member_descriptor == member_descriptor.to_i.to_s
-          # If this descriptor looks like an integer, treat it as an actual
-          # integer to get 1,2,10 rather than 1,10,2
-          ["0", member_descriptor.to_s.rjust(30, "0")]
         else
-          # Otherwise, sort by the final label
-          ["0", member_label(@composition, group, member_descriptor).rjust(30, "0")]
+          # Othewise sort lexicographically
+          [0, member_label(@composition, group, member_descriptor).downcase]
         end
       end
     end

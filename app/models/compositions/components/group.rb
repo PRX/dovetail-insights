@@ -79,7 +79,6 @@ module Compositions
               # dimension name, so look it up if necessary. If there's no match,
               # use the key as given.
               dimension_name = DataSchemaUtil.dimension_name_for_query_key(param_value) || param_value
-              p dimension_name
 
               groups[group_index] = new(dimension_name.to_sym)
             end

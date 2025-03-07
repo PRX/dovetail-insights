@@ -132,6 +132,8 @@ Dimensions:
       - downloads
       - impressions
     PermitNulls: true
+    SortFields:
+      - season_number
     BigQuery:
       Selector: CAST(episodes.season_number AS STRING)
       Type: STRING
