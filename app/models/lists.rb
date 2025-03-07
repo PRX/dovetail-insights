@@ -64,7 +64,8 @@ class Lists
         {key: 36, value: "Mobile App"},
         {key: 40, value: "Mobile Browser"},
         {key: 37, value: "Smart Home"},
-        {key: 38, value: "Smart TV"}
+        {key: 38, value: "Smart TV"},
+        {key: 68, value: "Smart Watch"}
       ]
     elsif dimension_key == "continent"
       [
