@@ -47,3 +47,4 @@
 - Data schema should reload in dev
 - Move DataSchemaUtils
 - CSV export
+- Figure out access for podcasts, episodes, campaigns, advertisers, etc. Do we keep piggybacking off feeder/augury permissions?

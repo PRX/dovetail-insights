@@ -24,8 +24,8 @@
             (!g1 && !g2)
           )
           total = @composition.results.calc_sum(metric)
-          text = number_with_delimiter(total)
 
+          text = number_with_delimiter(total)
           title = "Total #{metric.metric}: #{number_with_delimiter(total)}"
         else
           text = "n/a"
@@ -49,10 +49,10 @@
             (!g1 && !g2)
           )
           sum = @composition.results.calc_sum(metric, g2, group_2_member_descriptor)
-          min = @composition.results.get_min(metric, g2, group_2_member_descriptor)
-          max = @composition.results.get_max(metric, g2, group_2_member_descriptor)
+          min = @composition.results.calc_min(metric, g2, group_2_member_descriptor)
+          max = @composition.results.calc_max(metric, g2, group_2_member_descriptor)
           range = (max||0) - (min||0)
-          mean = @composition.results.get_arith_mean(metric, false, group_2_member_descriptor) || 0
+          mean = @composition.results.calc_arithmetic_mean(metric, g2, group_2_member_descriptor) || 0
 
           total_sum = @composition.results.calc_sum(metric)
           sum_as_percent = ((sum / total_sum.to_f) * 100).round(2)

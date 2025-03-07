@@ -59,11 +59,11 @@
 
   # If there are any values that have a NULL group 1, we should unknowns for
   # all group 2s
-  @tbl_show_group_1_unknowns = false unless @composition.metrics.any? { |m| @composition.results.get_value(m, nil, false) }
+  @tbl_show_group_1_unknowns = false unless @composition.metrics.any? { |m| @composition.results.lookup_data_point(m, nil, false) }
 
   # If there are any values that have a NULL group 2, we should unknowns for
   # all group 1s
-  @tbl_show_group_2_unknowns = false unless @composition.metrics.any? { |m| @composition.results.get_value(m, false, nil) }
+  @tbl_show_group_2_unknowns = false unless @composition.metrics.any? { |m| @composition.results.lookup_data_point(m, false, nil) }
 
   # Create a set of each group's members, plus `nil` to represent values that
   # don't belong to any member of that group (if necessary)

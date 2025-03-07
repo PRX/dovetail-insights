@@ -132,7 +132,7 @@ module Results
     # For example, (downloads, nil) would return the number of downloads not
     # associated with any country, if group 1's dimension were country.
 
-    def get_value(metric, group_1_member_descriptor = false, group_2_member_descriptor = false)
+    def lookup_data_point(metric, group_1_member_descriptor = false, group_2_member_descriptor = false)
       @value_cache ||= {}
       cache_key = [metric.metric, group_1_member_descriptor, group_2_member_descriptor]
 
@@ -190,6 +190,21 @@ module Results
       @value_cache[cache_key]
     end
 
+    def calc(aggregation, metric, group, member_descriptor)
+      case aggregation
+      when :sum
+        calc_sum(metric, group, member_descriptor)
+      when :min
+        calc_min(metric, group, member_descriptor)
+      when :max
+        calc_max(metric, group, member_descriptor)
+      when :range
+        calc_range(metric, group, member_descriptor)
+      when :arithmetic_mean
+        calc_arithmetic_mean(metric, group, member_descriptor)
+      end
+    end
+
     ##
     # Get the total for a metric. If a group and member is given, this will be
     # the total just for that member. If not, it will be the total for the
@@ -212,49 +227,97 @@ module Results
     end
 
     ##
-    # tktk
+    #
 
-    def get_min(metric, group = false, member = false)
-      # TODO This should not icnlude nil group
-      if group && member.nil?
-        rows.filter { |row| row[group.as].nil? }.map { |row| row[metric.as] }.compact.min
-      elsif group && member
-        rows.filter { |row| row[group.as] == member }.map { |row| row[metric.as] }.compact.min
-      else
-        rows.map { |row| row[metric.as] }.compact.min
+    def foo(metric, group = false, member_descriptor = false)
+      # If there are groups, we don't want to include nils. For example, if the
+      # results had { US: 200, CA: 50: nil: 3 }, we want to return 50, not 3,
+      # since that's the actual minimum associated with a discrete country.
+
+      # We know there is at least 1 group
+      g1 = composition.groups[0]
+      g2 = composition.groups[1]
+
+      # Passing in no group when there are two groups is undefined behavior
+      raise if !group && g2
+
+      (rows
+        .filter do |row|
+          if group
+            # If a group is given, only select rows matching the given descriptor
+            # for that group
+            member_descriptor.nil? ? row[group.as].nil? : row[group.as] == member_descriptor
+          else
+            # If no group is given, we know there's no group 2 because of the
+            # +raise+ above, and we can assume that we're looking for the min
+            # across group 1 members, so we want to include all rows
+            next true
+          end
+        end).filter do |row|
+        if !group
+          # Include rows that aren't nil in group 1
+          !row[g1.as].nil?
+        elsif g2
+          # Include rows that aren't nil in the other group
+          group_idx = composition.groups.index(group)
+          !row[composition.groups[1 - group_idx].as].nil?
+        else
+          # Include all rows
+          true
+        end
       end
     end
 
     ##
     # tktk
 
-    def get_max(metric, group = false, member = false)
-      # TODO This should not icnlude nil group
-      if group && member.nil?
-        rows.filter { |row| row[group.as].nil? }.map { |row| row[metric.as] }.compact.max
-      elsif group && member
-        rows.filter { |row| row[group.as] == member }.map { |row| row[metric.as] }.compact.max
-      else
-        rows.map { |row| row[metric.as] }.compact.max.blank?
-      end
+    def calc_min(metric, group = false, member_descriptor = false)
+      @calc_min_cache ||= {}
+      cache_key = [metric.metric, group, member_descriptor]
+
+      # Return memoized value even if it's nil
+      return @calc_min_cache[cache_key] if @calc_min_cache.key?(cache_key)
+
+      # When there are no groups, we don't need to worry about nils, so
+      # simply take the min of all values for the given metric
+      return @calc_min_cache[cache_key] = rows.map { |row| row[metric.as] }.compact.min unless composition.groups
+
+      bar = foo(metric, group, member_descriptor)
+      @calc_min_cache[cache_key] = bar.map { |row| row[metric.as] }.compact.min
     end
 
-    def get_arith_mean(metric, group1_member_descriptor = false, group2_member_descriptor = false)
-      # TODO There may be cases where 0 is not the correct default for missing values
+    ##
+    # tktk
 
-      # if group1_member_descriptor
-      #   # Get the mean for some group 1 member across all group 2 members
-      #   values = group_2_unique_member_descriptors.map { |d| get_value(metric, group1_member_descriptor, d) || 0 }
-      #   values.sum / group_2_unique_member_descriptors.size
-      # elsif group2_member_descriptor
-      #   # Get the mean for some group 2 member across all group 1 members
-      #   values = group_1_unique_member_descriptors.map { |d| get_value(metric, d, group2_member_descriptor) || 0 }
-      #   values.sum / group_1_unique_member_descriptors.size
-      # else
-      #   # Get the mean across all group 1 members
-      #   values = group_1_unique_member_descriptors.map { |d| get_value(metric, d) || 0 }
-      #   values.sum / group_1_unique_member_descriptors.size
-      # end
+    def calc_max(metric, group = false, member_descriptor = false)
+      @calc_max_cache ||= {}
+      cache_key = [metric.metric, group, member_descriptor]
+
+      # Return memoized value even if it's nil
+      return @calc_max_cache[cache_key] if @calc_max_cache.key?(cache_key)
+
+      # When there are no groups, we don't need to worry about nils, so
+      # simply take the min of all values for the given metric
+      return @calc_max_cache[cache_key] = rows.map { |row| row[metric.as] }.compact.max unless composition.groups
+
+      bar = foo(metric, group, member_descriptor)
+      @calc_max_cache[cache_key] = bar.map { |row| row[metric.as] }.compact.max
+    end
+
+    def calc_arithmetic_mean(metric, group = false, member_descriptor = false)
+      @calc_arith_mean_cache ||= {}
+      cache_key = [metric.metric, group, member_descriptor]
+
+      # Return memoized value even if it's nil
+      return @calc_arith_mean_cache[cache_key] if @calc_arith_mean_cache.key?(cache_key)
+
+      # When there are no groups, we don't need to worry about nils, so
+      # simply take the min of all values for the given metric
+      return @calc_arith_mean_cache[cache_key] = calc_sum(metric, group, member_descriptor) unless composition.groups
+
+      bar = foo(metric, group, member_descriptor)
+      sum = bar.inject(0) { |sum, row| sum + row[metric.as] }
+      @calc_arith_mean_cache[cache_key] = sum / bar.size
     end
 
     ##

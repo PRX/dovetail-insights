@@ -1,10 +1,15 @@
+<%
+  g1 = @composition&.groups[0]
+  g2 = @composition&.groups[1]
+%>
+
 <tr data-data-explorer--results-table-sort-target="row">
   <%# First cell in the row is a header with the group member name %>
-  <%= group_table_header_tag(@composition, @composition.groups[0], group_1_member_descriptor, :row) if @tbl_show_group_1_headers %>
+  <%= group_table_header_tag(@composition, g1, group_1_member_descriptor, :row) if @tbl_show_group_1_headers %>
 
   <% @meta&.each do |meta| %>
-    <% meta_descriptor = @composition.results.group_meta_descriptor(@composition.groups[0], group_1_member_descriptor, meta) %>
-    <td><%= meta_descriptor_label(@composition.groups[0], meta_descriptor) %></td>
+    <% meta_descriptor = @composition.results.group_meta_descriptor(g1, group_1_member_descriptor, meta) %>
+    <td><%= meta_descriptor_label(g1, meta_descriptor) %></td>
   <% end %>
 
   <%# Totals for this member of group 1 (a total for each metric) %>
@@ -14,18 +19,18 @@
     <% @composition.metrics.each do |metric| %>
       <%
         # Don't display a total for this group 1 member if group 2 is not summable for this metric
-        if !@composition.groups[1] || @composition.groups[1]&.summable?(metric)
-          sum = @composition.results.calc_sum(metric, @composition.groups[0], group_1_member_descriptor)
-          min = @composition.results.get_min(metric, @composition.groups[0], group_1_member_descriptor) || 0
-          max = @composition.results.get_max(metric, @composition.groups[0], group_1_member_descriptor) || 0
+        if !g2 || g2&.summable?(metric)
+          sum = @composition.results.calc_sum(metric, g1, group_1_member_descriptor)
+          min = @composition.results.calc_min(metric, g1, group_1_member_descriptor) || 0
+          max = @composition.results.calc_max(metric, g1, group_1_member_descriptor) || 0
           range = (max||0) - (min||0)
-          mean = @composition.results.get_arith_mean(metric, group_1_member_descriptor) || 0
+          mean = @composition.results.calc_arithmetic_mean(metric, g1, group_1_member_descriptor) || 0
 
           total_sum = @composition.results.calc_sum(metric)
           sum_as_percent = ((sum / total_sum.to_f) * 100).round(2)
 
           title = [
-            "Total #{metric.metric} for #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)}: #{number_with_delimiter sum}",
+            "Total #{metric.metric} for #{member_label(@composition, g1, group_1_member_descriptor)}: #{number_with_delimiter sum}",
             "#{sum_as_percent}% of overall total",
             "Mean: #{number_with_delimiter(mean)}",
             "Min: #{number_with_delimiter(min)}",
@@ -36,7 +41,7 @@
           text = number_with_delimiter sum
         else
           text = "n/a"
-          title = "When grouping by #{prop_or_dim_label @composition.groups[1].dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
+          title = "When grouping by #{prop_or_dim_label g2.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
         end
       %>
 
@@ -49,19 +54,19 @@
       <%# If this is the nil, and there's no need to show unknowns, skip it %>
       <% next if !group_2_member_descriptor && !@tbl_show_group_2_unknowns %>
 
-      <% value = @composition.results.get_value(metric, group_1_member_descriptor, group_2_member_descriptor) %>
+      <% value = @composition.results.lookup_data_point(metric, group_1_member_descriptor, group_2_member_descriptor) %>
 
-      <% group_1_member_sum = @composition.results.calc_sum(metric, @composition.groups[0], group_1_member_descriptor) %>
+      <% group_1_member_sum = @composition.results.calc_sum(metric, g1, group_1_member_descriptor) %>
       <% percent_of_group_1 = ((value.to_f / group_1_member_sum) * 100).round(2) %>
-      <% group_2_member_sum = @composition.results.calc_sum(metric, @composition.groups[1], group_2_member_descriptor) %>
+      <% group_2_member_sum = @composition.results.calc_sum(metric, g2, group_2_member_descriptor) %>
       <% percent_of_group_2 = ((value.to_f / group_2_member_sum) * 100).round(2) %>
       <% total_sum = @composition.results.calc_sum(metric) %>
 
       <%
         title = [
-          "#{metric.metric} for #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)} and #{member_label(@composition, @composition.groups[1], group_2_member_descriptor)}: #{number_with_delimiter value}",
-          "#{percent_of_group_1}% of #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)}",
-          "#{percent_of_group_2}% of #{member_label(@composition, @composition.groups[1], group_2_member_descriptor)}"
+          "#{metric.metric} for #{member_label(@composition, g1, group_1_member_descriptor)} and #{member_label(@composition, g2, group_2_member_descriptor)}: #{number_with_delimiter value}",
+          "#{percent_of_group_1}% of #{member_label(@composition, g1, group_1_member_descriptor)}",
+          "#{percent_of_group_2}% of #{member_label(@composition, g2, group_2_member_descriptor)}"
         ].join("\n")
       %>
 
