@@ -87,13 +87,13 @@
     <%# Group 1 member labels %>
     <col>
 
+    <% if @meta %>
+      <col span="<%= @meta.size %>">
+    <% end %>
+
     <%# Group 1 totals %>
     <% if @tbl_show_group_1_totals %>
       <col span="<%= @composition.metrics.size %>" class="totals">
-    <% end %>
-
-    <% if @meta %>
-      <col span="<%= @meta.size %>">
     <% end %>
 
     <%# Group 2 members %>

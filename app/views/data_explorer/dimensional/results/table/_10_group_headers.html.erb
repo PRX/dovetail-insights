@@ -1,12 +1,12 @@
 <tr>
   <%= tag.td if @tbl_show_group_1_headers %>
 
-  <% if @tbl_show_group_1_totals %>
-    <th colspan="<%= @composition.metrics.size %>" scope="colgroup">TOTAL</th>
-  <% end %>
-
   <% @meta&.each do |meta| %>
     <td><%= prop_or_dim_label(meta) %></td>
+  <% end %>
+
+  <% if @tbl_show_group_1_totals %>
+    <th colspan="<%= @composition.metrics.size %>" scope="colgroup">TOTAL</th>
   <% end %>
 
   <% @display_group_2_member_descriptors.each do |group_2_member_descriptor| %>

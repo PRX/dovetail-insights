@@ -8,6 +8,10 @@
     <th scope="row">TOTAL</th>
   <% end %>
 
+  <% @meta&.each do |meta| %>
+    <td></td>
+  <% end %>
+
   <% if @tbl_show_group_1_totals %>
     <% @composition.metrics.each do |metric| %>
       <%
@@ -31,10 +35,6 @@
 
       <td class="totals" title="<%= title %>"><%= text %></td>
     <% end %>
-  <% end %>
-
-  <% @meta&.each do |meta| %>
-    <td></td>
   <% end %>
 
   <% @display_group_2_member_descriptors.each do |group_2_member_descriptor| %>

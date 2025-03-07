@@ -2,6 +2,11 @@
   <%# First cell in the row is a header with the group member name %>
   <%= group_table_header_tag(@composition, @composition.groups[0], group_1_member_descriptor, :row) if @tbl_show_group_1_headers %>
 
+  <% @meta&.each do |meta| %>
+    <% meta_descriptor = @composition.results.group_meta_descriptor(@composition.groups[0], group_1_member_descriptor, meta) %>
+    <td><%= meta_descriptor_label(@composition.groups[0], meta_descriptor) %></td>
+  <% end %>
+
   <%# Totals for this member of group 1 (a total for each metric) %>
   <%# This isn't displayed when no group 2 is selected, since the total and %>
   <%# the NULL value are the same, and we display the NULL value %>
@@ -37,11 +42,6 @@
 
       <td class="totals" title="<%= title %>"><%= text %></td>
     <% end %>
-  <% end %>
-
-  <% @meta&.each do |meta| %>
-    <% meta_descriptor = @composition.results.group_meta_descriptor(@composition.groups[0], group_1_member_descriptor, meta) %>
-    <td><%= meta_descriptor_label(@composition.groups[0], meta_descriptor) %></td>
   <% end %>
 
   <% @display_group_2_member_descriptors.each do |group_2_member_descriptor| %>

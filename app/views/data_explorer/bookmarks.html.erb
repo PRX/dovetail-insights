@@ -17,9 +17,11 @@
 <ul>
   <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)">Dimensional: 0 groups, 1 metric</a></li>
   <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads),count(uniques)">Dimensional: 0 groups, 2+ metrics</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=continent">Dimensional: 1 groups, 1 metrics</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads),count(uniques)&group.1=continent">Dimensional: 1 groups, 2+ metricd</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=continent&group.2=device">Dimensional: 2 groups, 1 metric</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=continent">Dimensional: 1 groups, 1 metrics, 0 meta</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=country&group.1.meta=country">Dimensional: 1 groups, 1 metrics, 1+ meta</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads),count(uniques)&group.1=continent">Dimensional: 1 groups, 2+ metrics, 0 meta</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=continent&group.2=device">Dimensional: 2 groups, 1 metric, 0 meta</a></li>
+  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=country&group.1.meta=country&group.2=device">Dimensional: 2 groups, 1 metric, 1 meta</a></li>
   <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads),count(uniques)&group.1=continent&group.2=device">Dimensional: 2 groups, 2+ metrics</a></li>
   <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)">Time Series: Daily, 0 groups, 1 metric, 0 comparisons</a></li>
   <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads),count(uniques)">Time Series: Daily, 0 groups, 2+ metrics, 0 comparisons</a></li>

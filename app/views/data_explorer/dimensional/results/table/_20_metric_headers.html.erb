@@ -1,14 +1,14 @@
 <tr>
   <%= tag.td if @tbl_show_group_1_headers %>
 
+  <% @meta&.each do |meta| %>
+    <td></td>
+  <% end %>
+
   <% if @tbl_show_group_1_totals %>
     <% @composition.metrics.each do |metric| %>
       <th scope="col"><%= metric.metric %></th>
     <% end %>
-  <% end %>
-
-  <% @meta&.each do |meta| %>
-    <td></td>
   <% end %>
 
   <% @display_group_2_member_descriptors.each do |_| %>
