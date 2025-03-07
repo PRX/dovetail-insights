@@ -11,8 +11,6 @@ module SchemaLabelHelper
 
     # If there's a explicit localization override, use that. Otherwise, use the
     # query key if it's available, or default to the name.
-    p field_name
-    p t("dimensions.#{field_name}")
     I18n.exists?("dimensions.#{field_name}") ? t("dimensions.#{field_name}").titleize : field_key_or_name.to_s.titleize
   end
 end
