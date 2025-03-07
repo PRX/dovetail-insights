@@ -8,8 +8,8 @@ class DataExplorerController < ApplicationController
   before_action :check_podcast_authorization
 
   def index
-    if @composition.valid? && @composition.results && @composition.big_query_total_bytes_billed
-      CompositionResultMetadataLog.create!(user_id: current_user.user_id, total_bytes_processed: @composition.big_query_total_bytes_billed, params: params.to_s)
+    if @composition.valid? && @composition.results && @composition.bigquery_total_bytes_billed
+      CompositionResultMetadataLog.create!(user_id: current_user.user_id, total_bytes_processed: @composition.bigquery_total_bytes_billed, params: params.to_s)
     end
 
     @bytes = CompositionResultMetadataLog.where(current_user.user_id).where("created_at >= ?", 48.hours.ago).pluck(:total_bytes_processed).reduce(0, :+)

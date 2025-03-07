@@ -43,3 +43,4 @@
   - For some dimensions, it is tricky/expensive to generate the list of members
 - With 0 groups in time series, or 1 group in dimensional, allow values in the table to be displayed as a percent
 - Look into using pipe syntax for BigQuery queries https://cloud.google.com/bigquery/docs/pipe-syntax-guide
+- Add a preflight tubro thing that the composition can be submitted to to get real time warnings and errors without having to run the query

@@ -3,7 +3,7 @@ module Results
     attr_reader :provider, :composition, :rows
 
     def initialize(composition, rows)
-      @provider = :big_query
+      @provider = :bigquery
       @composition = composition
       @rows = rows
     end

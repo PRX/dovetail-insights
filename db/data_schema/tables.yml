@@ -17,7 +17,7 @@ Tables:
         downloads:
           Key: feeder_podcast
       Join: INNER
-      Table: production.podcasts
+      Table: <%= ENV.fetch("BIGQUERY_DATASET") %>podcasts
       Key: id
   episodes:
     BigQuery:
@@ -25,7 +25,7 @@ Tables:
         downloads:
           Key: feeder_episode
       Join: INNER
-      Table: production.episodes
+      Table: <%= ENV.fetch("BIGQUERY_DATASET") %>episodes
       Key: id
   countries:
     BigQuery:
@@ -33,7 +33,7 @@ Tables:
         downloads:
           Key: country_geoname_id
       Join: LEFT
-      Table: production.geonames
+      Table: <%= ENV.fetch("BIGQUERY_DATASET") %>geonames
       Key: geoname_id
   cities:
     BigQuery:
@@ -41,7 +41,7 @@ Tables:
         downloads:
           Key: city_geoname_id
       Join: LEFT
-      Table: production.geonames
+      Table: <%= ENV.fetch("BIGQUERY_DATASET") %>geonames
       Key: geoname_id
   metros:
     BigQuery:
@@ -49,7 +49,7 @@ Tables:
         cities:
           Key: metro_code
       Join: LEFT
-      Table: production.metronames
+      Table: <%= ENV.fetch("BIGQUERY_DATASET") %>metronames
       Key: code
   user_agents:
     BigQuery:
@@ -57,7 +57,7 @@ Tables:
         downloads:
           Key: agent_name_id
       Join: LEFT
-      Table: production.agentnames
+      Table: <%= ENV.fetch("BIGQUERY_DATASET") %>agentnames
       Key: agentname_id
   device_types:
     BigQuery:
@@ -65,7 +65,7 @@ Tables:
         downloads:
           Key: agent_type_id
       Join: LEFT
-      Table: production.agentnames
+      Table: <%= ENV.fetch("BIGQUERY_DATASET") %>agentnames
       Key: agentname_id
   operating_systems:
     BigQuery:
@@ -73,7 +73,7 @@ Tables:
         downloads:
           Key: agent_os_id
       Join: LEFT
-      Table: production.agentnames
+      Table: <%= ENV.fetch("BIGQUERY_DATASET") %>agentnames
       Key: agentname_id
   campaigns:
     BigQuery:
@@ -81,7 +81,7 @@ Tables:
         impressions:
           Key: campaign_id
       Join: LEFT
-      Table: production.campaigns
+      Table: <%= ENV.fetch("BIGQUERY_DATASET") %>campaigns
       Key: id
   advertisers:
     BigQuery:
@@ -89,5 +89,5 @@ Tables:
         campaigns:
           Key: advertiser_id
       Join: LEFT
-      Table: production.advertisers
+      Table: <%= ENV.fetch("BIGQUERY_DATASET") %>advertisers
       Key: id

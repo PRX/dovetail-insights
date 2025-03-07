@@ -27,7 +27,7 @@ module Compositions
     include CompositionConstraints
 
     attr_reader :filters
-    attr_reader :big_query_total_bytes_billed
+    attr_reader :bigquery_total_bytes_billed
 
     # TODO Needing to set this is pretty hacky
     attr_accessor :unauthorized_podcast_ids

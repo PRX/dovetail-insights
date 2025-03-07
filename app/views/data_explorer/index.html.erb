@@ -11,8 +11,8 @@
               } do |form| %>
   <div id="global-data-parameters">
 
-    <% if @composition.big_query_total_bytes_billed %>
-      <p><b><%= number_to_human_size(@composition.big_query_total_bytes_billed) %> (<%= number_to_currency(@composition.big_query_total_bytes_billed.to_f / 2.0**40 * BIG_QUERY_PRICE_PER_TIB, precision: 5) %>)</b></p>
+    <% if @composition.bigquery_total_bytes_billed %>
+      <p><b><%= number_to_human_size(@composition.bigquery_total_bytes_billed) %> (<%= number_to_currency(@composition.bigquery_total_bytes_billed.to_f / 2.0**40 * BIGQUERY_PRICE_PER_TIB, precision: 5) %>)</b></p>
     <% end %>
 
     <%= render "data_explorer/composition_errors" if @composition.invalid? %>

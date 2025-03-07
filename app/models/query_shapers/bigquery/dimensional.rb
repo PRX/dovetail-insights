@@ -1,5 +1,5 @@
 module QueryShapers
-  module BigQuery
+  module Bigquery
     class Dimensional
       # Map Group::EXTRACT_OPTS to the BigQuery SQL version
       EXTRACT_OPTS_MAP = {
@@ -206,7 +206,7 @@ module QueryShapers
           table_def = DataSchema.tables[table_name]
           table_def&.dig("BigQuery", "JoinsTo")&.each do |join_table_name, join_def|
             join_type = table_def["BigQuery"]["Join"]
-            big_query_table_name = table_def["BigQuery"]["Table"]
+            bigquery_table_name = table_def["BigQuery"]["Table"]
             primary_key = table_def["BigQuery"]["Key"]
             foreign_key = join_def["Key"]
 
@@ -214,9 +214,9 @@ module QueryShapers
             # matches the primary key of the input table, or using an arbitrary
             # expression
             if join_def["Key"]
-              joins << "#{join_type} JOIN #{big_query_table_name} AS #{table_name} ON #{table_name}.#{primary_key} = #{join_table_name}.#{foreign_key}"
+              joins << "#{join_type} JOIN #{bigquery_table_name} AS #{table_name} ON #{table_name}.#{primary_key} = #{join_table_name}.#{foreign_key}"
             elsif join_def["Expression"]
-              joins << "#{join_type} JOIN #{big_query_table_name} AS #{table_name} ON #{join_def["Expression"]}"
+              joins << "#{join_type} JOIN #{bigquery_table_name} AS #{table_name} ON #{join_def["Expression"]}"
             end
           end
         end

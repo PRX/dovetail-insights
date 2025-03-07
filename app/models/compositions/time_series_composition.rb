@@ -68,11 +68,11 @@ module Compositions
       return unless valid?
 
       @query ||= begin
-        shaper = QueryShapers::BigQuery::TimeSeries.new(self)
+        shaper = QueryShapers::Bigquery::TimeSeries.new(self)
 
         # dimensional.sql.erb is suitable for both dimensional and time series
         # queries.
-        erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "big_query", "dimensional.sql.erb")))
+        erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "bigquery", "dimensional.sql.erb")))
         erb.result_with_hash(shaper.to_hash)
       end
     end
@@ -95,7 +95,7 @@ module Compositions
       return @results if @results
 
       # Accumulate bytes for all query jobs
-      @big_query_total_bytes_billed = 0
+      @bigquery_total_bytes_billed = 0
 
       standard_jobs = [] # There will only be one of these, but easier to use an array
       compare_jobs = []
@@ -104,7 +104,7 @@ module Compositions
       # Start a query job for the standard query (this happens even when there
       # are no comparisons)
       threads << Thread.new do
-        standard_jobs << BigQueryClient.instance.query_job(query(binding))
+        standard_jobs << BigqueryClient.instance.query_job(query(binding))
       end
 
       if comparisons.present?
@@ -152,7 +152,7 @@ module Compositions
               b.local_variable_set(:compare_abs_from, compare_abs_from)
               b.local_variable_set(:compare_abs_to, compare_abs_to)
 
-              job = BigQueryClient.instance.query_job(query(binding))
+              job = BigqueryClient.instance.query_job(query(binding))
 
               # We need to be able to identify the results of this job later,
               # so we store some identifying metadata alongside it
@@ -178,25 +178,25 @@ module Compositions
       standard_jobs.each do |job|
         job.wait_until_done!
 
-        @big_query_total_bytes_billed += job.stats["query"]["totalBytesBilled"].to_i
+        @bigquery_total_bytes_billed += job.stats["query"]["totalBytesBilled"].to_i
         @results = Results::TimeSeries.new(self, job.data)
       end
 
       # If there were any compare jobs, load their results into the Results
       # instance
       compare_jobs.each do |job|
-        big_query_job = job[:job]
+        bigquery_job = job[:job]
         period = job[:period]
         idx = job[:idx]
 
-        big_query_job.wait_until_done!
+        bigquery_job.wait_until_done!
 
-        @big_query_total_bytes_billed += big_query_job.stats["query"]["totalBytesBilled"].to_i
+        @bigquery_total_bytes_billed += bigquery_job.stats["query"]["totalBytesBilled"].to_i
 
         @results.comparison_results ||= {}
         @results.comparison_results[period] ||= []
         # Store the results of this comparison oldest-to-newest
-        @results.comparison_results[period][idx] = big_query_job.data
+        @results.comparison_results[period][idx] = bigquery_job.data
       end
 
       @results

@@ -29,9 +29,9 @@ module Compositions
       return unless valid?
 
       @query ||= begin
-        shaper = QueryShapers::BigQuery::Dimensional.new(self)
+        shaper = QueryShapers::Bigquery::Dimensional.new(self)
 
-        erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "big_query", "dimensional.sql.erb")))
+        erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "bigquery", "dimensional.sql.erb")))
         erb.result_with_hash(shaper.to_hash).gsub(/\n{3,}/, "\n\n")
       end
     end
@@ -44,10 +44,10 @@ module Compositions
       return unless valid?
 
       @results ||= begin
-        job = BigQueryClient.instance.query_job(query)
+        job = BigqueryClient.instance.query_job(query)
         job.wait_until_done!
 
-        @big_query_total_bytes_billed = job.stats["query"]["totalBytesBilled"].to_i
+        @bigquery_total_bytes_billed = job.stats["query"]["totalBytesBilled"].to_i
 
         Results::Dimensional.new(self, job.data)
       end
