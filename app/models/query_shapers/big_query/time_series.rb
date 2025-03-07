@@ -36,11 +36,13 @@ module QueryShapers
           # represent each group
           selects << "rolling_window_range AS #{@composition.granularity_as}_raw"
           # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
+          # Interval descriptors represent the beginning of the interval.
           selects << %(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", RANGE_START(rolling_window_range), "UTC") AS #{@composition.granularity_as})
         else
           granularity_arg = GRANULARITY_OPTS_MAP[@composition.granularity]
 
           # All date/time group descriptors should use YYYY-MM-DDThh:mm:ssZ
+          # Interval descriptors represent the beginning of the interval
           selects << %(FORMAT_TIMESTAMP("%Y-%m-%dT%H:%M:%SZ", TIMESTAMP_TRUNC(downloads.timestamp, #{granularity_arg}), "UTC") AS #{@composition.granularity_as})
         end
 

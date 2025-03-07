@@ -14,6 +14,7 @@ module Results
     # expected.
     #
     # These descriptors are always strings like "2023-01-01T12:34:56Z"
+    # Interval descriptors represent the beginning of the interval
 
     def unique_interval_descriptors
       # Keeping this here for checking actual values coming out of the query

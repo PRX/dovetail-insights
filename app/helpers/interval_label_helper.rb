@@ -7,6 +7,8 @@ module IntervalLabelHelper
   # but the results are intended to only display the year, like if the user
   # selected _yearly_ grouping. This will return +"2023"+, based on that chosen
   # granularity.
+  #
+  # Interval descriptors represent the beginning of the interval.
 
   def interval_label(composition, interval_descriptor)
     # Parse the given descriptor into a Time
