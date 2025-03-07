@@ -18,6 +18,9 @@ module ResultsHelper
         elsif dimension_def["SortFields"].present?
           # If the dimension has sort fields, always sort by the raw sort field
           # values, in the order the fields are listed in the schema
+          #
+          # Note that once the descriptor is converted to a label, that label
+          # value may appear out of place
 
           [10, *dimension_def["SortFields"].map do |sort_property_name|
             d = @composition.results.group_sort_descriptor(group, member_descriptor, sort_property_name)
@@ -26,7 +29,7 @@ module ResultsHelper
             (d.to_s == d.to_i.to_s) ? d.to_i : d.downcase
           end]
         else
-          # Othewise sort lexicographically
+          # Othewise sort lexicographically by the final display label
           [0, member_label(@composition, group, member_descriptor).downcase]
         end
       end
