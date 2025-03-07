@@ -8,7 +8,7 @@ Metrics:
     BigQuery:
       Selector: COUNT(*)
       RequiredColumns:
-        impressions: []
+        impressions: [timestamp] # Including timestamp so there's something to count
   "count(uniques)":
     BigQuery:
       Selector: COUNT(DISTINCT downloads.listener_id)
