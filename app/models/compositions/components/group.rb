@@ -184,8 +184,7 @@ module Compositions
 
       def summable?(metric)
         dimension_def = DataSchemaUtil.field_definition(dimension)
-
-        (dimension_def["SummableMetrics"] || []).include?(metric.metric.to_s)
+        dimension_def.dig("MetricAggregations", "Sum")&.include?(metric.metric.to_s)
       end
 
       ##

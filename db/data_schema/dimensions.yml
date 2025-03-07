@@ -25,9 +25,10 @@ Dimensions:
     ExhibitField: podcast_name
     StaticFields:
       - podcast_name
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     BigQuery:
       Selector: podcasts.id
       RequiredColumns:
@@ -48,9 +49,10 @@ Dimensions:
       - episode_number
     SortFields:
       - episode_publish_timestamp
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     BigQuery:
       Selector: episodes.id
       Type: STRING
@@ -59,9 +61,10 @@ Dimensions:
   download_timestamp:
     Type: Timestamp
     QueryKey: time
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     BigQuery:
       Selector: downloads.timestamp
       Type: TIMESTAMP
@@ -70,9 +73,10 @@ Dimensions:
   download_local_timestamp:
     Type: Timestamp
     QueryKey: localTime
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     BigQuery:
       # Queries treat all timestamps as UTC values. In order to allow users to
       # deal with some timestamps in their local time zone, we use
@@ -96,9 +100,10 @@ Dimensions:
   episode_publish_timestamp:
     Type: Timestamp
     QueryKey: published
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     BigQuery:
       Selector: episodes.published_at
       Type: TIMESTAMP
@@ -107,9 +112,10 @@ Dimensions:
   current_episode_age_in_seconds:
     Type: Duration
     QueryKey: age
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     BigQuery:
       Selector: TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), episodes.published_at, SECOND)
       RequiredColumns:
@@ -117,9 +123,10 @@ Dimensions:
   episode_age_at_download_in_seconds:
     Type: Duration
     QueryKey: lag
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     BigQuery:
       Selector: TIMESTAMP_DIFF(downloads.timestamp, episodes.published_at, SECOND)
       RequiredColumns:
@@ -128,9 +135,10 @@ Dimensions:
   season_number:
     Type: Token
     QueryKey: season
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     SortFields:
       - season_number
@@ -142,9 +150,10 @@ Dimensions:
   episode_number:
     Type: Token
     QueryKey: episodeNumber
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     BigQuery:
       Selector: CAST(episodes.episode_number AS STRING)
@@ -158,9 +167,10 @@ Dimensions:
     StaticFields:
       - user_agent_name
     PermitNulls: true
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     BigQuery:
       Selector: user_agents.agentname_id
       Type: INTEGER
@@ -172,9 +182,10 @@ Dimensions:
     ExhibitField: device_type_name
     StaticFields:
       - device_type_name
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     BigQuery:
       Selector: device_types.agentname_id
@@ -187,9 +198,10 @@ Dimensions:
     ExhibitField: os_name
     StaticFields:
       - os_name
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     BigQuery:
       Selector: operating_systems.agentname_id
@@ -199,9 +211,10 @@ Dimensions:
   continent_code:
     Type: Token
     QueryKey: continent
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     BigQuery:
       Selector: countries.continent_code
@@ -214,9 +227,10 @@ Dimensions:
     ExhibitField: country_name
     StaticFields:
       - country_name
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     BigQuery:
       Selector: countries.country_iso_code
@@ -230,9 +244,10 @@ Dimensions:
     StaticFields:
       - subdivision_name
       - continent_code
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     BigQuery:
       Selector: CONCAT(cities.country_iso_code, '-', cities.subdivision_1_iso_code)
@@ -251,9 +266,10 @@ Dimensions:
       - city_name
       - city_name_with_full_state
       - city_name_with_state_abbreviation
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     BigQuery:
       Selector: cities.geoname_id
@@ -265,9 +281,10 @@ Dimensions:
     ExhibitField: metro_name
     StaticFields:
       - metro_name
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     BigQuery:
       Selector: metros.code
@@ -276,9 +293,10 @@ Dimensions:
   time_zone:
     Type: Token
     QueryKey: tz
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     BigQuery:
       Selector: cities.time_zone
@@ -290,8 +308,9 @@ Dimensions:
     ExhibitField: campaign_name
     StaticFields:
       - campaign_name
-    SummableMetrics:
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(impressions)
     BigQuery:
       Selector: campaigns.id
       RequiredColumns:
@@ -302,8 +321,9 @@ Dimensions:
     ExhibitField: advertiser_name
     StaticFields:
       - advertiser_name
-    SummableMetrics:
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(impressions)
     BigQuery:
       Selector: advertisers.id
       RequiredColumns:
@@ -312,9 +332,10 @@ Dimensions:
     Type: Token
     QueryKey: feed
     StaticFields: []
-    SummableMetrics:
-      - downloads
-      - impressions
+    MetricAggregations:
+      Sum:
+        - count(downloads)
+        - count(impressions)
     PermitNulls: true
     BigQuery:
       Selector: COALESCE(downloads.feeder_feed, "__DEFAULT_FEED__")

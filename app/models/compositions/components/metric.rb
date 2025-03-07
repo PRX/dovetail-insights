@@ -71,7 +71,7 @@ module Compositions
       # query, rather than just a metric name or something like that.
 
       def as
-        @as ||= :"#{metric}_#{ShortRandom.value(self)}"
+        @as ||= :"#{metric.to_s.tr("(", "_").tr(")", "_")}_#{ShortRandom.value(self)}"
       end
 
       def as_json(options = {})
