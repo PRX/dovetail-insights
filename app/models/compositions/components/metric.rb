@@ -18,19 +18,20 @@ module Compositions
         return [] if !params[:metrics]
 
         params[:metrics].split(",").map do |metric_param_part|
-          # The metric name (meaning, the name of the metric defined in the
-          # data schema), will always be at the beginning of the value and
-          # consist of lowercase letters and underscores
-          metric_name = metric_param_part.match(/([a-z_]+)/)[1]
+          # Metric names in the schema look like foo(bar) or count(downloads).
+          # In the URL, metrics may be expressed exactly by name, or with
+          # variables, like foo(bar,1,2). This removes the variable part,
+          # leaving just the schema name.
+          metric_name = metric_param_part.gsub(/([a-zA-Z_]+\([a-zA-Z_]+)(,.*)+(\))/) { |match| "#{$1}#{$3}" }
 
           metric = new(metric_name.to_sym)
 
           # Some metrics include a variable, which will appear in the value
           # after the name, enclosed in parens
-          metric_variable_match_data = metric_param_part.match(/\(([0-9]+)\)/)
-          if metric_variable_match_data
-            metric.variable = metric_variable_match_data[1].to_i
-          end
+          # metric_variable_match_data = metric_param_part.match(/\(([0-9]+)\)/)
+          # if metric_variable_match_data
+          #   metric.variable = metric_variable_match_data[1].to_i
+          # end
 
           metric
         end

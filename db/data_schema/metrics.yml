@@ -1,15 +1,15 @@
 Metrics:
-  downloads:
+  "count(downloads)":
     BigQuery:
       Selector: COUNT(DISTINCT downloads.request_uuid)
       RequiredColumns:
         downloads: [request_uuid]
-  impressions:
+  "count(impressions)":
     BigQuery:
       Selector: COUNT(*)
       RequiredColumns:
         impressions: []
-  uniques:
+  "count(uniques)":
     BigQuery:
       Selector: COUNT(DISTINCT downloads.listener_id)
       RequiredColumns:
