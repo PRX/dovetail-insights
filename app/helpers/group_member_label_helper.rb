@@ -135,8 +135,12 @@ module GroupMemberLabelHelper
   # When member_descriptor is nil, this is being used to label data that is not
   # associated with any member of the group (e.g., downloads that don't have a
   # country, because we didn't determine the origin).
+  #
+  # Generally the UI will not include elements where group is nil, but for
+  # completeness, that case is handled as well
 
   def member_label(composition, group, member_descriptor)
+    return "NO GROUP SELECTED" unless group # TODO
     return "Indeterminate #{prop_or_dim_label(group.dimension)}" unless member_descriptor
 
     dimension_def = DataSchemaUtil.field_definition(group.dimension)

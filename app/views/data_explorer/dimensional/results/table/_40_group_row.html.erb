@@ -20,7 +20,7 @@
           sum_as_percent = ((sum / total_sum.to_f) * 100).round(2)
 
           title = [
-            "Total #{metric.metric} for #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)}: #{sum}",
+            "Total #{metric.metric} for #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)}: #{number_with_delimiter sum}",
             "#{sum_as_percent}% of overall total",
             "Mean: #{number_with_delimiter(mean)}",
             "Min: #{number_with_delimiter(min)}",
@@ -59,7 +59,7 @@
 
       <%
         title = [
-          "#{metric.metric} for #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)} and #{member_label(@composition, @composition.groups[1], group_2_member_descriptor)}: #{value}",
+          "#{metric.metric} for #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)} and #{member_label(@composition, @composition.groups[1], group_2_member_descriptor)}: #{number_with_delimiter value}",
           "#{percent_of_group_1}% of #{member_label(@composition, @composition.groups[0], group_1_member_descriptor)}",
           "#{percent_of_group_2}% of #{member_label(@composition, @composition.groups[1], group_2_member_descriptor)}"
         ].join("\n")
@@ -67,12 +67,9 @@
 
       <td
         data-data-explorer--results-table-highlight-target="cell"
-        data-highlight-metric="<%= metric.metric %>"
-        data-highlight-group-1="<%= group_1_member_descriptor || "__nil__" %>"
-        data-highlight-group-2="<%= group_2_member_descriptor || "__nil__" %>"
-        data-sort-metric="<%= metric.metric %>"
-        data-sort-group-1-member-descriptor="<%= group_1_member_descriptor || "__nil__" %>"
-        data-sort-group-2-member-descriptor="<%= group_2_member_descriptor || "__nil__" %>"
+        data-dx-metric="<%= metric.metric %>"
+        data-dx-group-1-member-descriptor="<%= group_1_member_descriptor || "__nil__" %>"
+        data-dx-group-2-member-descriptor="<%= group_2_member_descriptor || "__nil__" %>"
         data-raw-value="<%= value %>"
         title="<%= title %>">
 

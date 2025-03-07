@@ -14,7 +14,7 @@ export default class extends Controller {
     const dimension = event.target.dataset.sortGroupDimension;
     const metric = event.target.dataset.sortMetric;
     const group2MemberDescriptor = event.target.getAttribute(
-      "data-sort-group-2-member-descriptor",
+      "data-dx-group-2-member-descriptor",
     );
 
     if (event.target.dataset.sortConfig?.startsWith("0,")) {
@@ -49,10 +49,10 @@ export default class extends Controller {
       // group and metric
       const sortedDataRows = this.rowTargets.sort((tr1, tr2) => {
         const tr1Cell = tr1.querySelector(
-          `td[data-sort-metric="${metric}"][data-sort-group-2-member-descriptor="${group2MemberDescriptor}"]`,
+          `td[data-dx-metric="${metric}"][data-dx-group-2-member-descriptor="${group2MemberDescriptor}"]`,
         );
         const tr2Cell = tr2.querySelector(
-          `td[data-sort-metric="${metric}"][data-sort-group-2-member-descriptor="${group2MemberDescriptor}"]`,
+          `td[data-dx-metric="${metric}"][data-dx-group-2-member-descriptor="${group2MemberDescriptor}"]`,
         );
 
         if (!tr1Cell || !tr2Cell) {

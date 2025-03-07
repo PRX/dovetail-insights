@@ -242,19 +242,19 @@ module Results
     def get_arith_mean(metric, group1_member_descriptor = false, group2_member_descriptor = false)
       # TODO There may be cases where 0 is not the correct default for missing values
 
-      if group1_member_descriptor
-        # Get the mean for some group 1 member across all group 2 members
-        values = group_2_unique_member_descriptors.map { |d| get_value(metric, group1_member_descriptor, d) || 0 }
-        values.sum / group_2_unique_member_descriptors.size
-      elsif group2_member_descriptor
-        # Get the mean for some group 2 member across all group 1 members
-        values = group_1_unique_member_descriptors.map { |d| get_value(metric, d, group2_member_descriptor) || 0 }
-        values.sum / group_1_unique_member_descriptors.size
-      else
-        # Get the mean across all group 1 members
-        values = group_1_unique_member_descriptors.map { |d| get_value(metric, d) || 0 }
-        values.sum / group_1_unique_member_descriptors.size
-      end
+      # if group1_member_descriptor
+      #   # Get the mean for some group 1 member across all group 2 members
+      #   values = group_2_unique_member_descriptors.map { |d| get_value(metric, group1_member_descriptor, d) || 0 }
+      #   values.sum / group_2_unique_member_descriptors.size
+      # elsif group2_member_descriptor
+      #   # Get the mean for some group 2 member across all group 1 members
+      #   values = group_1_unique_member_descriptors.map { |d| get_value(metric, d, group2_member_descriptor) || 0 }
+      #   values.sum / group_1_unique_member_descriptors.size
+      # else
+      #   # Get the mean across all group 1 members
+      #   values = group_1_unique_member_descriptors.map { |d| get_value(metric, d) || 0 }
+      #   values.sum / group_1_unique_member_descriptors.size
+      # end
     end
 
     ##
@@ -319,7 +319,7 @@ module Results
       sample_row = rows.find { |row| row[group.as] == member_descriptor }
 
       # That row will also have the meta property value that we're looking for
-      @group_member_descriptor_for_property[cache_key] = sample_row.dig(as) || ""
+      @group_member_descriptor_for_property[cache_key] = sample_row&.dig(as) || ""
 
       @group_member_descriptor_for_property[cache_key]
     end

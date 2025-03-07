@@ -44,19 +44,21 @@ module ResultsHelper
   # produce an empty tag.
 
   def group_table_header_tag(composition, group, member_descriptor, th_scope, skip_content = false)
+    group_num = composition.groups&.index(group)&.+ 1
+
     opts = {
       colspan: (th_scope == :colgroup) ? composition.metrics&.size : 1,
       scope: th_scope,
       data: {
         action: "click->data-explorer--results-table-sort#sort",
-        "sort-group-dimension": group&.dimension,
-        "sort-group-2-member-descriptor": member_descriptor || "__nil__", # TODO
-        "sort-metric": (composition.metrics&.size == 1) ? composition.metrics[0].metric : nil
+        "dx-group-#{group_num}-dimension-name": group&.dimension,
+        "dx-group-#{group_num}-member-descriptor": member_descriptor || "__nil__",
+        "dx-metric": (composition.metrics&.size == 1) ? composition.metrics[0].metric : nil
       }
     }
 
     content_tag(:th, opts) do
-      member_label(composition, group, member_descriptor) unless skip_content || !group
+      member_label(composition, group, member_descriptor) unless skip_content
     end
   end
 

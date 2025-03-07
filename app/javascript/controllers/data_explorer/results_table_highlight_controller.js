@@ -100,17 +100,19 @@ export default class extends Controller {
       const cellDivisions = [];
 
       const uniques = {
-        "data-highlight-metric": new Set(
-          [...cells].map((c) => c.dataset.highlightMetric),
+        "data-dx-metric": new Set([...cells].map((c) => c.dataset.dxMetric)),
+        "data-dx-group-1-member-descriptor": new Set(
+          [...cells].map((c) =>
+            c.getAttribute("data-dx-group-1-member-descriptor"),
+          ),
         ),
-        "data-highlight-group-1": new Set(
-          [...cells].map((c) => c.getAttribute("data-highlight-group-1")),
+        "data-dx-group-2-member-descriptor": new Set(
+          [...cells].map((c) =>
+            c.getAttribute("data-dx-group-2-member-descriptor"),
+          ),
         ),
-        "data-highlight-group-2": new Set(
-          [...cells].map((c) => c.getAttribute("data-highlight-group-2")),
-        ),
-        "data-highlight-interval": new Set(
-          [...cells].map((c) => c.getAttribute("data-highlight-interval")),
+        "data-dx-interval-descriptor": new Set(
+          [...cells].map((c) => c.getAttribute("data-dx-interval-descriptor")),
         ),
       };
 
