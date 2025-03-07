@@ -116,7 +116,7 @@ module QueryShapers
         end
 
         # TODO Need to include exhibit/sort/etc
-        composition.groups.each do |group|
+        composition&.groups&.each do |group|
           dimension_def = DataSchemaUtil.field_definition(group.dimension)
 
           if dimension_def.dig("BigQuery", "RequiredColumns").key?(table_name)
@@ -233,7 +233,7 @@ module QueryShapers
         # All of these SELECTs use a unique, derived AS, so there is no risk of
         # collision, but they are not otherwise deduped, so it is currently possible
         # for things to be SELECTed more than once unnecessarily
-        @composition.groups.each do |group|
+        @composition.groups&.each do |group|
           dimension_def = DataSchemaUtil.field_definition(group.dimension)
           selector = dimension_def["BigQuery"]["Selector"]
 
@@ -362,7 +362,7 @@ module QueryShapers
       # GROUP BY clauses, to support exhibit properties, meta properties, etc
 
       def group_bys
-        composition.groups.flat_map do |group|
+        composition&.groups&.flat_map do |group|
           # Always GROUP BY the group's dimension, using the unique AS value
           group_bys = [group.as]
 
