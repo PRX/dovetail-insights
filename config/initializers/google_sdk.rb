@@ -8,7 +8,7 @@ Google::Apis.logger = google_logger
 
 BIGQUERY_PRICE_PER_TIB = 6.25
 
-module BigqueryClient
+class BigqueryClient
   def self.instance
     @instance ||= Google::Cloud::Bigquery.new
   end

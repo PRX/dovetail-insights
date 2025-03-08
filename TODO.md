@@ -49,3 +49,4 @@
 - CSV export
 - Figure out access for podcasts, episodes, campaigns, advertisers, etc. Do we keep piggybacking off feeder/augury permissions?
 - Write tests for results, particularly around edge case math
+- Figure out good, consistent language for NULL groups. Needs to be clear that sometimes it may be that there was no value (like a download from HI would correctly not have a continent), or it may be that we weren't able to determine the value, even though it theoretically had one.
