@@ -115,7 +115,6 @@ module QueryShapers
           end
         end
 
-        # TODO Need to include exhibit/sort/etc
         composition&.groups&.each do |group|
           dimension_def = DataSchemaUtil.field_definition(group.dimension)
 
