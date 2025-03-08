@@ -28,15 +28,20 @@ module ResultsHelper
             # If the value appears to be a number, sort it numerically
             (d.to_s == d.to_i.to_s) ? d.to_i : d.downcase
           end]
+        elsif group.extract
+          # Timestamps using extraction should be sorted by the raw descriptor,
+          # which will always be a number, and should be sorted numerically
+          [20, member_descriptor.to_i]
+        elsif group.indices
+          # For ranges, sort numerically by raw descriptor, but force the final
+          # range to the bottom
+          (member_descriptor == Compositions::Components::Group::TERMINATOR_INDEX) ? [21, member_descriptor] : [20, member_descriptor.to_i]
         else
           # Othewise sort lexicographically by the final display label
-          [0, member_label(@composition, group, member_descriptor).downcase]
+          [50, member_label(@composition, group, member_descriptor).downcase]
         end
       end
     end
-
-    # TODO Only reverse if there's a sort property, and even that is not ideal,
-    # the schema should be able to indicate sort order
   end
 
   ##
