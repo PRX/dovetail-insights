@@ -161,7 +161,7 @@ module Compositions
       caution :local_time_distortion
 
       def initialize(dimension_name)
-        raise unless dimension_name.instance_of? Symbol
+        raise "Group dimension must be a symbol" unless dimension_name.instance_of? Symbol
 
         @dimension = dimension_name
       end

@@ -237,7 +237,7 @@ module Results
       g2 = composition.groups[1]
 
       # Passing in no group when there are two groups is undefined behavior
-      raise if !group && g2
+      raise "tktk" if !group && g2
 
       (rows
         .filter do |row|

@@ -50,7 +50,7 @@ module Compositions
     end
 
     def filters=(filters)
-      raise if filters.any? { |f| !f.instance_of? Components::Filter }
+      raise "Invalid filter object" if filters.any? { |f| !f.instance_of? Components::Filter }
       @filters = filters
     end
 

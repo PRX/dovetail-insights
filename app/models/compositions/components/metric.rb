@@ -48,7 +48,7 @@ module Compositions
       validate :metric_is_defined
 
       def initialize(metric)
-        raise unless metric.instance_of? Symbol
+        raise "Metric must be a symbol" unless metric.instance_of? Symbol
 
         @metric = metric
       end
@@ -57,7 +57,7 @@ module Compositions
         # TODO This value should be in seconds, and should support both raw input
         # in seconds from the form, and more friendly input like "7D" and convert
         # the days to seconds
-        raise unless variable.instance_of? Integer
+        raise "Metric variable must " unless variable.instance_of? Integer
 
         @variable = variable
       end

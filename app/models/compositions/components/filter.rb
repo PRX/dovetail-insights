@@ -103,25 +103,25 @@ module Compositions
       validate :nulls_follow_when_permitted
 
       def initialize(dimension_name)
-        raise unless dimension_name.instance_of? Symbol
+        raise "Filter dimension must be a symbol" unless dimension_name.instance_of? Symbol
 
         @dimension = dimension_name
       end
 
       def operator=(operator)
-        raise unless operator.instance_of? Symbol
+        raise "Filter operator must be a symbol" unless operator.instance_of? Symbol
 
         @operator = operator
       end
 
       def gte=(gte)
-        raise unless gte.instance_of? Integer
+        raise "Filter gte must be an integer" unless gte.instance_of? Integer
 
         @gte = gte
       end
 
       def lt=(lt)
-        raise unless lt.instance_of? Integer
+        raise "Filter lt must be an integer" unless lt.instance_of? Integer
 
         @lt = lt
       end

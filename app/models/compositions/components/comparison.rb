@@ -34,8 +34,8 @@ module Compositions
       validate :period_is_supported, :lookback_is_supported
 
       def initialize(period, lookback)
-        raise unless period.instance_of? Symbol
-        raise unless lookback.instance_of? Integer
+        raise "Period must be a symbol" unless period.instance_of? Symbol
+        raise "Lookback must be an integer" unless lookback.instance_of? Integer
 
         @period = period
         @lookback = lookback

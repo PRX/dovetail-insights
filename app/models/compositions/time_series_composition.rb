@@ -39,13 +39,13 @@ module Compositions
     # TODO Validate metrics (may be different validations than with dimensional lens)
 
     def granularity=(granularity)
-      raise unless granularity.instance_of? Symbol
+      raise "Granularity must be a symbol" unless granularity.instance_of? Symbol
 
       @granularity = granularity
     end
 
     def window=(window)
-      raise unless window.instance_of? Integer
+      raise "Window must be an integer" unless window.instance_of? Integer
 
       @window = window
     end
@@ -59,7 +59,7 @@ module Compositions
     end
 
     def comparisons=(comparisons)
-      raise if comparisons.any? { |c| !c.instance_of? Components::Comparison }
+      raise "Invalid comparison object" if comparisons.any? { |c| !c.instance_of? Components::Comparison }
 
       @comparisons ||= comparisons
     end
