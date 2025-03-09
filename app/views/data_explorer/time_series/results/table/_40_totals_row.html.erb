@@ -7,12 +7,12 @@
       <% @composition.comparisons.each do |comparison| %>
         <% comparison.lookback.times do |j| %>
           <% rewind = -(comparison.lookback - j) %>
-          <% total = @composition.results.get_total_comparison(comparison, rewind, metric, interval_descriptor) %>
+          <% total = @composition.results.calc_interval_sum(metric, interval_descriptor, comparison, rewind) %>
           <td><%= number_with_delimiter(total) %></td>
         <% end %>
       <% end %>
 
-      <% total = @composition.results.get_total(metric, interval_descriptor)%>
+      <% total = @composition.results.calc_interval_sum(metric, interval_descriptor) %>
       <td><%= number_with_delimiter(total) %></td>
     <% end %>
   <% end %>

@@ -2,7 +2,7 @@ module Results
   class TimeSeries < Dimensional
     # A hash where each key is some comparison, and the value is an array of
     # the all the query job datas.
-    # { YoY: [ 2022_rows, 2023_rows, 2024_rows ] }
+    # { YoY: [ 2022_rows, 2023_rows, 2024_rows ], QoQ: [22Q1_row, 22Q2_rows] }
     attr_accessor :comparison_results
 
     ##
@@ -13,8 +13,8 @@ module Results
     # results, so that looking up values using these descriptors works as
     # expected.
     #
-    # These descriptors are always strings like "2023-01-01T12:34:56Z"
-    # Interval descriptors represent the beginning of the interval
+    # These descriptors are always strings like "2023-01-01T12:34:56Z".
+    # Interval descriptors represent the beginning of the interval.
 
     def unique_interval_descriptors
       # Keeping this here for checking actual values coming out of the query
@@ -63,7 +63,7 @@ module Results
         descriptors << current_interval.strftime("%Y-%m-%dT%H:%M:%SZ")
       end
 
-      # We know have a list of all necessary descriptors for this range and
+      # We now have a list of all necessary descriptors for this range and
       # granularity, but it's backwards. Reverse it to correct that. This set
       # may also be inclusive of the time range end, so filter things out to
       # enforce the time range end being LT.
@@ -72,18 +72,67 @@ module Results
       @unique_interval_descriptors
     end
 
+    def comparison_descriptor_for_interval_descriptor(interval_descriptor, comparison, rewind)
+      raise "Must include a rewind when including a comparison" if comparison && !rewind
+      raise "Must include a comparison when including a rewind" if rewind && !comparison
+
+      return interval_descriptor if !comparison
+
+      interval_timestamp = Time.parse(interval_descriptor)
+
+      comparison_descriptor = case comparison.period
+      when :YoY
+        interval_timestamp.advance(years: rewind)
+      when :QoQ
+        interval_timestamp.advance(months: 3 * rewind)
+      when :WoW
+        interval_timestamp.advance(weeks: rewind)
+      end
+
+      comparison_descriptor.strftime("%Y-%m-%dT%H:%M:%SZ")
+    end
+
+    ##
+    # Returns all the rows from the results for the given comparison and
+    # lookback, or the base results if no comparison is given
+
+    def rows_for_comparison(comparison = nil, rewind = nil)
+      raise "Must include a rewind when including a comparison" if comparison && !rewind
+      raise "Must include a comparison when including a rewind" if rewind && !comparison
+
+      if !comparison
+        rows
+      else
+        results_for_this_comparison = comparison_results[comparison.period]
+
+        # When comparison.lookback=5, rewind will be something like -5, which
+        # is the first item in the array, so 5 + -5 = 0. The most recent comparison
+        # data will be rewind = -1, so 5 + -1 = 4
+        idx = comparison.lookback + rewind
+
+        results_for_this_comparison[idx]
+      end
+    end
+
     ##
     # See Results::Dimension#get_value for a description of how this works
 
-    def get_value(metric, interval_descriptor, group_1_member_descriptor = false, group_2_member_descriptor = false)
-      @value_cache ||= {}
-      cache_key = [metric.metric, interval_descriptor, group_1_member_descriptor, group_2_member_descriptor]
+    def lookup_data_point(metric, interval_descriptor, comparison = nil, rewind = nil, group_1_member_descriptor = false, group_2_member_descriptor = false)
+      raise "Must include a rewind when including a comparison" if comparison && !rewind
+      raise "Must include a comparison when including a rewind" if rewind && !comparison
+
+      @lookup_data_point_cache ||= {}
+      cache_key = [metric.metric, interval_descriptor, comparison, rewind, group_1_member_descriptor, group_2_member_descriptor]
 
       # Return memoized value even if it's nil
-      return @value_cache[cache_key] if @value_cache.key?(cache_key)
+      return @lookup_data_point_cache[cache_key] if @lookup_data_point_cache.key?(cache_key)
 
-      row = @rows.find do |row|
-        granularity_test = row[composition.granularity_as] == interval_descriptor
+      rows_to_use = rows_for_comparison(comparison, rewind)
+
+      descriptor_to_use = comparison_descriptor_for_interval_descriptor(interval_descriptor, comparison, rewind)
+
+      row = rows_to_use.find do |row|
+        granularity_test = row[composition.granularity_as] == descriptor_to_use
 
         g1_test = true
         g2_test = true
@@ -100,92 +149,24 @@ module Results
       # If a row was found, return the value from that row for the given metric.
       # Currently, this returns +nil+ if no value was found. It does **not**
       # default to a value like +0+.
-      @value_cache[cache_key] = row && row[metric.as]
-
-      @value_cache[cache_key]
+      @lookup_data_point_cache[cache_key] = row && row[metric.as]
     end
 
-    ##
-    # Get the total for a metric. If a group and member is given, this will be
-    # the total just for that member. If not, it will be the total for the
-    # metric across the entire result.
+    def calc_interval_sum(metric, interval_descriptor, comparison = nil, rewind = nil)
+      raise "Must include a rewind when including a comparison" if comparison && !rewind
+      raise "Must include a comparison when including a rewind" if rewind && !comparison
 
-    def get_total(metric, interval)
-      if interval
-        rows.filter { |row| row[composition.granularity_as] == interval }.inject(0) { |sum, row| sum + row[metric.as] }
-      else
-        # TODO Suppport overall metric totals?
-        # rows.inject(0) { |sum, row| sum + row[metric.as] }
-      end
-    end
+      @calc_interval_sum_cache ||= {}
+      cache_key = [metric, interval_descriptor, comparison, rewind]
 
-    def get_value_comparison(comparison, rewind, metric, interval_descriptor, group1_member = false, group2_member = false)
-      return get_value(metric, interval_descriptor, group1_member, group2_member) unless comparison
+      # Return memoized value even if it's nil
+      return @calc_interval_sum_cache[cache_key] if @calc_interval_sum_cache.key?(cache_key)
 
-      results_for_this_comparison = comparison_results[comparison.period]
+      rows_to_use = rows_for_comparison(comparison, rewind)
 
-      # When comparison.lookback=5, rewind will be something like -5, which
-      # is the first item in the array, so 5 + -5 = 0. The most recent comparison
-      # data will be rewind = -1, so 5 + -1 = 4
-      idx = comparison.lookback + rewind
+      descriptor_to_use = comparison_descriptor_for_interval_descriptor(interval_descriptor, comparison, rewind)
 
-      rows_for_this_lookback = results_for_this_comparison[idx]
-
-      interval_timestamp = Time.parse(interval_descriptor)
-
-      row = rows_for_this_lookback.find do |row|
-        comparison_member = case comparison.period
-        when :YoY
-          interval_timestamp.advance(years: rewind)
-        when :QoQ
-          interval_timestamp.advance(months: 3 * rewind)
-        when :WoW
-          interval_timestamp.advance(weeks: rewind)
-        end
-
-        granularity_test = row[composition.granularity_as] == comparison_member.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-        g1_test = true
-        g2_test = true
-
-        g1_test = row[composition.groups[0].as] == group1_member if group1_member
-        g2_test = row[composition.groups[1].as] == group2_member if group2_member
-
-        g1_test = row[composition.groups[0].as].nil? if group1_member.nil? && composition.groups[0]
-        g2_test = row[composition.groups[1].as].nil? if group2_member.nil? && composition.groups[1]
-
-        granularity_test && g1_test && g2_test
-      end
-
-      row && row[metric.as]
-    end
-
-    def get_total_comparison(comparison, rewind, metric, interval_descriptor)
-      if interval_descriptor
-        results_for_this_comparison = comparison_results[comparison.period]
-
-        idx = comparison.lookback + rewind
-
-        rows_for_this_lookback = results_for_this_comparison[idx]
-
-        interval_timestamp = Time.parse(interval_descriptor)
-
-        (rows_for_this_lookback.filter do |row|
-          comparison_member = case comparison.period
-          when :YoY
-            interval_timestamp.advance(years: rewind)
-          when :QoQ
-            interval_timestamp.advance(months: 3 * rewind)
-          when :WoW
-            interval_timestamp.advance(weeks: rewind)
-          end
-
-          row[composition.granularity_as] == comparison_member.strftime("%Y-%m-%dT%H:%M:%SZ")
-        end).inject(0) { |sum, row| sum + row[metric.as] }
-      else
-        # TODO Suppport overall metric totals?
-        # rows.inject(0) { |sum, row| sum + row[metric.as] }
-      end
+      @calc_interval_sum_cache[cache_key] = rows_to_use.filter { |row| row[composition.granularity_as] == descriptor_to_use }.inject(0) { |sum, row| sum + row[metric.as] }
     end
   end
 end

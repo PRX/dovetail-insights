@@ -1,13 +1,13 @@
-<% value = @composition.results.get_value_comparison(comparison, lookback, metric, interval_descriptor, group_1_member_descriptor, group_2_member_descriptor) %>
+<% data_point = @composition.results.lookup_data_point(metric, interval_descriptor, comparison, rewind, group_1_member_descriptor, group_2_member_descriptor) %>
 
 <td
   data-data-explorer--results-table-highlight-target="cell"
-  data-highlight-metric="<%= metric.metric %>"
-  data-highlight-interval="<%= interval_descriptor %>"
-  data-highlight-group-1="<%= group_1_member_descriptor %>"
-  data-highlight-group-2="<%= group_2_member_descriptor %>"
-  data-highlight-comparison="<%= "#{comparison&.period}-#{lookback}" %>"
-  data-raw-value="<%= value %>">
+  data-dx-metric="<%= metric.metric %>"
+  data-dx-interval-descriptor="<%= interval_descriptor %>"
+  data-dx-group-1-member-descriptor="<%= group_1_member_descriptor || "__nil__" %>"
+  data-dx-group-2-member-descriptor="<%= group_2_member_descriptor || "__nil__" %>"
+  <%= html_attributes("data-dx-comparison-rewind": "#{comparison&.period}-#{rewind}") if comparison %>
+  data-dx-data-point="<%= data_point %>">
 
-  <%= number_with_delimiter(value) %>
+  <%= number_with_delimiter(data_point) %>
 </td>

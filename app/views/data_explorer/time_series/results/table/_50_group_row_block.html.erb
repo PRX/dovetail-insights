@@ -13,13 +13,13 @@
         @composition.comparisons.each do |comparison|
           comparison.lookback.times do |i|
             rewind = -(comparison.lookback - i)
-            value = @composition.results.get_value_comparison(comparison, rewind, metric, interval_descriptor, group_1_member_descriptor, group_2_member_descriptor)
+            value = @composition.results.lookup_data_point(metric, interval_descriptor, comparison, rewind, group_1_member_descriptor, group_2_member_descriptor)
 
             values << value
           end
         end
 
-        values << @composition.results.get_value(metric, interval_descriptor, group_1_member_descriptor, group_2_member_descriptor)
+        values << @composition.results.lookup_data_point(metric, interval_descriptor, nil, nil, group_1_member_descriptor, group_2_member_descriptor)
       end
     end
 
@@ -39,14 +39,14 @@
         <% @composition.metrics.each do |metric| %>
           <% @composition.comparisons.each do |comparison| %>
             <% comparison.lookback.times do |i| %>
-              <%# if +comparison.lookback+ is 3, +lookback+ should be -3, -2, %>
-              <%# and -1 for the loops. So when i=0, lookback=-3, and i=1 l=-2 %>
-              <% lookback = -(comparison.lookback - i) %>
-              <%= render partial: "data_explorer/time_series/results/table/51_value_cell", locals: {comparison: comparison, lookback: lookback, metric: metric, interval_descriptor: interval_descriptor, group_1_member_descriptor: group_1_member_descriptor, group_2_member_descriptor: group_2_member_descriptor} %>
+              <%# if +comparison.lookback+ is 3, +rewind+ should be -3, -2, %>
+              <%# and -1 for the loops. So when i=0, rewind=-3, and i=1 l=-2 %>
+              <% rewind = -(comparison.lookback - i) %>
+              <%= render partial: "data_explorer/time_series/results/table/51_value_cell", locals: {comparison: comparison, rewind: rewind, metric: metric, interval_descriptor: interval_descriptor, group_1_member_descriptor: group_1_member_descriptor, group_2_member_descriptor: group_2_member_descriptor} %>
             <% end %>
           <% end %>
 
-          <%= render partial: "data_explorer/time_series/results/table/51_value_cell", locals: {comparison: nil, lookback: nil, metric: metric, interval_descriptor: interval_descriptor, group_1_member_descriptor: group_1_member_descriptor, group_2_member_descriptor: group_2_member_descriptor} %>
+          <%= render partial: "data_explorer/time_series/results/table/51_value_cell", locals: {comparison: nil, rewind: nil, metric: metric, interval_descriptor: interval_descriptor, group_1_member_descriptor: group_1_member_descriptor, group_2_member_descriptor: group_2_member_descriptor} %>
         <% end %>
       <% end %>
     </tr>
