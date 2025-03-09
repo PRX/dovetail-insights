@@ -66,7 +66,7 @@ module Ranging
     # we replace that space with a plus sign, yielding +"now/Y+5D"+.
 
     def from=(from)
-      raise unless from.instance_of? String
+      raise "From must be a string" unless from.instance_of? String
 
       @from = from&.tr(" ", "+")
     end
@@ -75,7 +75,7 @@ module Ranging
     # See #from=
 
     def to=(to)
-      raise unless to.instance_of? String
+      raise "To must be a string" unless to.instance_of? String
 
       @to = to&.tr(" ", "+")
     end
