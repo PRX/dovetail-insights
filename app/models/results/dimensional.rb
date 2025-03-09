@@ -186,8 +186,6 @@ module Results
       # Currently, this returns +nil+ if no value was found. It does **not**
       # default to a value like +0+.
       @value_cache[cache_key] = row && row[metric.as]
-
-      @value_cache[cache_key]
     end
 
     def calc(aggregation, metric, group, member_descriptor)
@@ -383,8 +381,6 @@ module Results
 
       # That row will also have the meta property value that we're looking for
       @group_member_descriptor_for_property[cache_key] = sample_row&.dig(as) || ""
-
-      @group_member_descriptor_for_property[cache_key]
     end
 
     ##
