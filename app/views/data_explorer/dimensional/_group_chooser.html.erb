@@ -17,7 +17,7 @@
       <option
         data-dimension-type="<%= dimension_def["Type"] %>"
         value="<%= dim_key %>"
-        <%= select_eq params["group.#{group_num}"] == dim_key %>>
+        <%= select_eq group&.dimension == dimension_name.to_sym %>>
         <%= prop_or_dim_label(dimension_name) %>
       </option>
     <% end %>

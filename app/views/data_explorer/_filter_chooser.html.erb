@@ -38,7 +38,7 @@
         <% else %>
           <br>
           <label for="filter.<%= dim_key %>.values">Values:</label>
-          <input autocomplete="off" class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" type="text" placeholder="Apple, Banana, Cherry" id="filter.<%= dim_key %>.values" name="filter.<%= dim_key %>.values" value="<%= params["filter.#{dim_key}.values"] %>">
+          <input autocomplete="off" class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" type="text" placeholder="Apple, Banana, Cherry" id="filter.<%= dim_key %>.values" name="filter.<%= dim_key %>.values" value="<%= filter&.values&.join(",") %>">
         <% end %>
 
         <% if dimension_def["PermitNulls"] %>
@@ -48,12 +48,10 @@
       <% elsif ["Duration"].include? dimension_def["Type"] %>
         <br>
         <label for="filter.<%= dim_key %>.from">From:</label>
-        <%# TODO Get value from `filter`, not params %>
         <input autocomplete="off" class="gte" type="text" placeholder="42" <%= html_attributes(id: "filter.#{dim_key}.gte", name: "filter.#{dim_key}.gte", value: to_duration_shorthand(filter&.gte)) %>>
 
         <br>
         <label for="filter.<%= dim_key %>.to">To:</label>
-        <%# TODO Get value from `filter`, not params %>
         <input autocomplete="off" class="lt" type="text" placeholder="1066" <%= html_attributes(id: "filter.#{dim_key}.lt", name: "filter.#{dim_key}.lt", value: to_duration_shorthand(filter&.lt)) %>>
       <% elsif ["Timestamp"].include? dimension_def["Type"] %>
         <br>
