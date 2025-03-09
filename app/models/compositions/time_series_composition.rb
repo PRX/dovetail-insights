@@ -64,7 +64,7 @@ module Compositions
       @comparisons ||= comparisons
     end
 
-    def query(a_binding)
+    def query(abs_from, abs_to)
       return unless valid?
 
       @query ||= begin
@@ -73,7 +73,7 @@ module Compositions
         # dimensional.sql.erb is suitable for both dimensional and time series
         # queries.
         erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "bigquery", "dimensional.sql.erb")))
-        erb.result_with_hash(shaper.to_hash)
+        erb.result_with_hash(shaper.to_hash.merge({abs_from: abs_from, abs_to: abs_to}))
       end
     end
 
@@ -104,7 +104,7 @@ module Compositions
       # Start a query job for the standard query (this happens even when there
       # are no comparisons)
       threads << Thread.new do
-        standard_jobs << BigqueryClient.instance.query_job(query(binding))
+        standard_jobs << BigqueryClient.instance.query_job(query(nil, nil))
       end
 
       if comparisons.present?
@@ -127,8 +127,6 @@ module Compositions
               # +j=0+. And +rewind=-1+ when +j=1+, etc
               rewind = -(comparison.lookback - j)
 
-              b = binding
-
               compare_abs_from = abs_from.dup
               compare_abs_from = case comparison.period
               when :YoY
@@ -149,10 +147,7 @@ module Compositions
                 compare_abs_to.advance(weeks: rewind)
               end
 
-              b.local_variable_set(:compare_abs_from, compare_abs_from)
-              b.local_variable_set(:compare_abs_to, compare_abs_to)
-
-              job = BigqueryClient.instance.query_job(query(binding))
+              job = BigqueryClient.instance.query_job(query(compare_abs_from, compare_abs_to))
 
               # We need to be able to identify the results of this job later,
               # so we store some identifying metadata alongside it
@@ -161,9 +156,6 @@ module Compositions
                 period: comparison.period,
                 idx: j
               }
-
-              b.local_variable_set(:compare_abs_from, abs_from)
-              b.local_variable_set(:compare_abs_to, abs_to)
             end
 
             threads << thread
