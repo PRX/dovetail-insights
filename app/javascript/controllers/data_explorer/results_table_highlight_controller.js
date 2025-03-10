@@ -36,7 +36,7 @@ export default class extends Controller {
       let min = 99999999;
 
       cellSet.forEach((cell) => {
-        const val = +cell.dataset.rawValue;
+        const val = +cell.dataset.dxDataPoint;
 
         if (val > max) {
           max = val;
@@ -50,13 +50,13 @@ export default class extends Controller {
       let hue;
 
       if (paletteOpt === "rainbow") {
-        hue = 298 - i * 51;
+        hue = 298 - i * 23;
       } else if (paletteOpt === "monochrome") {
-        hue = 298 - 0 * 51;
+        hue = 298 - 0 * 23;
       }
 
       cellSet.forEach((cell) => {
-        const val = +cell.dataset.rawValue;
+        const val = +cell.dataset.dxDataPoint;
 
         let scale;
 
@@ -81,7 +81,7 @@ export default class extends Controller {
       let previousValue;
 
       cellSet.forEach((cell) => {
-        const val = +cell.dataset.rawValue;
+        const val = +cell.dataset.dxDataPoint;
 
         if (previousValue) {
           const percentDelta = (val - previousValue) / previousValue;
@@ -105,6 +105,8 @@ export default class extends Controller {
 
   highlight() {
     if (this.hasTableTarget) {
+      console.log("foo");
+
       const spectrumsOpt = this.divisionsTarget.value;
 
       const showDeltas = spectrumsOpt.startsWith("delta,");
@@ -127,6 +129,9 @@ export default class extends Controller {
         ),
         "data-dx-interval-descriptor": new Set(
           [...cells].map((c) => c.getAttribute("data-dx-interval-descriptor")),
+        ),
+        "data-dx-comparison-rewind": new Set(
+          [...cells].map((c) => c.getAttribute("data-dx-comparison-rewind")),
         ),
       };
 
