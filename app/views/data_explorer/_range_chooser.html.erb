@@ -1,3 +1,13 @@
+<script>
+  document.addEventListener("DOMContentLoaded", (event) => {
+    const now = new Date();
+    if (now.getDate() !== now.getUTCDate) {
+      document.getElementById("utc-midnight-warning").innerText = `Dovetail Insights uses the UTC/GMT time zone for all data and calculations. Please be aware that currently the date in your local time zone and the UTC time zone DO NOT MATCH. So while for you today is the ${now.getDate()}th, for Insights today is the ${now.getUTCDate()}th.`;
+    }
+  });
+</script>
+<p id="utc-midnight-warning"></p>
+
 <fieldset id="time-ranger-chooser">
   <legend>Time Range</legend>
 
