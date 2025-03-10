@@ -112,7 +112,7 @@ module Results
 
     def lookup_data_point(metric, group_1_member_descriptor = false, group_2_member_descriptor = false)
       @value_cache ||= {}
-      cache_key = [metric.metric, group_1_member_descriptor, group_2_member_descriptor]
+      cache_key = [metric, group_1_member_descriptor, group_2_member_descriptor]
 
       # Return memoized value even if it's nil
       return @value_cache[cache_key] if @value_cache.key?(cache_key)
@@ -188,7 +188,7 @@ module Results
 
     def calc_sum(metric, group = false, member_descriptor = false)
       @calc_sum_cache ||= {}
-      cache_key = [metric.metric, group, member_descriptor]
+      cache_key = [metric, group, member_descriptor]
 
       # Return memoized value even if it's nil
       return @calc_sum_cache[cache_key] if @calc_sum_cache.key?(cache_key)
@@ -249,7 +249,7 @@ module Results
 
     def calc_min(metric, group = false, member_descriptor = false)
       @calc_min_cache ||= {}
-      cache_key = [metric.metric, group, member_descriptor]
+      cache_key = [metric, group, member_descriptor]
 
       # Return memoized value even if it's nil
       return @calc_min_cache[cache_key] if @calc_min_cache.key?(cache_key)
@@ -267,7 +267,7 @@ module Results
 
     def calc_max(metric, group = false, member_descriptor = false)
       @calc_max_cache ||= {}
-      cache_key = [metric.metric, group, member_descriptor]
+      cache_key = [metric, group, member_descriptor]
 
       # Return memoized value even if it's nil
       return @calc_max_cache[cache_key] if @calc_max_cache.key?(cache_key)
@@ -282,7 +282,7 @@ module Results
 
     def calc_arithmetic_mean(metric, group = false, member_descriptor = false)
       @calc_arith_mean_cache ||= {}
-      cache_key = [metric.metric, group, member_descriptor]
+      cache_key = [metric, group, member_descriptor]
 
       # Return memoized value even if it's nil
       return @calc_arith_mean_cache[cache_key] if @calc_arith_mean_cache.key?(cache_key)
@@ -342,7 +342,7 @@ module Results
     def group_member_descriptor_for_field(group, member_descriptor, field_name, fingerprint)
       @group_member_descriptor_for_field ||= {}
 
-      cache_key = [group&.dimension&.to_s, member_descriptor, field_name, fingerprint]
+      cache_key = [group, member_descriptor, field_name, fingerprint]
 
       # If no property is given, short circuit and memoize/return the given
       # descriptor

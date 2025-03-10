@@ -198,7 +198,7 @@ module Results
       raise "Must include a comparison when including a rewind" if rewind && !comparison
 
       @lookup_data_point_cache ||= {}
-      cache_key = [metric.metric, interval_descriptor, comparison, rewind, group_1_member_descriptor, group_2_member_descriptor]
+      cache_key = [metric, interval_descriptor, comparison, rewind, group_1_member_descriptor, group_2_member_descriptor]
 
       # Return memoized value even if it's nil
       return @lookup_data_point_cache[cache_key] if @lookup_data_point_cache.key?(cache_key)
