@@ -10,23 +10,24 @@ module Results
 
     ##
     # Generates a CSV for the results.
-    # TODO Refactor this
 
     def as_csv
       CSV.generate(headers: true) do |csv|
         headers = []
 
         # Add a column for each group (zero or more)
-        # TODO dimension is not meaningful enough on its own. Needs to include
-        # more info like "extract" and "HOUR" if necesasry
         composition.groups.each do |group|
-          headers << group.dimension
+          headers << ApplicationController.helpers.prop_or_dim_label(group.dimension, group)
 
           dimension_def = DataSchemaUtil.field_definition(group.dimension)
           if dimension_def.has_key?("ExhibitField")
             exhibit_property_name = dimension_def["ExhibitField"]
 
-            headers << exhibit_property_name
+            headers << ApplicationController.helpers.prop_or_dim_label(exhibit_property_name, group)
+          end
+
+          group&.meta&.each do |meta_field_name|
+            headers << ApplicationController.helpers.prop_or_dim_label(meta_field_name, group)
           end
         end
 
@@ -38,81 +39,41 @@ module Results
         # Add row of headers
         csv << headers
 
-        if composition.groups.size == 0
-          row = []
-
-          composition.metrics.each do |metric|
-            row << get_value(metric, nil, nil)
-          end
-
-          csv << row
-        elsif composition.groups.size == 1
-          group_1_unique_member_descriptors.each do |member|
+        (group_1_unique_member_descriptors || [false]).each do |group_1_descriptor|
+          (group_2_unique_member_descriptors || [false]).each do |group_2_descriptor|
             row = []
-            row << member
 
-            dimension_def = DataSchemaUtil.field_definition(composition.groups[0].dimension)
-            if dimension_def.has_key?("ExhibitField")
-              row << group_member_exhibition(composition.groups[0], member)
-            end
+            composition.groups.each_with_index do |group, idx|
+              descriptor = group_1_descriptor if idx == 0 && group_1_descriptor
+              descriptor = group_2_descriptor if idx == 1 && group_2_descriptor
 
-            # Add values for each metric for this group
-            composition.metrics.each do |metric|
-              row << get_value(metric, member, nil)
-            end
+              if descriptor
+                row << if group.indices
+                  ApplicationController.helpers.member_label(composition, group, descriptor)
+                else
+                  descriptor
+                end
 
-            csv << row
-          end
+                dimension_def = DataSchemaUtil.field_definition(group.dimension)
+                if dimension_def.has_key?("ExhibitField")
+                  row << group_member_exhibition(group, descriptor)
+                end
 
-          # Add values for each metric for groupless values
-          row = ["UNKNOWN"]
-          composition.metrics.each do |metric|
-            row << get_value(metric, nil, nil)
-          end
-          csv << row
-        elsif composition.groups.size == 2
-          group_1_unique_member_descriptors.each do |group_1_member_descriptor|
-            group_2_unique_member_descriptors.each do |group_2_member_descriptor|
-              row = []
-              row << group_1_member_descriptor
-              row << group_member_exhibition(composition.groups[0], group_1_member_descriptor)
-              row << group_2_member_descriptor
-              row << group_member_exhibition(composition.groups[1], group_2_member_descriptor)
-
-              composition.metrics.each do |metric|
-                row << get_value(metric, group_1_member_descriptor, group_2_member_descriptor)
+                group&.meta&.each do |meta_field_name|
+                  row << group_meta_descriptor(group, descriptor, meta_field_name)
+                end
               end
-
-              csv << row
             end
 
-            row = []
-            row << group_member_exhibition(composition.groups[0], group_1_member_descriptor)
-            row << nil
             composition.metrics.each do |metric|
-              row << get_value(metric, group_1_member_descriptor, nil)
+              row << lookup_data_point(metric, group_1_descriptor, group_2_descriptor)
             end
+
             csv << row
           end
-
-          group_2_unique_member_descriptors.each do |group_2_member_descriptor|
-            row = []
-            row << nil
-            row << group_member_exhibition(composition.groups[1], group_2_member_descriptor)
-            composition.metrics.each do |metric|
-              row << get_value(metric, nil, group_2_member_descriptor)
-            end
-            csv << row
-          end
-
-          row = []
-          row << nil
-          row << nil
-          composition.metrics.each do |metric|
-            row << get_value(metric, nil, nil)
-          end
-          csv << row
         end
+
+        csv
       end
     end
 
@@ -360,27 +321,27 @@ module Results
     # Can be used for things like ExhibitField, SortFields, meta
     # properties, etc, using the fingerprint to differentiate.
 
-    def group_member_descriptor_for_property(group, member_descriptor, property_name, fingerprint)
-      @group_member_descriptor_for_property ||= {}
+    def group_member_descriptor_for_field(group, member_descriptor, field_name, fingerprint)
+      @group_member_descriptor_for_field ||= {}
 
-      cache_key = [group&.dimension&.to_s, member_descriptor, property_name, fingerprint]
+      cache_key = [group&.dimension&.to_s, member_descriptor, field_name, fingerprint]
 
       # If no property is given, short circuit and memoize/return the given
       # descriptor
-      @group_member_descriptor_for_property[cache_key] = member_descriptor unless property_name
+      @group_member_descriptor_for_field[cache_key] = member_descriptor unless field_name
 
       # Return memoized value even if it's nil
-      return @group_member_descriptor_for_property[cache_key] if @group_member_descriptor_for_property.key?(cache_key)
+      return @group_member_descriptor_for_field[cache_key] if @group_member_descriptor_for_field.key?(cache_key)
 
       # In the query, this property was SELECTed using an AS with a fingerprint
       # to prevent collisions
-      as = :"#{group.as}_#{fingerprint}_#{property_name}"
+      as = :"#{group.as}_#{fingerprint}_#{field_name}"
 
       # Look for any row in the results that include the original member
       sample_row = rows.find { |row| row[group.as] == member_descriptor }
 
       # That row will also have the meta property value that we're looking for
-      @group_member_descriptor_for_property[cache_key] = sample_row&.dig(as) || ""
+      @group_member_descriptor_for_field[cache_key] = sample_row&.dig(as) || ""
     end
 
     ##
@@ -400,15 +361,15 @@ module Results
     # descriptors may become the same exhibitions.
 
     def group_member_exhibition(group, member_descriptor)
-      group_member_descriptor_for_property(group, member_descriptor, (group && DataSchemaUtil.field_definition(group.dimension)["ExhibitField"]), :exhibit)
+      group_member_descriptor_for_field(group, member_descriptor, (group && DataSchemaUtil.field_definition(group.dimension)["ExhibitField"]), :exhibit)
     end
 
-    def group_meta_descriptor(group, group_member_descriptor, meta_property_name)
-      group_member_descriptor_for_property(group, group_member_descriptor, meta_property_name, :meta)
+    def group_meta_descriptor(group, group_member_descriptor, meta_field_name)
+      group_member_descriptor_for_field(group, group_member_descriptor, meta_field_name, :meta)
     end
 
-    def group_sort_descriptor(group, group_member_descriptor, sort_property_name)
-      group_member_descriptor_for_property(group, group_member_descriptor, sort_property_name, :sort)
+    def group_sort_descriptor(group, group_member_descriptor, sort_field_name)
+      group_member_descriptor_for_field(group, group_member_descriptor, sort_field_name, :sort)
     end
   end
 end

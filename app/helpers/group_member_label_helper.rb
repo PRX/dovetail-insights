@@ -42,11 +42,11 @@ module GroupMemberLabelHelper
     index_of_index = group.indices.index(member_descriptor.to_i)
 
     if member_descriptor == Compositions::Components::Group::TERMINATOR_INDEX
-      "Over #{human_duration(group.indices.last)}"
+      "#{human_duration(group.indices.last)} and over"
     elsif index_of_index == 0
       "Under #{human_duration(member_descriptor.to_f)}"
     else
-      "Between #{human_duration(group.indices[index_of_index - 1])} and #{human_duration(member_descriptor.to_f)}"
+      "#{human_duration(group.indices[index_of_index - 1])} and over and under #{human_duration(member_descriptor.to_f)}"
     end
   end
 
@@ -80,11 +80,11 @@ module GroupMemberLabelHelper
     index_of_index = group.abs_indices.index(member_descriptor)
 
     if member_descriptor == Compositions::Components::Group::TERMINATOR_INDEX
-      "After #{compact_timestamp_string group.abs_indices.last}"
+      "At/after #{compact_timestamp_string group.abs_indices.last}"
     elsif index_of_index == 0
       "Before #{compact_timestamp_string member_descriptor}"
     else
-      "Between #{compact_timestamp_string group.abs_indices[index_of_index - 1]} and #{compact_timestamp_string member_descriptor}"
+      "At/after #{compact_timestamp_string group.abs_indices[index_of_index - 1]} and before #{compact_timestamp_string member_descriptor}"
     end
   end
 

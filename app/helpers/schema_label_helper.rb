@@ -3,7 +3,7 @@ module SchemaLabelHelper
   # Returns the best label to represent a schema property or dimension to the
   # user.
 
-  def prop_or_dim_label(field_name)
+  def prop_or_dim_label(field_name, group = nil)
     return "????" unless field_name # TODO
 
     field_def = DataSchemaUtil.field_definition(field_name)
@@ -11,6 +11,16 @@ module SchemaLabelHelper
 
     # If there's a explicit localization override, use that. Otherwise, use the
     # query key if it's available, or default to the name.
-    I18n.exists?("dimensions.#{field_name}") ? t("dimensions.#{field_name}").titleize : field_key_or_name.to_s.titleize
+    base = I18n.exists?("dimensions.#{field_name}") ? t("dimensions.#{field_name}").titleize : field_key_or_name.to_s.titleize
+
+    if group&.extract
+      "#{group.extract.to_s.titleize} of #{base}"
+    elsif group&.truncate
+      "#{group.truncate.to_s.titleize} Truncation of #{base}"
+    elsif group&.indices
+      "#{base} Range"
+    else
+      base
+    end
   end
 end
