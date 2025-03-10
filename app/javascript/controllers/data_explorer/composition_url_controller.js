@@ -35,6 +35,17 @@ function cleanStringForSearchParamsString(paramsString) {
 //   return cleanStringForSearchParamsString(paramsString);
 // }
 
+function lensParamsString() {
+  const lensParams = new URLSearchParams();
+
+  lensParams.set(
+    "lens",
+    new URLSearchParams(window.location.search).get("lens"),
+  );
+
+  return lensParams.toString();
+}
+
 export default class extends Controller {
   static targets = [
     "lens",
@@ -45,19 +56,9 @@ export default class extends Controller {
     "groupChooser",
     "granularity",
     "granularityWindow",
+    "cumeWindow",
     "compare",
   ];
-
-  lensParamsString() {
-    const lensParams = new URLSearchParams();
-
-    lensParams.set(
-      "lens",
-      new URLSearchParams(window.location.search).get("lens"),
-    );
-
-    return lensParams.toString();
-  }
 
   rangeParamsString() {
     const rangeParams = new URLSearchParams();
@@ -326,25 +327,39 @@ export default class extends Controller {
     const granularityParams = new URLSearchParams();
 
     if (
-      ["timeSeries", "cume"].includes(
+      ["timeSeries"].includes(
         new URLSearchParams(window.location.search).get("lens"),
       )
     ) {
       if (this.hasGranularityTarget && this.granularityTarget.value) {
         granularityParams.set("granularity", this.granularityTarget.value);
       }
-    }
 
-    if (
-      this.hasGranularityTarget &&
-      this.granularityTarget.value === "rolling"
-    ) {
-      if (this.granularityWindowTarget.value) {
-        granularityParams.set("window", this.granularityWindowTarget.value);
+      if (
+        this.hasGranularityTarget &&
+        this.granularityTarget.value === "rolling"
+      ) {
+        if (this.granularityWindowTarget.value) {
+          granularityParams.set("window", this.granularityWindowTarget.value);
+        }
       }
     }
 
     return granularityParams.toString();
+  }
+
+  cumeWindowParamsString() {
+    const windowParams = new URLSearchParams();
+
+    if (
+      ["cume"].includes(new URLSearchParams(window.location.search).get("lens"))
+    ) {
+      if (this.cumeWindowTarget.value) {
+        windowParams.set("window", this.cumeWindowTarget.value);
+      }
+    }
+
+    return windowParams.toString();
   }
 
   timeSeriesComparesParamsString() {
@@ -368,13 +383,14 @@ export default class extends Controller {
     event.preventDefault();
 
     const completeParamsString = [
-      this.lensParamsString(),
+      lensParamsString(),
       this.rangeParamsString(),
       this.filtersParamsString(),
       this.timeSeriesGranularityParamsString(),
       this.dimensionAnalysisMetricsParamsString(),
       this.dimensionAnalysisGroupsParamsString(),
       this.timeSeriesComparesParamsString(),
+      this.cumeWindowParamsString(),
     ]
       .filter((s) => s.length)
       .join("&");

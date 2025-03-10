@@ -27,6 +27,8 @@
     <div id="lens-data-parameters">
       <%= render partial: "data_explorer/time_series/granularity_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
 
+      <%= render partial: "data_explorer/cume/window_chooser", locals: {form: form} if @composition.is_a? Compositions::CumeComposition %>
+
       <%= render partial: "data_explorer/dimensional/metrics_chooser" if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
 
       <%= render partial: "data_explorer/dimensional/groups_panel" if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
