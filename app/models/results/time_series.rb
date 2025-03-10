@@ -146,8 +146,6 @@ module Results
       # may also be inclusive of the time range end, so filter things out to
       # enforce the time range end being LT.
       @unique_interval_descriptors = descriptors.reverse.filter { |m| m < composition.abs_to }
-
-      @unique_interval_descriptors
     end
 
     def comparison_descriptor_for_interval_descriptor(interval_descriptor, comparison, rewind)
