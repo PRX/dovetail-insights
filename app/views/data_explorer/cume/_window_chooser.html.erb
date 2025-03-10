@@ -2,6 +2,6 @@
   <legend>Window</legend>
   <fieldset id="window">
     <%= form.label :window, "Window" %>
-    <%= form.text_field :window, name: "window", value: to_duration_shorthand(@composition.try(:window)), data: {"data-explorer--composition-url-target": "cumeWindow"} %>
+    <%= form.text_field :window, name: "window", placeholder: "10h, 48h, 1D, 5D, etc", value: to_duration_shorthand(@composition.try(:window)), data: {"data-explorer--composition-url-target": "cumeWindow"} %>
   </fieldset>
 </fieldset>
