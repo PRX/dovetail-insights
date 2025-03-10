@@ -1,0 +1,29 @@
+<table>
+  <tr>
+    <td>After…</td>
+
+    <% @composition.groups[0]&.meta&.each do |meta_field_name| %>
+      <td><%= prop_or_dim_label(meta_field_name) %></td>
+    <% end %>
+
+    <% @composition.results.unique_window_descriptors.each do |window_descriptor| %>
+      <td><%= cume_window_label @composition, window_descriptor %></td>
+    <% end %>
+  </tr>
+
+  <% @composition.results.group_1_unique_member_descriptors.each do |group_1_member_descriptor| %>
+    <tr>
+      <td><%= member_label(@composition, @composition.groups[0], group_1_member_descriptor) %></td>
+
+      <% @composition.groups[0]&.meta&.each do |meta_field_name| %>
+        <td><%= @composition.results.group_meta_descriptor(@composition.groups[0], group_1_member_descriptor, meta_field_name) %></td>
+      <% end %>
+
+      <% @composition.metrics.each do |metric| %>
+        <% @composition.results.unique_window_descriptors.each do |window_descriptor| %>
+          <td><%= number_with_delimiter @composition.results.lookup_cume_data_point(metric, window_descriptor, group_1_member_descriptor, nil) %></td>
+        <% end %>
+      <% end %>
+    </tr>
+  <% end %>
+</table>

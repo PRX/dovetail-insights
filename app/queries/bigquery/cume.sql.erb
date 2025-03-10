@@ -1,3 +1,38 @@
--- Always apply a pubDate filter with a range that matches the composition time range
--- Always group by episode
--- Should be able to compare episodes across a very long period, like if a show has been around for 10 years, and you want to compare the first episode to the most recent epsiode. This would require setting the composition time range to 10 years, which could result in huge query results. Enforce some sensible limits to the number of episodes that can be included in any composition once the range gets over some limit, by requiring a episode INCLUDE filter
+-- Dovetail Insights: Cume
+
+DECLARE range_start TIMESTAMP DEFAULT '<%= composition.abs_from.to_s %>';
+DECLARE range_end TIMESTAMP DEFAULT '<%= composition.abs_to.to_s %>';
+
+DECLARE window_num_seconds INT64 DEFAULT <%= composition.window %>;
+DECLARE range_duration_in_seconds INT64 DEFAULT TIMESTAMP_DIFF(range_end, range_start, SECOND);
+DECLARE num_windows_in_range FLOAT64 DEFAULT (range_duration_in_seconds / window_num_seconds) - 1;
+DECLARE rounded_num_windows_in_range INT64 DEFAULT CAST(FLOOR(num_windows_in_range) AS INT64);
+DECLARE total_range_covered_by_windows_in_seconds INT64 DEFAULT window_num_seconds * rounded_num_windows_in_range;
+
+WITH
+downloads_in_range AS (
+  SELECT <%= downloads_table_columns.join(", ") %>
+
+  FROM production.dt_downloads AS downloads
+
+  WHERE
+    downloads.timestamp >= range_start AND downloads.timestamp < range_end
+    AND downloads.is_duplicate = FALSE
+    AND downloads.feeder_podcast IS NOT NULL
+)
+,window_range_start_values AS (
+  SELECT *
+  FROM UNNEST(
+    GENERATE_ARRAY(0, total_range_covered_by_windows_in_seconds, window_num_seconds)
+  ) AS window_start
+)
+
+SELECT <%= selects.join(",\n\t") %>
+<%# TODO get this AS name from the schema %>
+FROM downloads_in_range AS downloads
+
+<%= joins.uniq.join("\n") %>
+
+WHERE <%= wheres.join("\n\tAND ") %>
+
+<%= "GROUP BY #{group_bys.join(",\n\t")}" if group_bys.present? %>

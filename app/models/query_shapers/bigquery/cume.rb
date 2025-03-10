@@ -1,26 +1,14 @@
 module QueryShapers
   module Bigquery
-    class Dimensional < Base
-      # Map Group::EXTRACT_OPTS to the BigQuery SQL version
-      EXTRACT_OPTS_MAP = {
-        hour: "HOUR",
-        day_of_week: "DAYOFWEEK",
-        day: "DAY",
-        week: "WEEK",
-        month: "MONTH",
-        year: "YEAR"
-      }
-      # Map Group::TRUNCATE_OPTS to the BigQuery SQL version
-      TRUNCATE_OPTS_MAP = {
-        week: "WEEK",
-        month: "MONTH",
-        year: "YEAR"
-      }
+    ##
+    # Note that time series comparisons are achieved using multiple queries, so
+    # there is no comparison-specific code in the query shaper.
 
+    class Cume < Base
       attr_reader :composition
 
       def initialize(composition)
-        raise unless composition.is_a? Compositions::BaseComposition
+        raise unless composition.is_a? Compositions::CumeComposition
 
         @composition = composition
       end
@@ -33,15 +21,12 @@ module QueryShapers
         @to_hash ||= {
           composition: composition,
           selects: selects,
-          joins: joins,
           wheres: wheres,
+          joins: joins,
           group_bys: group_bys,
-          downloads_table_columns: columns_for_table("downloads"),
-          impressions_table_columns: columns_for_table("impressions")
+          downloads_table_columns: columns_for_table("downloads")
         }
       end
-
-      private
 
       ##
       # Returns all tables required to complete the query, based on parameters
@@ -90,8 +75,9 @@ module QueryShapers
       def columns_for_table(table_name)
         columns = super
 
-        # TODO Lots of duplication in here, and this is very similar to the
-        # cume implementation can it be DRYed up?
+        # Cume queries require timestamps, even if no parameters would
+        # otherwise, to be able to JOIN on the ranges
+        columns << "timestamp" if ["downloads", "impressions"].include?(table_name)
 
         composition.metrics.each do |metric|
           metric_def = DataSchema.metrics[metric.metric.to_s]
@@ -221,7 +207,26 @@ module QueryShapers
         selects.concat group_selects
         selects.concat metric_selects
 
+        # Select the window's range start value, which is used as the
+        # descriptor for that window
+        selects << "window_range_start_values.window_start AS cume_window_range_start"
+
+        # We always need episode age and timestamp to correctly calculate some
+        # things
+        selects << simple_select_for_prop_or_dim(composition.groups[0], :current_episode_age_in_seconds, :cume)
+        selects << simple_select_for_prop_or_dim(composition.groups[0], :episode_publish_timestamp, :cume)
+
         selects.uniq
+      end
+
+      def joins
+        joins = super
+
+        # JOIN the start value for the cume window that this download/impression
+        # falls into
+        joins << "INNER JOIN window_range_start_values ON TIMESTAMP_DIFF(downloads.timestamp, episodes.published_at, SECOND) >= window_range_start_values.window_start AND TIMESTAMP_DIFF(downloads.timestamp, episodes.published_at, SECOND) < (window_range_start_values.window_start + window_num_seconds)"
+
+        joins
       end
 
       ##
@@ -230,7 +235,15 @@ module QueryShapers
       # GROUP BY clauses, to support exhibit properties, meta properties, etc
 
       def group_bys
-        composition&.groups&.flat_map do |group|
+        all_group_bys = []
+
+        # Group by cume window
+        all_group_bys << "window_range_start_values.window_start"
+
+        all_group_bys << simple_group_by_for_prop_or_dim(composition.groups[0], :current_episode_age_in_seconds, :cume)
+        all_group_bys << simple_group_by_for_prop_or_dim(composition.groups[0], :episode_publish_timestamp, :cume)
+
+        all_group_bys.concat(composition&.groups&.flat_map do |group|
           # Always GROUP BY the group's dimension, using the unique AS value
           group_bys = [group.as]
 
@@ -247,7 +260,9 @@ module QueryShapers
           group_bys << group.meta.map { |m| simple_group_by_for_prop_or_dim(group, m, :meta) } if group.meta
 
           group_bys
-        end
+        end)
+
+        all_group_bys
       end
     end
   end

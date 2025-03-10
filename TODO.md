@@ -50,3 +50,6 @@
 - Figure out access for podcasts, episodes, campaigns, advertisers, etc. Do we keep piggybacking off feeder/augury permissions?
 - Write tests for results, particularly around edge case math
 - Figure out good, consistent language for NULL groups. Needs to be clear that sometimes it may be that there was no value (like a download from HI would correctly not have a continent), or it may be that we weren't able to determine the value, even though it theoretically had one.
+- Metrics should be allow listed per composition (with validations). Some metrics don't make sense in all lenses, like rolling uniques doesn't make sense in dimensional or cume
+- Cume: Should be able to compare episodes across a very long period, like if a show has been around for 10 years, and you want to compare the first episode to the most recent epsiode. This would require setting the composition time range to 10 years, which could result in huge query results. Enforce some sensible limits to the number of episodes that can be included in any composition once the range gets over some limit, by requiring a episode INCLUDE filter
+- Cume: Support impressions
