@@ -5,6 +5,81 @@ module Results
     # { YoY: [ 2022_rows, 2023_rows, 2024_rows ], QoQ: [22Q1_row, 22Q2_rows] }
     attr_accessor :comparison_results
 
+    def as_csv
+      CSV.generate(headers: true) do |csv|
+        headers = []
+
+        headers << "Interval"
+
+        # Add a column for each group (zero or more)
+        composition.groups.each do |group|
+          headers << ApplicationController.helpers.prop_or_dim_label(group.dimension, group)
+
+          dimension_def = DataSchemaUtil.field_definition(group.dimension)
+          if dimension_def.has_key?("ExhibitField")
+            exhibit_property_name = dimension_def["ExhibitField"]
+
+            headers << ApplicationController.helpers.prop_or_dim_label(exhibit_property_name, group)
+          end
+
+          group&.meta&.each do |meta_field_name|
+            headers << ApplicationController.helpers.prop_or_dim_label(meta_field_name, group)
+          end
+        end
+
+        # Add a column for each metric (1 or more)
+        composition.metrics.each do |metric|
+          headers << metric.metric
+        end
+
+        # Add row of headers
+        csv << headers
+
+        group_1_unique_member_descriptors_with_nil = group_1_unique_member_descriptors + [nil] if group_1_unique_member_descriptors
+        group_2_unique_member_descriptors_with_nil = group_2_unique_member_descriptors + [nil] if group_2_unique_member_descriptors
+
+        unique_interval_descriptors.each do |interval_descriptor|
+          (group_1_unique_member_descriptors_with_nil || [false]).each do |group_1_descriptor|
+            (group_2_unique_member_descriptors_with_nil || [false]).each do |group_2_descriptor|
+              row = []
+
+              row << interval_descriptor
+
+              composition.groups.each_with_index do |group, idx|
+                descriptor = group_1_descriptor if idx == 0 && (group_1_descriptor || group_1_descriptor.nil?)
+                descriptor = group_2_descriptor if idx == 1 && (group_2_descriptor || group_2_descriptor.nil?)
+
+                if descriptor || descriptor.nil?
+                  row << if group.indices
+                    ApplicationController.helpers.member_label(composition, group, descriptor)
+                  else
+                    descriptor || ""
+                  end
+
+                  dimension_def = DataSchemaUtil.field_definition(group.dimension)
+                  if dimension_def.has_key?("ExhibitField")
+                    row << group_member_exhibition(group, descriptor)
+                  end
+
+                  group&.meta&.each do |meta_field_name|
+                    row << group_meta_descriptor(group, descriptor, meta_field_name)
+                  end
+                end
+              end
+
+              composition.metrics.each do |metric|
+                row << lookup_data_point(metric, interval_descriptor, nil, nil, group_1_descriptor, group_2_descriptor)
+              end
+
+              csv << row
+            end
+          end
+        end
+
+        csv
+      end
+    end
+
     ##
     # We build this list of descriptors manually so that they are continuous
     # within the time range, even if there is no data for all weeks/months/etc.

@@ -39,19 +39,22 @@ module Results
         # Add row of headers
         csv << headers
 
-        (group_1_unique_member_descriptors || [false]).each do |group_1_descriptor|
-          (group_2_unique_member_descriptors || [false]).each do |group_2_descriptor|
+        group_1_unique_member_descriptors_with_nil = group_1_unique_member_descriptors + [nil] if group_1_unique_member_descriptors
+        group_2_unique_member_descriptors_with_nil = group_2_unique_member_descriptors + [nil] if group_2_unique_member_descriptors
+
+        (group_1_unique_member_descriptors_with_nil || [false]).each do |group_1_descriptor|
+          (group_2_unique_member_descriptors_with_nil || [false]).each do |group_2_descriptor|
             row = []
 
             composition.groups.each_with_index do |group, idx|
-              descriptor = group_1_descriptor if idx == 0 && group_1_descriptor
-              descriptor = group_2_descriptor if idx == 1 && group_2_descriptor
+              descriptor = group_1_descriptor if idx == 0 && (group_1_descriptor || group_1_descriptor.nil?)
+              descriptor = group_2_descriptor if idx == 1 && (group_2_descriptor || group_2_descriptor.nil?)
 
-              if descriptor
+              if descriptor || descriptor.nil?
                 row << if group.indices
                   ApplicationController.helpers.member_label(composition, group, descriptor)
                 else
-                  descriptor
+                  descriptor || ""
                 end
 
                 dimension_def = DataSchemaUtil.field_definition(group.dimension)
@@ -276,6 +279,7 @@ module Results
 
       bar = foo(metric, group, member_descriptor)
       sum = bar.inject(0) { |sum, row| sum + row[metric.as] }
+      return unless bar.size > 1 # protect against divide-by-zero
       @calc_arith_mean_cache[cache_key] = sum / bar.size
     end
 
