@@ -25,7 +25,6 @@ DECLARE range_duration_in_seconds INT64 DEFAULT TIMESTAMP_DIFF(range_end, range_
   # Figure out how many windows for the current rolling window setting
   # fit into that duration (e.g., duration=10, window=3, that would give
   # 3.333 windows)
-  # This assume windows are always defined as some number of *days*
 %>
 DECLARE num_windows_in_range FLOAT64 DEFAULT range_duration_in_seconds / rolling_window_num_seconds;
 
@@ -55,7 +54,7 @@ downloads_in_range AS (
     downloads.timestamp >= range_start AND downloads.timestamp < range_end
     AND downloads.is_duplicate = FALSE
     AND downloads.feeder_podcast IS NOT NULL
-  )
+)
 
 <% if joins.uniq.join(" ").include?("impressions_in_range") %>
 ,impressions_in_range AS (

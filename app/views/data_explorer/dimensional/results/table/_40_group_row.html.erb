@@ -7,8 +7,8 @@
   <%# First cell in the row is a header with the group member name %>
   <%= group_table_header_tag(@composition, g1, group_1_member_descriptor, :row) if @tbl_show_group_1_headers %>
 
-  <% @meta&.each do |meta| %>
-    <% meta_descriptor = @composition.results.group_meta_descriptor(g1, group_1_member_descriptor, meta) %>
+  <% @meta&.each do |meta_field_name| %>
+    <% meta_descriptor = @composition.results.group_meta_descriptor(g1, group_1_member_descriptor, meta_field_name) %>
     <td><%= meta_descriptor_label(g1, meta_descriptor) %></td>
   <% end %>
 

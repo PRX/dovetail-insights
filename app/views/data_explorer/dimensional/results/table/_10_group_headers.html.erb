@@ -1,8 +1,8 @@
 <tr>
   <%= tag.td if @tbl_show_group_1_headers %>
 
-  <% @meta&.each do |meta| %>
-    <td><%= prop_or_dim_label(meta) %></td>
+  <% @meta&.each do |meta_field_name| %>
+    <td><%= prop_or_dim_label(meta_field_name) %></td>
   <% end %>
 
   <% if @tbl_show_group_1_totals %>
