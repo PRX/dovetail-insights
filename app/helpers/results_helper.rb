@@ -22,8 +22,8 @@ module ResultsHelper
           # Note that once the descriptor is converted to a label, that label
           # value may appear out of place
 
-          [10, *dimension_def["SortFields"].map do |sort_property_name|
-            d = @composition.results.group_sort_descriptor(group, member_descriptor, sort_property_name)
+          [10, *dimension_def["SortFields"].map do |sort_field_name|
+            d = @composition.results.group_sort_descriptor(group, member_descriptor, sort_field_name)
 
             # If the value appears to be a number, sort it numerically
             (d.to_s == d.to_i.to_s) ? d.to_i : d.downcase

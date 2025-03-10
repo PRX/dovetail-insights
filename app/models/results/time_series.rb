@@ -5,6 +5,9 @@ module Results
     # { YoY: [ 2022_rows, 2023_rows, 2024_rows ], QoQ: [22Q1_row, 22Q2_rows] }
     attr_accessor :comparison_results
 
+    ##
+    # See Results::Dimensional#as_csv for more details on how this works.
+
     def as_csv
       CSV.generate(headers: true) do |csv|
         headers = []
@@ -17,9 +20,9 @@ module Results
 
           dimension_def = DataSchemaUtil.field_definition(group.dimension)
           if dimension_def.has_key?("ExhibitField")
-            exhibit_property_name = dimension_def["ExhibitField"]
+            exhibit_field_name = dimension_def["ExhibitField"]
 
-            headers << ApplicationController.helpers.prop_or_dim_label(exhibit_property_name, group)
+            headers << ApplicationController.helpers.prop_or_dim_label(exhibit_field_name, group)
           end
 
           group&.meta&.each do |meta_field_name|

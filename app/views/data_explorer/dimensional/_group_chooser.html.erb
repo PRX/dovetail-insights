@@ -126,18 +126,18 @@
 
           <%# List all the static fields for this dimension, but exclude the exhibit field, since it %>
           <%# will already be displayed. %>
-          <% dimension_def["StaticFields"]&.filter {|p| p != dimension_def["ExhibitField"] }&.each do |static_property_name| %>
-            <% static_property_def = DataSchemaUtil.field_definition(static_property_name) %>
-            <% static_property_key = static_property_def["QueryKey"] || static_property_name %>
-            <% x = "meta-#{static_property_name}-#{dimension_name}" %>
+          <% dimension_def["StaticFields"]&.filter {|p| p != dimension_def["ExhibitField"] }&.each do |static_field_name| %>
+            <% static_field_def = DataSchemaUtil.field_definition(static_field_name) %>
+            <% static_field_key = static_field_def["QueryKey"] || static_field_name %>
+            <% x = "meta-#{static_field_name}-#{dimension_name}" %>
             <label for="<%= x %>">
               <input
                 type="checkbox"
-                value="<%= static_property_key %>"
+                value="<%= static_field_key %>"
                 id="<%= x %>"
-                <%= html_attributes(checked: "checked") if group && group.meta&.include?(static_property_name.to_sym) %>
+                <%= html_attributes(checked: "checked") if group && group.meta&.include?(static_field_name.to_sym) %>
                 <%= html_attributes(name: "group.#{group_num}.meta") %>>
-              <%= prop_or_dim_label(static_property_name) %>
+              <%= prop_or_dim_label(static_field_name) %>
             </label>
           <% end %>
         </div>

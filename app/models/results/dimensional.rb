@@ -15,15 +15,16 @@ module Results
       CSV.generate(headers: true) do |csv|
         headers = []
 
-        # Add a column for each group (zero or more)
+        # Add a column for each group (zero or more). Also add a column for
+        # the exhibit field and each meta field if necessary.
         composition.groups.each do |group|
           headers << ApplicationController.helpers.prop_or_dim_label(group.dimension, group)
 
           dimension_def = DataSchemaUtil.field_definition(group.dimension)
           if dimension_def.has_key?("ExhibitField")
-            exhibit_property_name = dimension_def["ExhibitField"]
+            exhibit_field_name = dimension_def["ExhibitField"]
 
-            headers << ApplicationController.helpers.prop_or_dim_label(exhibit_property_name, group)
+            headers << ApplicationController.helpers.prop_or_dim_label(exhibit_field_name, group)
           end
 
           group&.meta&.each do |meta_field_name|
@@ -39,13 +40,25 @@ module Results
         # Add row of headers
         csv << headers
 
+        # For each defined group, we want to loop through all descriptors *and*
+        # nil, to cover any NULLs for that group.
         group_1_unique_member_descriptors_with_nil = group_1_unique_member_descriptors + [nil] if group_1_unique_member_descriptors
         group_2_unique_member_descriptors_with_nil = group_2_unique_member_descriptors + [nil] if group_2_unique_member_descriptors
 
+        # We want a row for each unique combination of descriptors from each
+        # group. There may be zero, 1 or 2 groups, so use a proxy list of
+        # `false` descriptors to fill in when there is no group. This allows us
+        # to have a single nested loop rather than having to handle all three
+        # cases separately.
         (group_1_unique_member_descriptors_with_nil || [false]).each do |group_1_descriptor|
           (group_2_unique_member_descriptors_with_nil || [false]).each do |group_2_descriptor|
             row = []
 
+            # Loop through all groups. If there are no groups this won't happen,
+            # and if there's only 1 group it will only happen once. For each
+            # group's various fields, add the label to the row. When the
+            # descriptor is `nil`, that's the NULLs group, so we still need to
+            # insert a blank cell in the CSV.
             composition.groups.each_with_index do |group, idx|
               descriptor = group_1_descriptor if idx == 0 && (group_1_descriptor || group_1_descriptor.nil?)
               descriptor = group_2_descriptor if idx == 1 && (group_2_descriptor || group_2_descriptor.nil?)
@@ -68,6 +81,7 @@ module Results
               end
             end
 
+            # Add the metric values for this row
             composition.metrics.each do |metric|
               row << lookup_data_point(metric, group_1_descriptor, group_2_descriptor)
             end
