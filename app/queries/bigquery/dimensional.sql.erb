@@ -1,7 +1,7 @@
 -- Dovetail Insights: Dimensional
 
-DECLARE range_start TIMESTAMP DEFAULT '<%= (abs_from || composition.abs_from).to_s %>';
-DECLARE range_end TIMESTAMP DEFAULT '<%= (abs_to || composition.abs_to).to_s %>';
+DECLARE range_start TIMESTAMP DEFAULT '<%= (defined?(abs_from) ? abs_from : composition.abs_from).to_s %>';
+DECLARE range_end TIMESTAMP DEFAULT '<%= (defined?(abs_to) ? abs_to : composition.abs_to).to_s %>';
 
 <%
   # NOTE: Rolling window calculations and ranges are *unused* with non-rolling
