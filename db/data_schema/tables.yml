@@ -8,7 +8,7 @@ Tables:
           Expression: impressions.request_uuid = downloads.request_uuid AND TIMESTAMP_TRUNC(downloads.timestamp, DAY, "UTC") = TIMESTAMP_TRUNC(impressions.timestamp, DAY, "UTC")
           RequiredColumns:
             downloads: [request_uuid, timestamp]
-            impressions: [timestamp]
+            impressions: [request_uuid, timestamp]
       Join: LEFT
       Table: impressions_in_range
   podcasts:
