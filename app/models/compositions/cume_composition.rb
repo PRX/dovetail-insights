@@ -133,7 +133,7 @@ module Compositions
         errors.add(:window, "must be at least 12 hours") if window < 12 * 3_600
         # The app support windows as small as 1 second, so this could be
         # expanded if desired
-        errors.add(:window, "must be a whole number of hours") if window % 3_600 != 0
+        errors.add(:window, "must be a whole number of minutes") if window % 60 != 0
       end
     end
   end

@@ -18,6 +18,9 @@ module CumeLabelHelper
     elsif seconds % 3_600 == 0
       hours = seconds / 3_600
       "#{hours.to_i} #{"hours".pluralize(hours)}"
+    elsif seconds % 60 == 0
+      minutes = seconds / 60
+      "#{ActionController::Base.helpers.number_with_delimiter minutes.to_i} #{"minutes".pluralize(minutes)}"
     else
       "#{ActionController::Base.helpers.number_with_delimiter seconds.to_i} #{"second".pluralize(seconds)}"
     end
