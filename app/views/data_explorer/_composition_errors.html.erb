@@ -19,7 +19,7 @@
     <% end %>
 
     <% @composition.try(:groups)&.each do |group| %>
-      <% group.errors.full_messages.each do |msg| %>
+      <% group&.errors&.full_messages&.each do |msg| %>
         <li><%= group.dimension %> group: <%= msg %></li>
       <% end %>
     <% end %>

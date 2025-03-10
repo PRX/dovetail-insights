@@ -25,7 +25,7 @@ module CompositionConstraints
 
   def cities_group_blocked_by_default
     try(:groups)&.each do |group|
-      if group.dimension == :city_id
+      if group&.dimension == :city_id
         if self&.filters&.find { |f| f.dimension == :subdivision_iso_code && f.operator == :include && f.values.size == 1 }
         else
           errors.add(:groups, :cities_restricted, message: "cannot group by city without an active state filter and only 1 state included")
