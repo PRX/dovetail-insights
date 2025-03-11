@@ -40,7 +40,9 @@
   @display_group_2_member_descriptors = default_group_member_descriptor_sort(@composition, @composition.groups[1], @display_group_2_member_descriptors)
 %>
 
-<table data-data-explorer--results-table-highlight-target="table">
+<table
+  class="table dx-results"
+  data-data-explorer--results-table-highlight-target="table">
   <colgroup>
     <%# Group 1 member labels %>
     <% if @tbl_show_group_1_headers %>
