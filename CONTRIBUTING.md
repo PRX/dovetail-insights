@@ -39,7 +39,7 @@ These steps assume you have followed PRX's [Local Development Environment guide]
 
     Set `BIGQUERY_PROJECT` to the Google Cloud project name that contains the BigQuery database you want to use. Set `BIGQUERY_CREDENTIALS` to the _path_ of a file that contains BigQuery API credentials from above. (i.e., `./config/bigquery-keyfile.json`)
 
-    Set `ID_HOST`. You can decide if you want to use a local, staging, or production ID server. Set `PRX_CLIENT_ID` to a client key from whichever server you chose.
+    Set `ID_HOST`. You can decide if you want to use a local, staging, or production ID server. Set `PRX_ID_CLIENT_APP_KEY` to a client key from whichever server you chose.
 
 1.  Install Ruby gems.
 
