@@ -29,8 +29,7 @@ module Compositions
     attr_reader :filters
     attr_reader :bigquery_total_bytes_billed
 
-    # TODO Needing to set this is pretty hacky
-    attr_accessor :unauthorized_podcast_ids
+    attr_accessor :user
 
     # All lenses support and require a time range define by +from+ and +to+.
     # These values are mostly handled by +Ranging+.
@@ -102,8 +101,22 @@ module Compositions
     end
 
     def only_authorized_podcasts
-      if unauthorized_podcast_ids
-        errors.add(:filters, :unauthorized, message: "must not include unauthorized podcasts")
+      podcast_filter = filters&.find { |f| f.dimension == :podcast_id }
+
+      return unless podcast_filter
+
+      user_podcast_accounts ||= (user.resources(:feeder, :read_private) + user.resources(:augury, :campaign))
+      all_podcasts = Lists.all_podcasts
+
+      invalid_podcasts = podcast_filter&.values&.select do |podcast_id|
+        podcast = all_podcasts.find { |podcast| podcast[:id] == podcast_id.to_i }
+        authed = user_podcast_accounts.include?(podcast[:account_id].to_s)
+
+        !podcast || !authed
+      end
+
+      if !user || invalid_podcasts.size > 0
+        errors.add(:filters, :unauthorized, message: "must not include unauthorized podcasts (#{invalid_podcasts.join(", ")})")
 
         # TODO Adding errors outside of #validate doesn't play nicely with .valid?
         podcast_filter = filters&.find { |f| f.dimension == :podcast_id }
