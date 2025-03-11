@@ -28,12 +28,36 @@
     data-action="data-explorer--results-table-highlight#highlight">
 
     <option value="">All values</option>
-    <option value="data-dx-metric">Per metric</option>
-    <option value="data-dx-metric,data-dx-group-1-member-descriptor">Amongst group 1</option>
-    <option value="data-dx-metric,data-dx-group-2-member-descriptor">Amongst group 2</option>
-    <option value="data-dx-metric,data-dx-interval-descriptor">Amongst interval</option>
-    <option value="data-dx-metric,data-dx-interval-descriptor,data-dx-comparison-rewind">Amongst interval and comparison</option>
-    <option value="delta,data-dx-metric,data-dx-group-1-member-descriptor">Group 1 over time (busted with any comparisons or 2 groups)</option>
-    <option value="delta,data-dx-metric,data-dx-group-1-member-descriptor,data-dx-group-2-member-descriptor">Group 1+2 over time</option>
+
+    <% if @composition.try(:metrics) && @composition.metrics.size > 1 %>
+      <option value="data-dx-metric">Per metric</option>
+    <% end %>
+
+    <% if @composition.try(:groups)&.[](1) || (@composition.is_a?(Compositions::TimeSeriesComposition) && @composition.try(:groups)&.[](0)) %>
+      <option value="data-dx-metric,data-dx-group-1-member-descriptor">Amongst group 1</option>
+    <% end %>
+
+    <% if @composition.try(:groups)&.[](1) %>
+      <option value="data-dx-metric,data-dx-group-2-member-descriptor">Amongst group 2</option>
+    <% end %>
+
+    <% if @composition.is_a? Compositions::TimeSeriesComposition %>
+      <option value="data-dx-metric,data-dx-interval-descriptor">Amongst interval</option>
+
+      <% if @composition.comparisons&.size > 0 %>
+        <option value="data-dx-metric,data-dx-interval-descriptor,data-dx-comparison-rewind">Amongst interval and comparison</option>
+      <% end %>
+
+      <% if @composition.comparisons&.size == 0 %>
+        <% if @composition&.groups.size == 1 %>
+          <option value="delta,data-dx-metric,data-dx-group-1-member-descriptor">Group 1 over time</option>
+        <% end %>
+
+        <% if @composition&.groups.size == 2 %>
+          <option value="data-dx-metric,data-dx-group-1-member-descriptor,data-dx-group-2-member-descriptor">Amongst group 1+2</option>
+          <option value="delta,data-dx-metric,data-dx-group-1-member-descriptor,data-dx-group-2-member-descriptor">Group 1+2 over time</option>
+        <% end %>
+      <% end %>
+    <% end %>
   </select>
 </fieldset>
