@@ -76,7 +76,7 @@ export default class extends Controller {
           return -1;
         }
 
-        return +tr2Cell.dataset.rawValue - +tr1Cell.dataset.rawValue;
+        return +tr2Cell.dataset.dxDataPoint - +tr1Cell.dataset.dxDataPoint;
       });
 
       const body = this.tableTarget.querySelector("tbody");
