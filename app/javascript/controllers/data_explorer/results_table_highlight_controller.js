@@ -36,38 +36,61 @@ export default class extends Controller {
       let min = 99999999;
 
       cellSet.forEach((cell) => {
-        const val = +cell.dataset.dxDataPoint;
+        const val = cell.dataset.dxDataPoint
+          ? +cell.dataset.dxDataPoint
+          : undefined;
 
-        if (val > max) {
-          max = val;
-        }
+        if (val) {
+          if (val > max) {
+            max = val;
+          }
 
-        if (val !== 0 && val < min) {
-          min = val;
+          if (val < min) {
+            min = val;
+          }
         }
       });
 
-      let hue;
+      let h;
 
       if (paletteOpt === "rainbow") {
-        hue = 298 - i * 23;
+        const numColors = 10; // Any even number
+        const maxHue = 295;
+        const hueStep = maxHue / (numColors - 1);
+
+        // Map the input to range 0-9
+        const cycle = i % numColors;
+
+        // 0 in the first half of the cycle, 1 in the second half
+        const adj = Math.round((i % numColors) / numColors);
+
+        // Rather than [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5]
+        // We want     [0,2,4,6,8,1,3,5,7,9,0,2,4,6,8,1]
+        // To keep a litte more color distance between adjacent rows/columns
+        const factor = ((cycle * 2) % numColors) + adj;
+
+        h = hueStep * factor;
       } else if (paletteOpt === "monochrome") {
-        hue = 298 - 0 * 23;
+        h = 30;
       }
 
       cellSet.forEach((cell) => {
-        const val = +cell.dataset.dxDataPoint;
+        const val = cell.dataset.dxDataPoint
+          ? +cell.dataset.dxDataPoint
+          : undefined;
 
-        let scale;
+        if (val) {
+          let relativeValue;
 
-        if (this.scaleTarget.value === "log") {
-          scale =
-            (Math.log(val) - Math.log(min)) / (Math.log(max) - Math.log(min));
-        } else if (this.scaleTarget.value === "linear") {
-          scale = (val - min) / (max - min);
+          if (this.scaleTarget.value === "log") {
+            relativeValue =
+              (Math.log(val) - Math.log(min)) / (Math.log(max) - Math.log(min));
+          } else if (this.scaleTarget.value === "linear") {
+            relativeValue = (val - min) / (max - min);
+          }
+
+          cell.style.background = `oklch(67% 0.25 ${h} / ${relativeValue})`;
         }
-
-        cell.style.background = `hsla(${hue} 100% 68% / ${scale})`;
       });
 
       i += 1;
@@ -105,8 +128,6 @@ export default class extends Controller {
 
   highlight() {
     if (this.hasTableTarget) {
-      console.log("foo");
-
       const spectrumsOpt = this.divisionsTarget.value;
 
       const showDeltas = spectrumsOpt.startsWith("delta,");
