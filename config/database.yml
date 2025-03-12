@@ -36,12 +36,15 @@ staging:
   cache:
     <<: *default_pg
     migrations_paths: db/cache_migrate
+    database: <%= ENV.fetch("POSTGRES_DATABASE", "insights") %>_cache
   queue:
     <<: *default_pg
     migrations_paths: db/queue_migrate
+    database: <%= ENV.fetch("POSTGRES_DATABASE", "insights") %>_queue
   cable:
     <<: *default_pg
     migrations_paths: db/cable_migrate
+    database: <%= ENV.fetch("POSTGRES_DATABASE", "insights") %>_cable
 
 production:
   primary:
