@@ -11,11 +11,11 @@ class DataExplorerController < ApplicationController
       CompositionResultMetadataLog.create!(user_id: current_user.user_id, total_bytes_processed: @composition.bigquery_total_bytes_billed, params: params.to_s)
     end
 
-    @bytes = CompositionResultMetadataLog.where(current_user.user_id).where("created_at >= ?", 48.hours.ago).pluck(:total_bytes_processed).reduce(0, :+)
+    @bytes = CompositionResultMetadataLog.where(user_id: current_user.user_id).where("created_at >= ?", 48.hours.ago).pluck(:total_bytes_processed).reduce(0, :+)
   end
 
   def bookmarks
-    @bytes = CompositionResultMetadataLog.where(current_user.user_id).where("created_at >= ?", 48.hours.ago).pluck(:total_bytes_processed).reduce(0, :+)
+    @bytes = CompositionResultMetadataLog.where(user_id: current_user.user_id).where("created_at >= ?", 48.hours.ago).pluck(:total_bytes_processed).reduce(0, :+)
   end
 
   def export
