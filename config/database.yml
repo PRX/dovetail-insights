@@ -30,7 +30,6 @@ test:
   <<: *default_sqlite
   database: storage/test.sqlite3
 
-# Store staging database in the storage/ directory
 staging:
   primary:
     <<: *default_pg
@@ -44,8 +43,6 @@ staging:
     <<: *default_pg
     migrations_paths: db/cable_migrate
 
-# Store production database in the storage/ directory, which by default
-# is mounted as a persistent Docker volume in config/deploy.yml.
 production:
   primary:
     <<: *default_pg
