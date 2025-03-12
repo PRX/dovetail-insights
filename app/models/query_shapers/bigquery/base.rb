@@ -37,6 +37,10 @@ module QueryShapers
           end
         end
 
+        # For each table required for this query, check to see if the given
+        # table is joined to it. If it is, include the key (which will be a
+        # column on the given table), or any columns required from the given
+        # table to complete the join.
         all_tables.each do |t|
           table_def = DataSchema.tables[t]
 
@@ -147,10 +151,16 @@ module QueryShapers
             # Joins can be defined using either a key on the join table that
             # matches the primary key of the input table, or using an arbitrary
             # expression
-            if join_def["Key"]
-              joins << "#{join_type} JOIN #{bigquery_table_name} AS #{table_name} ON #{table_name}.#{primary_key} = #{join_table_name}.#{foreign_key}"
+            joins << if join_def["Key"]
+              "#{join_type} JOIN #{bigquery_table_name} AS #{table_name} ON #{table_name}.#{primary_key} = #{join_table_name}.#{foreign_key}"
             elsif join_def["Expression"]
-              joins << "#{join_type} JOIN #{bigquery_table_name} AS #{table_name} ON #{join_def["Expression"]}"
+              "#{join_type} JOIN #{bigquery_table_name} AS #{table_name} ON #{join_def["Expression"]}"
+            else
+              # This is a bit of an edge case; when neither Key nor Expression
+              # are set, we JOIN without an ON. Currently this is only done to
+              # handle UNNEST, which is put in the table definition's Table
+              # property.
+              "#{join_type} JOIN #{bigquery_table_name} AS #{table_name}"
             end
           end
         end

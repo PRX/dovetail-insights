@@ -342,3 +342,15 @@ Dimensions:
       RequiredColumns:
         downloads: [feeder_feed]
       Type: STRING
+  categories:
+    Type: Token
+    QueryKey: category
+    StaticFields: []
+    MetricAggregations:
+      Sum: []
+    PermitNulls: true
+    BigQuery:
+      Selector: episode_category
+      RequiredColumns:
+        episode_category: []
+      Type: STRING

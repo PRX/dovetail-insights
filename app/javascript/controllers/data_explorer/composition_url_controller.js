@@ -113,6 +113,17 @@ export default class extends Controller {
               .map((o) => o.value)
               .join(","),
           );
+        } else {
+          const valuesTextField = filterChooser.querySelector("input.value");
+          if (valuesTextField?.value.length) {
+            filtersParams.set(
+              valuesTextField.name,
+              valuesTextField.value
+                .split(",")
+                .map((v) => v.trim())
+                .join(","),
+            );
+          }
         }
 
         const nullsCheckbox = filterChooser.querySelector(

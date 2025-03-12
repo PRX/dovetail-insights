@@ -91,3 +91,11 @@ Tables:
       Join: LEFT
       Table: <%= ENV.fetch("BIGQUERY_DATASET", "staging") %>.advertisers
       Key: id
+  episode_category:
+    BigQuery:
+      JoinsTo:
+        episodes:
+          RequiredColumns:
+            episodes: [categories]
+      Join: LEFT
+      Table: UNNEST(episodes.categories)
