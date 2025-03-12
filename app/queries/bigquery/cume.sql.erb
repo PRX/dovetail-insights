@@ -13,7 +13,7 @@ WITH
 downloads_in_range AS (
   SELECT <%= downloads_table_columns.join(", ") %>
 
-  FROM production.dt_downloads AS downloads
+  FROM <%= ENV.fetch("BIGQUERY_DATASET", "staging") %>.dt_downloads AS downloads
 
   WHERE
     downloads.timestamp >= range_start AND downloads.timestamp < range_end
