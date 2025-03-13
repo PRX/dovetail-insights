@@ -65,6 +65,9 @@ gem "better_html"
 # The New Relic Ruby agent monitors your applications [https://docs.newrelic.com/docs/agents/ruby-agent]
 gem "newrelic_rpm"
 
+# Rails view helper to manage "active" state of a link [https://github.com/comfy/active_link_to]
+gem "active_link_to"
+
 group :development, :test do
   # Use sqlite3 as the database for Active Record
   gem "sqlite3", ">= 2.1"
