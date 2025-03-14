@@ -19,8 +19,10 @@ Rails.application.config.assets.version = "1.0"
 # `public/assets`
 
 Rails.application.config.assets.paths << Rails.root.join("node_modules/bootstrap-icons/font")
-Rails.application.config.assets.paths << Rails.root.join("node_modules/bootstrap/dist/js")
+# Rails.application.config.assets.paths << Rails.root.join("node_modules/bootstrap/dist/js")
 # I dont think this does anything Rails.application.config.assets.precompile << "bootstrap.bundle.min.js"
 
-Rails.application.config.assets.paths << Rails.root.join("node_modules/slim-select/dist")
+# Rails.application.config.assets.paths << Rails.root.join("node_modules/slim-select/dist")
 # I dont think this does anything Rails.application.config.assets.precompile << "slimselect.bundle.min.js"
+
+# Rails.application.config.assets.paths << Rails.root.join("node_modules/@popperjs/dist/esm")

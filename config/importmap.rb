@@ -19,7 +19,6 @@ pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 # Local modules
 pin_all_from "app/javascript/controllers", under: "controllers"
 
-# Modules that exist under some asset path. Any file listed under any entry of
-# config.assets.paths is available to reference
-pin "bootstrap", to: "bootstrap.bundle.min.js"
-pin "slim-select", to: "slimselect.min.js"
+pin "slim-select", to: "https://unpkg.com/slim-select@latest/dist/slimselect.es.js"
+pin "bootstrap", to: "https://ga.jspm.io/npm:bootstrap@5.3.3/dist/js/bootstrap.esm.js"
+pin "@popperjs/core", to: "https://ga.jspm.io/npm:@popperjs/core@2.11.8/lib/index.js"
