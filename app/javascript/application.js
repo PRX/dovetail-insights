@@ -2,8 +2,8 @@
 import "@hotwired/turbo-rails";
 // eslint-disable-next-line import/no-unresolved
 import "controllers";
-import * as bootstrap from "bootstrap";
-import * as slimSelect from "slim-select";
+import { Tooltip } from "bootstrap";
+import SlimSelect from "slim-select";
 
 document.querySelectorAll("#filters select.token").forEach((el) => {
   // eslint-disable-next-line no-new, no-undef
