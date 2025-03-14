@@ -31,7 +31,9 @@ form.nochrome {
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-template-areas:
-    "lens"
+    "lens";
+  overflow: scroll;
+  width: 100vw;
 }
 
 #global-data-parameters {
