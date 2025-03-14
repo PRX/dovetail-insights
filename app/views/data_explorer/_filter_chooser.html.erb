@@ -2,100 +2,43 @@
 
 <%# Look for an existing Filter instance for this dimension – it may not exist %>
 <% filter = @composition.filters&.find { |f| f.dimension == dimension_name.to_sym } %>
-<li class="filter-chooser">
-  <fieldset
-    data-data-explorer--composition-url-target="filterChooser"
-    data-dimension-key="<%= dim_key %>"
-    data-dimension-type="<%= dimension_def["Type"] %>"
-    <%= html_attributes(class: "field_with_errors") if filter.try(:invalid?) %>
-    <%= html_attributes(class: "active") if filter.try(:valid?) %>>
 
-    <legend>
-      <input type="checkbox" id="<%= "toggle-filter.#{dim_key}" %>">
-      <label for="<%= "toggle-filter.#{dim_key}" %>">
+<%# = html_attributes(class: "field_with_errors") if filter.try(:invalid?) %>
+<%# = html_attributes(class: "active") if filter.try(:valid?) %>
+<div
+  class="filter-chooser card mb-3 bg-white"
+  data-data-explorer--composition-url-target="filterChooser"
+  data-dimension-key="<%= dim_key %>"
+  data-dimension-type="<%= dimension_def["Type"] %>">
+
+  <div class="card-body p-2">
+    <div class="d-flex">
+      <h3 class="card-title flex-grow-1 mt-1">
         <%= prop_or_dim_label(dimension_name) %>
-      </label>
-    </legend>
+      </h3>
 
-    <div>
-      <p><%= t "filter_choosers.hints.#{dimension_name}" %></p>
+      <select
+        name="<%= "filter.#{dim_key}" %>"
+        class="
+          filter-operator
+          form-select
+          <%= "field_with_errors" if filter&.errors&.include?(:operator) %>
+        ">
 
-      <select class="<%= "field_with_errors" if filter&.errors&.include?(:operator) %>" <%= html_attributes(name: "filter.#{dim_key}") %>>
         <option></option>
         <option value="include" <%= select_eq filter&.operator == :include %>>Include</option>
         <option value="exclude" <%= select_eq filter&.operator == :exclude %>>Exclude</option>
       </select>
+    </div>
 
+    <div>
       <% if ["Token"].include? dimension_def["Type"] %>
-        <% if Lists.list_for(dim_key) %>
-          <br>
-          <label for="filter.<%= dim_key %>.values">Values:</label>
-          <select class="token value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" <%= html_attributes(name: "filter.#{dim_key}.values", id: "filter.#{dim_key}.values") %> multiple>
-            <% Lists.list_for(dim_key, @current_user_podcast_accounts).each do |item| %>
-              <option <%= html_attributes(value: item[item.keys[0]]) %> <%= select_eq filter&.values&.include?(item[item.keys[0]].to_s) %>><%= item[item.keys[1]] %></option>
-            <% end %>
-          </select>
-        <% else %>
-          <br>
-          <label for="filter.<%= dim_key %>.values">Values:</label>
-          <input autocomplete="off" class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" type="text" placeholder="Apple, Banana, Cherry" id="filter.<%= dim_key %>.values" name="filter.<%= dim_key %>.values" value="<%= filter&.values&.join(",") %>">
-        <% end %>
-
-        <% if dimension_def["PermitNulls"] %>
-          <label for="filter.<%= dim_key %>.nulls"><span class="inc">Include</span><span class="exc">Exclude</span> NULLs:</label>
-          <input name="filter.<%= dim_key %>.nulls" id="filter.<%= dim_key %>.nulls" type="checkbox" <%= html_attributes(checked: "checked") if filter&.nulls == :follow %>>
-        <% end %>
+        <%= render partial: "data_explorer/filter_chooser_token", locals: {filter: filter, dim_key: dim_key, dimension_def: dimension_def} %>
       <% elsif ["Duration"].include? dimension_def["Type"] %>
-        <br>
-        <label for="filter.<%= dim_key %>.from">From:</label>
-        <input autocomplete="off" class="gte" type="text" placeholder="42" <%= html_attributes(id: "filter.#{dim_key}.gte", name: "filter.#{dim_key}.gte", value: to_duration_shorthand(filter&.gte)) %>>
-
-        <br>
-        <label for="filter.<%= dim_key %>.to">To:</label>
-        <input autocomplete="off" class="lt" type="text" placeholder="1066" <%= html_attributes(id: "filter.#{dim_key}.lt", name: "filter.#{dim_key}.lt", value: to_duration_shorthand(filter&.lt)) %>>
+        <%= render partial: "data_explorer/filter_chooser_duration", locals: {filter: filter, dim_key: dim_key, dimension_def: dimension_def} %>
       <% elsif ["Timestamp"].include? dimension_def["Type"] %>
-        <br>
-        <select class="timestamp-mode" <%= html_attributes(name: "filter.#{dim_key}.timestamp-mode") %>>
-          <option value="Range">Range</option>
-          <option value="Extract" <%= select_eq filter&.extract %>>Extract</option>
-        </select>
-
-        <div class="range">
-          <label for="filter.<%= dim_key %>.from">From:</label>
-          <input autocomplete="off" class="from" type="text" placeholder="2024-01-01" <%= html_attributes(name: "filter.#{dim_key}.from", id: "filter.#{dim_key}.from", value: filter&.from) %>>
-
-          <br>
-          <label for="filter.<%= dim_key %>.to">To:</label>
-          <input autocomplete="off" class="to" type="text" placeholder="2024-07-01" <%= html_attributes(name: "filter.#{dim_key}.to", id: "filter.#{dim_key}.to", value: filter&.to) %>>
-
-          <small>
-            <p>From: <%= filter&.abs_from %></p>
-            <p>To: <%= filter&.abs_to %></p>
-          </small>
-        </div>
-
-        <div class="extract" data-controller="data-explorer--filter-chooser">
-          <select
-            data-data-explorer--filter-chooser-target="extractBy"
-            data-action="data-explorer--filter-chooser#setExtract"
-            <%= html_attributes(name: "filter.#{dim_key}.extract") %>>
-            <option></option>
-
-            <% Compositions::Components::Group::EXTRACT_OPTS.each do |part| %>
-              <option <%= html_attributes(value: part) %> <%= select_eq filter&.extract == part %>><%= part.to_s.humanize %></option>
-            <% end %>
-          </select>
-
-          <br>
-          <label <%= html_attributes(for: "filter.#{dim_key}.values") %>>Values:</label>
-          <select
-            multiple
-            data-data-explorer--filter-chooser-target="values"
-            <%= html_attributes(name: "filter.#{dim_key}.values", id: "filter.#{dim_key}.values") %>>
-            <option></option>
-          </select>
-        </div>
+        <%= render partial: "data_explorer/filter_chooser_timestamp", locals: {filter: filter, dim_key: dim_key, dimension_def: dimension_def} %>
       <% end %>
     </div>
-  </fieldset>
-</li>
+  </div>
+</div>

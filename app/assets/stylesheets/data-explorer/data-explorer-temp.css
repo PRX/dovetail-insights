@@ -1,10 +1,3 @@
-body {
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  height: 100vh;
-}
-
 .field_with_errors {
   background: lightcoral;
 
@@ -19,21 +12,31 @@ form {
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: 360px 1fr;
-  grid-template-rows: 1fr;
+  grid-template-rows: auto auto;
+  grid-template-columns: 330px 1fr;
   gap: 0px 0px;
   grid-template-areas:
-    "global-data-parameters lens"
+    "toolbar toolbar"
+    "global-data-parameters lens";
+  width: 100vw;
 }
 
 form.nochrome {
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
+  grid-template-rows: auto auto;
   gap: 0px 0px;
   grid-template-areas:
+    "toolbar"
     "lens";
   overflow: scroll;
   width: 100vw;
+}
+
+#toolbar {
+  grid-area: toolbar;
+  max-width: 100vw;
+  position: sticky;
+  left: 0;
 }
 
 #global-data-parameters {
@@ -42,8 +45,7 @@ form.nochrome {
 }
 
 .nochrome #global-data-parameters,
-.nochrome #lens-data-parameters,
-.nochrome #export-btn {
+.nochrome #lens-data-parameters {
   display: none;
 }
 
@@ -51,81 +53,9 @@ form.nochrome {
   padding: 3px 0;
 }
 
-#filters ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  .active { background-color: aquamarine; }
-
-  li {
-    margin: 0 0 9px 0;
-    padding: 0;
-
-    select.operator {
-      margin-right: 5px;
-    }
-
-    select[multiple] {
-      max-width: 240px;
-    }
-
-    fieldset {
-      padding: 2px 5px 4px;
-
-      &.active {
-        background-color: lightgreen;
-      }
-
-      &[data-dimension-type="Timestamp"] {
-        .range, .extract, .truncate { display: none; }
-
-        &:has(option[value=Range]:checked) .range { display: block; }
-        &:has(option[value=Extract]:checked) .extract { display: block; }
-        &:has(option[value=Truncate]:checked) .truncate { display: block; }
-      }
-    }
-
-    .inc { display: none; }
-    .exc { display: none; }
-    fieldset:has(select:first-of-type option[value=include]:checked) .inc { display: inline; }
-    fieldset:has(select:first-of-type option[value=exclude]:checked) .exc { display: inline; }
-  }
-}
-
-
-#lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #metrics,
-#lens-data-parameters:has(input[type=radio][value=dimensional]:checked) #metrics,
-#lens-data-parameters:has(input[type=radio][value=cume]:checked) #metrics {
-  display: block;
-}
-
-body:has(input[name=analysis-type][value=time-series]:checked) #time-series-granularity { display: block; }
-#time-series-granularity span { display: none; }
-body:has(#time-series-granularity option:last-child:checked) #time-series-granularity span {
-  display: inline;
-}
-
 #lens {
   grid-area: lens;
-}
-
-#lens-data-parameters {
-  background-color: #f3f3f3;
-  padding: 8px;
-}
-
-#lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #granularity,
-#lens-data-parameters:has(input[type=radio][value=cume]:checked) #granularity {
-  display: block;
-}
-
-#granularity:has(option:last-child:checked) #window { display: block }
-
-#lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #groups,
-#lens-data-parameters:has(input[type=radio][value=dimensional]:checked) #groups,
-#lens-data-parameters:has(input[type=radio][value=cume]:checked) #groups {
-  display: block;
+  overflow: scroll;
 }
 
 #groups fieldset .timestamp-options { display: none; }
@@ -179,17 +109,6 @@ form:has(#granularity select[name=granularity] option[value=quarterly]:checked) 
   #time-series-compare select[name=compare] option[value=YoY] {
     display: initial;
   }
-}
-
-#export-btn {
-  position: absolute;
-  top: 100px;
-  right: 0;
-  display: block;
-  border: 4px solid red;
-  background: rebeccapurple;
-  color: white;
-  padding: 10px;
 }
 
 table {

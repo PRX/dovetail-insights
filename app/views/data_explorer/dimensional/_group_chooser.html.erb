@@ -6,7 +6,7 @@
 <fieldset
   <%= html_attributes(class: "field_with_errors") if group&.errors.present? %>
   data-data-explorer--composition-url-target="groupChooser">
-  <legend>Group <%= group_num %></legend>
+  <!-- <legend>Group <%= group_num %></legend> -->
 
   <label for="<%= "group.#{group_num}" %>">Group By</label>
   <select class="dimension" <%= html_attributes(id: "group.#{group_num}", name: "group.#{group_num}") %>>

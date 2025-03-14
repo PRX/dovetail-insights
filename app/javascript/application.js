@@ -5,9 +5,22 @@ import "controllers";
 import { Tooltip } from "bootstrap";
 import SlimSelect from "slim-select";
 
-document.querySelectorAll("#filters select.token").forEach((el) => {
-  // eslint-disable-next-line no-new, no-undef
-  new SlimSelect({
-    select: el,
+document
+  .querySelectorAll(".filter-chooser select.token-select")
+  .forEach((el) => {
+    // eslint-disable-next-line no-new, no-undef
+    new SlimSelect({
+      select: el,
+    });
   });
-});
+
+(() => {
+  document.addEventListener("DOMContentLoaded", () => {
+    const tooltipTriggerList = document.querySelectorAll(
+      '[data-bs-toggle="tooltip"]',
+    );
+    [...tooltipTriggerList].map(
+      (tooltipTriggerEl) => new Tooltip(tooltipTriggerEl),
+    );
+  });
+})();

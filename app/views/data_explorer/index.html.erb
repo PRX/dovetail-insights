@@ -9,6 +9,8 @@
                 action: "data-explorer--composition-url#goto keydown.meta+enter@document->data-explorer--composition-url#goto keydown.esc@document->data-explorer--chrome#toggle",
                 "data-explorer--chrome-target": "root"
               } do |form| %>
+  <%= render partial: "data_explorer/toolbar", locals: {form: form} %>
+
   <div id="global-data-parameters">
 
     <% if @composition.bigquery_total_bytes_billed %>
@@ -24,24 +26,22 @@
   </div>
 
   <div id="lens">
-    <div id="lens-data-parameters">
-      <%= render partial: "data_explorer/time_series/granularity_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
+    <% if !@composition.instance_of?(Compositions::BaseComposition) && !@composition.results %>
+      <div id="lens-data-parameters">
+        <%= render partial: "data_explorer/time_series/granularity_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
 
-      <%= render partial: "data_explorer/cume/window_chooser", locals: {form: form} if @composition.is_a? Compositions::CumeComposition %>
+        <%= render partial: "data_explorer/cume/window_chooser", locals: {form: form} if @composition.is_a? Compositions::CumeComposition %>
 
-      <%= render partial: "data_explorer/dimensional/metrics_chooser" if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
+        <%= render partial: "data_explorer/dimensional/metrics_chooser" if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
 
-      <%= render partial: "data_explorer/dimensional/groups_panel" if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
+        <%= render partial: "data_explorer/dimensional/groups_panel" if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
 
-      <%= render partial: "data_explorer/time_series/comparison_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
-    </div>
+        <%= render partial: "data_explorer/time_series/comparison_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
+      </div>
+    <% end %>
 
     <div id="results">
-      <%= render partial: "data_explorer/highlight_chooser" %>
-
-      <% if @composition.valid? && @composition.results %>
-        <a id="export-btn" download href="<%= request.original_url.sub("/data-explorer", "/data-explorer/export") %>">Export to CSV</a>
-
+      <% if @composition.valid? && @composition&.results %>
         <% if @composition.lens == "dimensional" %>
           <%= render "data_explorer/dimensional/results" %>
         <% elsif @composition.lens == "timeSeries" %>
@@ -52,6 +52,4 @@
       <% end %>
     </div>
   </div>
-
-  <input type="submit" value="Explore">
 <% end %>

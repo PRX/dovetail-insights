@@ -1,4 +1,4 @@
-<fieldset id="granularity">
+<fieldset class="granularity-chooser">
   <legend>Time Series Options</legend>
 
   <select name="granularity" data-data-explorer--composition-url-target="granularity">
@@ -9,7 +9,7 @@
     <% end %>
   </select>
 
-  <fieldset id="window">
+  <fieldset class="granularity-chooser-window">
     <%= form.label :window, "Window" %>
     <%= form.text_field :window, name: "window", placeholder: "10h, 48h, 1D, 5D, etc", value: to_duration_shorthand(@composition.try(:window)), data: {"data-explorer--composition-url-target": "granularityWindow"} %>
   </fieldset>

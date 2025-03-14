@@ -97,7 +97,10 @@ module Compositions
       errors.add(:filters, "must include a podcast filter") if !podcast_filter
 
       # TODO Adding errors outside of #validate doesn't play nicely with .valid?
-      podcast_filter.errors.add(:operator, "can only be 'include'") if podcast_filter && podcast_filter.operator != :include
+      if podcast_filter && podcast_filter.operator != :include
+        errors.add(:filters, "must use include for podcast filter")
+        podcast_filter.errors.add(:operator, "can only be 'include'")
+      end
     end
 
     def only_authorized_podcasts

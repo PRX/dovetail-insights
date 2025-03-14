@@ -104,7 +104,7 @@ export default class extends Controller {
       // multiselect UI. Get all the IDs or keys for the options the user
       // selected, and create a comma delimited list with them.
       if (filterChooser.dataset.dimensionType === "Token") {
-        const valuesSelect = filterChooser.querySelector("select.value");
+        const valuesSelect = filterChooser.querySelector("select.token-select");
         if (valuesSelect?.selectedOptions.length) {
           const { selectedOptions } = valuesSelect;
           filtersParams.set(
@@ -254,7 +254,6 @@ export default class extends Controller {
             `*[name="group.${groupIndex}.meta"]:checked`,
           ),
         ];
-        console.log(selectedMetaCheckboxes);
 
         if (selectedMetaCheckboxes.length) {
           const values = selectedMetaCheckboxes.map((el) => el.value);

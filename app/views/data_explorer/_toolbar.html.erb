@@ -1,0 +1,86 @@
+<div id="toolbar" class="prx-app-bar navbar p-0 bg-white">
+  <nav class="ms-2 nav">
+    <% if @composition.valid? && @composition.results %>
+
+      <% if @composition.is_a?(Compositions::TimeSeriesComposition) %>
+        <div class="dropdown me-1">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="material-icons" aria-hidden="true">date_range</span> Granularity
+          </button>
+          <div class="dropdown-menu p-3" style="min-width: 575px;">
+            <%= render partial: "data_explorer/time_series/granularity_chooser", locals: {form: form} %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @composition.is_a?(Compositions::CumeComposition) %>
+        <div class="dropdown me-1">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="material-icons" aria-hidden="true">date_range</span> Window
+          </button>
+          <div class="dropdown-menu p-3" style="min-width: 575px;">
+            <%= render partial: "data_explorer/cume/window_chooser", locals: {form: form} %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
+        <div class="dropdown me-1">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="material-icons" aria-hidden="true">functions</span> Metrics
+          </button>
+          <div class="dropdown-menu p-3" style="min-width: 575px;">
+            <%= render partial: "data_explorer/dimensional/metrics_chooser" %>
+          </div>
+        </div>
+
+        <div class="dropdown me-1">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="material-icons" aria-hidden="true">table_chart</span> Groups
+          </button>
+          <div class="dropdown-menu p-3" style="min-width: 575px;">
+            <%= render partial: "data_explorer/dimensional/groups_panel" %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @composition.is_a?(Compositions::TimeSeriesComposition) %>
+        <div class="dropdown me-1">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="material-icons" aria-hidden="true">compare_arrows</span> Comparisons
+          </button>
+          <div class="dropdown-menu p-3" style="min-width: 575px;">
+            <%= render partial: "data_explorer/time_series/comparison_chooser", locals: {form: form} %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="material-icons" aria-hidden="true">highlight</span> Highlight
+        </button>
+        <div class="dropdown-menu p-3" style="min-width: 575px;">
+          <%= render partial: "data_explorer/highlight_chooser" %>
+        </div>
+      </div>
+    <% end %>
+  </nav>
+
+  <div class="me-2 my-2">
+    <a class="btn btn-danger" href="/data-explorer?lens=<%= @composition.lens %>" role="button">
+      Reset <span class="material-icons" aria-hidden="true">refresh</span>
+    </a>
+
+    <% if @composition.valid? && @composition.results %>
+      <a class="btn btn-primary" href="#" role="button">
+        Save <span class="material-icons" aria-hidden="true">save</span>
+      </a>
+
+      <a download class="btn btn-primary" href="<%= request.original_url.sub("/data-explorer", "/data-explorer/export") %>" role="button">
+        Export <span class="material-icons" aria-hidden="true">file_download</span>
+      </a>
+    <% end %>
+
+    <input data-bs-toggle="tooltip" data-bs-title="Use Command+Enter to explore quickly" class="btn btn-success" type="submit" value="Explore →">
+  </div>
+</div>

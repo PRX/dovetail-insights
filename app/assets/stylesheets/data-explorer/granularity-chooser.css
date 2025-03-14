@@ -1,0 +1,6 @@
+.granularity-chooser {
+  /* Only show Window fields when Rolling is selected (this assumes Rolling
+  is last in the list */
+  .granularity-chooser-window { display: none; }
+  &:has(select[name="granularity"] option:last-child:checked) .granularity-chooser-window { display: block }
+}

@@ -1,14 +1,13 @@
 <div class="prx-app-bar navbar p-0 bg-white">
-  <nav class="prx-app-nav navbar-nav justifty-content-start navbar-expand-md">
-    <div class="collapse navbar-collapse justify-content-start align-items-stretch" id="navbarSubNav">
-      <%= link_to "Data Explorer", data_explorer_path, class: "nav-link" %>
-      <%= link_to "Admin", admin_root_path, class: "nav-link" %>
+  <nav class="prx-app-nav navbar-nav navbar-expand">
+    <div class="collapse navbar-collapse">
+      <%= active_link_to "Home", root_path, class: "nav-link", active: :exclusive %>
+      <%= active_link_to "Data Explorer", data_explorer_path, class: "nav-link" %>
+      <%= active_link_to "Admin", admin_root_path, class: "nav-link" %>
     </div>
   </nav>
 
-  <nav class="prx-app-nav navbar-nav justifty-content-end navbar-expand-md">
-    <div class="collapse navbar-collapse justify-content-start align-items-stretch" id="navbarSubNav">
-      <p>Last 48 hours: <%= number_to_human_size(@bytes) %> (<%= number_to_currency(@bytes.to_f / 2.0**40 * BIGQUERY_PRICE_PER_TIB, precision: 5) %>)</p>
-    </div>
-  </nav>
+  <div class="navbar-text p-2">
+    Last 48 hours: <%= number_to_human_size(@bytes) %> (<%= number_to_currency(@bytes.to_f / 2.0**40 * BIGQUERY_PRICE_PER_TIB, precision: 5) %>)
+  </div>
 </div>

@@ -1,14 +1,37 @@
-.filter-chooser {
-  fieldset > div {
-    display: none;
-  }
+.filter-chooser.card {
+  border-top: 4px solid #75bbe1;
 
-  &:has(legend input:checked) fieldset > div {
-    display: inherit;
-  }
+  .active { background-color: aquamarine; }
 
   legend {
     font-weight: bold;
     font-size: 1rem;
+  }
+
+  h3.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  select.filter-operator {
+    font-size: 0.7rem;
+    width: inherit;
+    height: 1.9rem;
+    border-radius: 2px;
+    background-color: white;
+  }
+
+  .nulls-chooser { display: none; }
+  &:has(select.filter-operator option[value*=clude]:checked) .nulls-chooser { display: block; }
+  .nulls-chooser .include, .nulls-chooser .exclude { display: none; }
+  &:has(select.filter-operator option[value=include]:checked) .nulls-chooser .include { display: inline; }
+  &:has(select.filter-operator option[value=exclude]:checked) .nulls-chooser .exclude { display: inline; }
+
+  &[data-dimension-type="Timestamp"] {
+    .range, .extract, .truncate { display: none; }
+
+    &:has(option[value=Range]:checked) .range { display: block; }
+    &:has(option[value=Extract]:checked) .extract { display: block; }
+    &:has(option[value=Truncate]:checked) .truncate { display: block; }
   }
 }

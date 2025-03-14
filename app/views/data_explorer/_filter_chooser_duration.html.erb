@@ -1,0 +1,6 @@
+<label for="filter.<%= dim_key %>.from">From:</label>
+<input autocomplete="off" class="gte" type="text" placeholder="42" <%= html_attributes(id: "filter.#{dim_key}.gte", name: "filter.#{dim_key}.gte", value: to_duration_shorthand(filter&.gte)) %>>
+
+<br>
+<label for="filter.<%= dim_key %>.to">To:</label>
+<input autocomplete="off" class="lt" type="text" placeholder="1066" <%= html_attributes(id: "filter.#{dim_key}.lt", name: "filter.#{dim_key}.lt", value: to_duration_shorthand(filter&.lt)) %>>

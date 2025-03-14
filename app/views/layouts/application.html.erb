@@ -27,7 +27,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-turbo="false">
+  <body data-turbo="false" data-controller="blank-field">
     <%= render "layouts/nav" if current_user %>
     <%= render "layouts/subnav" if current_user %>
     <%= render "layouts/alerts" if current_user %>

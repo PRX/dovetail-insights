@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
+import SlimSelect from "slim-select";
 
 const hours = Array.from({ length: 24 }, (v, idx) => idx);
 const dow = [
@@ -69,7 +70,7 @@ export default class extends Controller {
 
     // TODO Hack until rendering is moved to Rails view, to set chosen values
     // from the URL as selected
-    const dimKey = this.element.closest("li > fieldset").dataset.dimensionKey;
+    const dimKey = this.element.closest("fieldset").dataset.dimensionKey;
     const val = new URL(window.location.toString()).searchParams.get(
       `filter.${dimKey}.values`,
     );
@@ -83,5 +84,9 @@ export default class extends Controller {
         }
       });
     }
+
+    new SlimSelect({
+      select: this.valuesTarget,
+    });
   }
 }

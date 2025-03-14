@@ -1,0 +1,45 @@
+<select class="timestamp-mode" <%= html_attributes(name: "filter.#{dim_key}.timestamp-mode") %>>
+  <option value="Range">Range</option>
+  <option value="Extract" <%= select_eq filter&.extract %>>Extract</option>
+</select>
+
+<div class="range">
+  <label for="filter.<%= dim_key %>.from">From:</label>
+  <input autocomplete="off" class="from" type="text" placeholder="2024-01-01" <%= html_attributes(name: "filter.#{dim_key}.from", id: "filter.#{dim_key}.from", value: filter&.from) %>>
+
+  <br>
+  <label for="filter.<%= dim_key %>.to">To:</label>
+  <input autocomplete="off" class="to" type="text" placeholder="2024-07-01" <%= html_attributes(name: "filter.#{dim_key}.to", id: "filter.#{dim_key}.to", value: filter&.to) %>>
+
+  <small>
+    <p>From: <%= filter&.abs_from %></p>
+    <p>To: <%= filter&.abs_to %></p>
+  </small>
+</div>
+
+<div class="extract" data-controller="data-explorer--filter-chooser">
+  <select
+    data-data-explorer--filter-chooser-target="extractBy"
+    data-action="data-explorer--filter-chooser#setExtract"
+    name="<%= "filter.#{dim_key}.extract" %>">
+
+    <option></option>
+
+    <% Compositions::Components::Group::EXTRACT_OPTS.each do |part| %>
+      <option value="<%= part %>" <%= select_eq filter&.extract == part %>>
+        <%= part.to_s.humanize %>
+      </option>
+    <% end %>
+  </select>
+
+  <br>
+  <label for="<%= "filter.#{dim_key}.values" %>">Values:</label>
+  <select
+    multiple
+    data-data-explorer--filter-chooser-target="values"
+    id="<%= "filter.#{dim_key}.values" %>"
+    name="<%= "filter.#{dim_key}.values" %>">
+
+    <option></option>
+  </select>
+</div>

@@ -1,0 +1,42 @@
+<% if Lists.list_for(dim_key) %>
+  <div class="form-floating">
+    <select
+      data-action="blur->blank-field#blur"
+      class="form-select token-select <%= "field_with_errors" if filter&.errors&.include?(:values) %>"
+      id="<%= "filter.#{dim_key}.values" %>"
+      name="<%= "filter.#{dim_key}.values" %>"
+      multiple>
+
+      <% Lists.list_for(dim_key, @current_user_podcast_accounts).each do |item| %>
+        <option
+          <%= html_attributes(value: item[item.keys[0]]) %>
+          <%= select_eq filter&.values&.include?(item[item.keys[0]].to_s) %>>
+
+          <%= item[item.keys[1]] %>
+        </option>
+      <% end %>
+    </select>
+    <label for="<%= "filter.#{dim_key}.values" %>">Values:</label>
+  </div>
+<% else %>
+  <div class="form-floating">
+    <label for="<%= "filter.#{dim_key}.values" %>">Values:</label>
+    <input autocomplete="off" class="value <%= "field_with_errors" if filter&.errors&.include?(:values) %>" type="text" placeholder="Apple, Banana, Cherry" id="<%= "filter.#{dim_key}.values" %>" name="<%= "filter.#{dim_key}.values" %>" value="<%= filter&.values&.join(",") %>">
+  </div>
+<% end %>
+
+<% if dimension_def["PermitNulls"] %>
+  <div class="nulls-chooser">
+    <label
+      for="filter.<%= dim_key %>.nulls">
+
+      <span class="include">Include</span><span class="exclude">Exclude</span> NULLs:
+    </label>
+
+    <input
+      name="<%= "filter.#{dim_key}.nulls" %>"
+      id="<%= "filter.#{dim_key}.nulls" %>"
+      type="checkbox"
+      <%= html_attributes(checked: "checked") if filter&.nulls == :follow %>>
+  </div>
+<% end %>
