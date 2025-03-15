@@ -11,7 +11,7 @@ module DataExplorerHelper
   # Supports: years, weeks, days, hours, minutes
 
   def to_duration_shorthand(value)
-    return nil unless value.present?
+    return nil if value.blank?
 
     if value == 0
       0

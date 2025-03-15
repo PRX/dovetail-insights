@@ -9,7 +9,7 @@ module ComparisonLabelHelper
 
   def comparison_descriptor(comparison, interval_descriptor, rewind)
     # Parse the given descriptor into a Time
-    time = Time.parse(interval_descriptor)
+    time = Time.parse(interval_descriptor).utc
 
     # Create a descriptor for the rewind value, based on the interval
     # descriptor. These will match descriptors in comparison query results.

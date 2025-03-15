@@ -11,9 +11,9 @@
 <fieldset id="time-ranger-chooser">
   <legend>Time Range</legend>
 
-  <%= form.label :from, "From" %><%= form.text_field :from, name: :from, data: { "data-explorer--composition-url-target": :from } %>
+  <%= form.label :from, "From" %><%= form.text_field :from, name: :from, data: {"data-explorer--composition-url-target": :from} %>
   <br>
-  <%= form.label :to, "To" %><%= form.text_field :to, name: :to, data: { "data-explorer--composition-url-target": :to } %>
+  <%= form.label :to, "To" %><%= form.text_field :to, name: :to, data: {"data-explorer--composition-url-target": :to} %>
 
   <% if @composition.abs_from || @composition.abs_to %>
     <p>

@@ -22,7 +22,7 @@ module GroupableResults
         members.push(Compositions::Components::Group::TERMINATOR_INDEX)
       else
         rows
-          .map { |row| row[group.as] } # Map each row to the member descriptor for this group
+          .pluck(group.as)
           .compact
           .uniq
       end

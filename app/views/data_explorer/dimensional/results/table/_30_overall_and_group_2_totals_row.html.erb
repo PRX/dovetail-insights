@@ -1,6 +1,6 @@
 <%
-  g1 = @composition&.groups[0]
-  g2 = @composition&.groups[1]
+  g1 = @composition&.groups&.[](0)
+  g2 = @composition&.groups&.[](1)
 %>
 
 <tr>
@@ -15,14 +15,13 @@
   <% if @tbl_show_group_1_totals %>
     <% @composition.metrics.each do |metric| %>
       <%
-        if (
-            # If there are two groups, and they are both summable
-            (g1 && g1.summable?(metric) && g2 && g2.summable?(metric)) ||
+        # If there are two groups, and they are both summable
+        if (g1&.summable?(metric) && g2&.summable?(metric)) ||
             # Or there's one group and it's summable
-            (!g2 && g1 && g1.summable?(metric)) ||
+            (!g2 && g1&.summable?(metric)) ||
             # If there's no groups, summing is irrelevant, but allow it anyway
             (!g1 && !g2)
-          )
+
           total = @composition.results.calc_sum(metric)
 
           text = number_with_delimiter(total)
@@ -40,18 +39,16 @@
   <% @display_group_2_member_descriptors.each do |group_2_member_descriptor| %>
     <% @composition.metrics.each do |metric| %>
       <%
-        if (
-            # If there are two groups, and they are both summable
-            (g1 && g1.summable?(metric) && g2 && g2.summable?(metric)) ||
+        # If there are two groups, and they are both summable
+        if (g1&.summable?(metric) && g2&.summable?(metric)) ||
             # Or there's one group and it's summable
-            (!g2 && g1 && g1.summable?(metric)) ||
+            (!g2 && g1&.summable?(metric)) ||
             # If there's no groups, summing is irrelevant, but allow it anyway
             (!g1 && !g2)
-          )
           sum = @composition.results.calc_sum(metric, g2, group_2_member_descriptor)
           min = @composition.results.calc_min(metric, g2, group_2_member_descriptor)
           max = @composition.results.calc_max(metric, g2, group_2_member_descriptor)
-          range = (max||0) - (min||0)
+          range = (max || 0) - (min || 0)
           mean = @composition.results.calc_arithmetic_mean(metric, g2, group_2_member_descriptor) || 0
 
           total_sum = @composition.results.calc_sum(metric)

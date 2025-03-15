@@ -198,7 +198,7 @@ module Compositions
           dimension_data = DataSchemaUtil.field_definition(dimension)
 
           if dimension_data["Type"] == "Token"
-            if !values || values.empty?
+            if values.blank?
               errors.add(:values, :missing_values, message: "are required")
             end
           end
@@ -250,7 +250,7 @@ module Compositions
           end
 
           # Extract always needs values
-          if !values || values.empty?
+          if values.blank?
             errors.add(:values, :missing_values, message: "are required")
           end
         end

@@ -31,7 +31,7 @@ module Compositions
       @query ||= begin
         shaper = QueryShapers::Bigquery::Dimensional.new(self)
 
-        erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "bigquery", "dimensional.sql.erb")))
+        erb = ERB.new(File.read(Rails.root.join("app/queries/bigquery/dimensional.sql.erb").to_s))
         erb.result_with_hash(shaper.to_hash).gsub(/\n{3,}/, "\n\n")
       end
     end
@@ -103,7 +103,7 @@ module Compositions
     end
 
     def range_includes_future
-      warnings.add(:to, :includes_future, message: "extends into the future") if abs_to && abs_to > Time.now
+      warnings.add(:to, :includes_future, message: "extends into the future") if abs_to && abs_to > Time.now.utc
     end
   end
 end

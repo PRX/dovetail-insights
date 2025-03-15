@@ -1,6 +1,6 @@
 <%
-  g1 = @composition&.groups[0]
-  g2 = @composition&.groups[1]
+  g1 = @composition&.groups&.[](0)
+  g2 = @composition&.groups&.[](1)
 %>
 
 <tr data-data-explorer--results-table-sort-target="row">
@@ -23,7 +23,7 @@
           sum = @composition.results.calc_sum(metric, g1, group_1_member_descriptor)
           min = @composition.results.calc_min(metric, g1, group_1_member_descriptor) || 0
           max = @composition.results.calc_max(metric, g1, group_1_member_descriptor) || 0
-          range = (max||0) - (min||0)
+          range = (max || 0) - (min || 0)
           mean = @composition.results.calc_arithmetic_mean(metric, g1, group_1_member_descriptor) || 0
 
           total_sum = @composition.results.calc_sum(metric)

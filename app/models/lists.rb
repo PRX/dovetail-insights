@@ -35,8 +35,8 @@ class Lists
           rows << row
         end
 
-        os_ids = Lists.list_for("os").map { |h| h[:key] }
-        device_ids = Lists.list_for("device").map { |h| h[:key] }
+        os_ids = Lists.list_for("os").pluck(:key)
+        device_ids = Lists.list_for("device").pluck(:key)
         exclude_ids = os_ids + device_ids
 
         # Take out the OSs and device types to end up with use UAs

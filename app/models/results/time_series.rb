@@ -111,7 +111,7 @@ module Results
       when :quarterly
         composition.abs_to.beginning_of_quarter
       when :yearly
-        Time.new(composition.abs_to.year, 1, 1)
+        Time.new(composition.abs_to.year, 1, 1).utc
       when :rolling
         composition.abs_to
       end
@@ -154,7 +154,7 @@ module Results
 
       return interval_descriptor if !comparison
 
-      interval_timestamp = Time.parse(interval_descriptor)
+      interval_timestamp = Time.parse(interval_descriptor).utc
 
       comparison_descriptor = case comparison.period
       when :YoY

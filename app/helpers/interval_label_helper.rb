@@ -12,7 +12,7 @@ module IntervalLabelHelper
 
   def interval_label(composition, interval_descriptor)
     # Parse the given descriptor into a Time
-    time = Time.parse(interval_descriptor)
+    time = Time.parse(interval_descriptor).utc
 
     # Compose an appropriately formatted string based on the chosen granularity
     case composition.granularity

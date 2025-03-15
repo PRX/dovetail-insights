@@ -5,12 +5,12 @@
 
   <% DataSchema.metrics.each do |metric_name, metric_def| %>
     <% if metric_def["Type"] == "Variable" %>
-      <% checked = @composition.try(:metrics) && @composition.metrics.find {|m| m.metric == metric_name.to_sym } %>
+      <% checked = @composition.try(:metrics) && @composition.metrics.find { |m| m.metric == metric_name.to_sym } %>
       <label><input type="checkbox" value="<%= metric_name %>" <%= html_attributes(checked: "checked") if checked %>> <%= metric_name %></label>
-      <% all_variables = @composition.try(:metrics) && @composition.metrics.filter {|m| m.metric == metric_name.to_sym } %>
-      <input name="<%= metric_name %>.variables" placeholder="e.g., '7' or '7, 14, 30'" <%= html_attributes(value: (all_variables||[]).map {|m| m.variable}.join(", ")) %>>
+      <% all_variables = @composition.try(:metrics) && @composition.metrics.filter { |m| m.metric == metric_name.to_sym } %>
+      <input name="<%= metric_name %>.variables" placeholder="e.g., '7' or '7, 14, 30'" <%= html_attributes(value: (all_variables || []).map { |m| m.variable }.join(", ")) %>>
     <% else %>
-      <% checked = @composition.try(:metrics) && @composition.metrics.find {|m| m.metric == metric_name.to_sym } %>
+      <% checked = @composition.try(:metrics) && @composition.metrics.find { |m| m.metric == metric_name.to_sym } %>
       <label>
         <input type="checkbox" data-data-explorer--composition-url-target="metric" <%= html_attributes(value: metric_name) %> <%= html_attributes(checked: "checked") if checked %>>
         <%= metric_name %>

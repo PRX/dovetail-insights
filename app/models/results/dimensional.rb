@@ -258,10 +258,10 @@ module Results
 
       # When there are no groups, we don't need to worry about nils, so
       # simply take the min of all values for the given metric
-      return @calc_min_cache[cache_key] = rows.map { |row| row[metric.as] }.compact.min unless composition.groups
+      return @calc_min_cache[cache_key] = rows.pluck(metric.as).compact.min unless composition.groups
 
       bar = foo(metric, group, member_descriptor)
-      @calc_min_cache[cache_key] = bar.map { |row| row[metric.as] }.compact.min
+      @calc_min_cache[cache_key] = bar.pluck(metric.as).compact.min
     end
 
     ##
@@ -276,10 +276,10 @@ module Results
 
       # When there are no groups, we don't need to worry about nils, so
       # simply take the min of all values for the given metric
-      return @calc_max_cache[cache_key] = rows.map { |row| row[metric.as] }.compact.max unless composition.groups
+      return @calc_max_cache[cache_key] = rows.pluck(metric.as).compact.max unless composition.groups
 
       bar = foo(metric, group, member_descriptor)
-      @calc_max_cache[cache_key] = bar.map { |row| row[metric.as] }.compact.max
+      @calc_max_cache[cache_key] = bar.pluck(metric.as).compact.max
     end
 
     def calc_arithmetic_mean(metric, group = false, member_descriptor = false)

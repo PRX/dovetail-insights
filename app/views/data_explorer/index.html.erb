@@ -1,14 +1,14 @@
 <%= render "data_explorer/lens_wizard" %>
 
 <%= form_with model: @composition,
-              url: "/",
-              method: :get,
-              id: "data-explorer",
-              data: {
-                controller: "data-explorer--composition-url data-explorer--results-table-highlight data-explorer--chrome",
-                action: "data-explorer--composition-url#goto keydown.meta+enter@document->data-explorer--composition-url#goto keydown.esc@document->data-explorer--chrome#toggle",
-                "data-explorer--chrome-target": "root"
-              } do |form| %>
+      url: "/",
+      method: :get,
+      id: "data-explorer",
+      data: {
+        controller: "data-explorer--composition-url data-explorer--results-table-highlight data-explorer--chrome",
+        action: "data-explorer--composition-url#goto keydown.meta+enter@document->data-explorer--composition-url#goto keydown.esc@document->data-explorer--chrome#toggle",
+        "data-explorer--chrome-target": "root"
+      } do |form| %>
   <%= render partial: "data_explorer/toolbar", locals: {form: form} %>
 
   <div id="global-data-parameters">

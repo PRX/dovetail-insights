@@ -72,7 +72,7 @@ module Compositions
 
         # dimensional.sql.erb is suitable for both dimensional and time series
         # queries.
-        erb = ERB.new(File.read(File.join(Rails.root, "app", "queries", "bigquery", "dimensional.sql.erb")))
+        erb = ERB.new(File.read(Rails.root.join("app/queries/bigquery/dimensional.sql.erb").to_s))
         erb.result_with_hash(shaper.to_hash.merge({abs_from: abs_from, abs_to: abs_to}))
       end
     end
@@ -310,7 +310,7 @@ module Compositions
       # The interval's descriptor is the beginning of the range covered by the
       # interval, so if it is before the composition's from, extends outside
       # the included data
-      first_interval_start = Time.parse(results.unique_interval_descriptors.first)
+      first_interval_start = Time.parse(results.unique_interval_descriptors.first).utc
       if first_interval_start < abs_from
         warnings.add(:from, :first_interval_out_of_range, message: "#{abs_from} does not cover all time included in the #{first_interval_start} interval, so it may include partial data")
       end
@@ -326,7 +326,7 @@ module Compositions
       # interval. For the final interval, we want to check the *end* of the
       # range, so we advance the start time by some amount based on the chosen
       # granularity.
-      last_interval_start = Time.parse(results.unique_interval_descriptors.last)
+      last_interval_start = Time.parse(results.unique_interval_descriptors.last).utc
 
       # This is the **exclusive** end of the interval's range
       last_interval_end = case granularity
@@ -355,7 +355,7 @@ module Compositions
 
     def range_includes_future
       # This is overriding the default message provided by DimensionalComposition
-      warnings.add(:to, :includes_future, message: "extends into the future, so some intervals may include less data than you expect") if abs_to && abs_to > Time.now
+      warnings.add(:to, :includes_future, message: "extends into the future, so some intervals may include less data than you expect") if abs_to && abs_to > Time.now.utc
     end
   end
 end

@@ -3,7 +3,7 @@
   id="groups">
   <legend>Groups</legend>
 
-  <% [1,2].each do |group_num| %>
+  <% [1, 2].each do |group_num| %>
     <%= render partial: "data_explorer/dimensional/group_chooser", locals: {group_num: group_num} %>
   <% end %>
 </fieldset>

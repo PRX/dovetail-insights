@@ -77,7 +77,7 @@ module Results
         episode_pub_time_str = group_member_descriptor_for_field(@composition.groups[0], group_1_member_descriptor, :episode_publish_timestamp, :cume)
 
         return if window_descriptor > episode_age
-        return if Time.parse(episode_pub_time_str) + window_descriptor.to_i > composition.abs_to
+        return if Time.parse(episode_pub_time_str).utc + window_descriptor.to_i > composition.abs_to
 
         idx = unique_window_descriptors.index(window_descriptor)
         previous_idx = idx - 1

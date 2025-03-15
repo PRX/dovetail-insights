@@ -122,7 +122,7 @@ module Compositions
                 else
                   # Everything else keep as is; validations will catch any
                   # issues with these strings
-                  v.present? ? v : nil
+                  v.presence
                 end
               end
             elsif param_key == "group.#{group_number}.meta"

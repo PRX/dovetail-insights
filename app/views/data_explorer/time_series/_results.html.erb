@@ -20,7 +20,7 @@
   # If there are no comparisons, don't show the headers
   @tbl_show_comparison_headers = false if @composition.comparisons.size < 1
 
-  #
+  # tktk
   @tbl_show_group_2_headers = false if @composition.groups.size < 2
 
   # No need for group 1 headers when no groups are selected
@@ -32,11 +32,11 @@
   # Create a set of each group's members, plus `nil` to represent values that
   # don't belong to any member of that group (if necessary)
   @display_group_1_member_descriptors = @composition.results.group_1_unique_member_descriptors || []
-  @display_group_1_member_descriptors << nil #if @tbl_show_group_1_unknowns
+  @display_group_1_member_descriptors << nil # if @tbl_show_group_1_unknowns
   @display_group_1_member_descriptors = default_group_member_descriptor_sort(@composition, @composition.groups[0], @display_group_1_member_descriptors)
 
   @display_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
-  @display_group_2_member_descriptors << nil #if @tbl_show_group_2_unknowns
+  @display_group_2_member_descriptors << nil # if @tbl_show_group_2_unknowns
   @display_group_2_member_descriptors = default_group_member_descriptor_sort(@composition, @composition.groups[1], @display_group_2_member_descriptors)
 %>
 

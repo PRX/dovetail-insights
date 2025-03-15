@@ -4,10 +4,10 @@ DataSchema = OpenStruct.new
 
 # TODO Validate that no entities have the same name
 
-DataSchema.dimensions = YAML.load_file(File.join(Rails.root, "db", "data_schema", "dimensions.yml"))["Dimensions"]
-DataSchema.properties = YAML.load_file(File.join(Rails.root, "db", "data_schema", "properties.yml"))["Properties"]
-DataSchema.metrics = YAML.load_file(File.join(Rails.root, "db", "data_schema", "metrics.yml"))["Metrics"]
-DataSchema.tables = YAML.load(ERB.new(File.read(File.join(Rails.root, "db", "data_schema", "tables.yml"))).result)["Tables"]
+DataSchema.dimensions = YAML.load_file(Rails.root.join("db/data_schema/dimensions.yml").to_s)["Dimensions"]
+DataSchema.properties = YAML.load_file(Rails.root.join("db/data_schema/properties.yml").to_s)["Properties"]
+DataSchema.metrics = YAML.load_file(Rails.root.join("db/data_schema/metrics.yml").to_s)["Metrics"]
+DataSchema.tables = YAML.load(ERB.new(File.read(Rails.root.join("db/data_schema/tables.yml").to_s)).result)["Tables"]
 
 class DataSchemaUtil
   ##

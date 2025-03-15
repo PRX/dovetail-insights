@@ -18,7 +18,7 @@
         <ul style="list-style: none;" class="p-0 m-0">
           <% foo.each do |query| %>
             <li>
-              <% scary_params = eval(query.params) %>
+              <% scary_params = eval(query.params) # rubocop:disable Security/Eval %>
               <a href="/data-explorer?<%= scary_params.to_query %>">
                 <%= time_ago_in_words query.created_at %> —
                 <%= scary_params["lens"] %>:
