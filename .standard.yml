@@ -1,0 +1,4 @@
+plugins:
+  # Activate the standard-rails plugin (which is provided by the standard-rails
+  # gem) to configure the rubocop-rails ruleset.
+  - standard-rails

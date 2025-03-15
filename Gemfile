@@ -81,6 +81,14 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
+  # Ruby's bikeshed-proof linter and formatter [https://github.com/standardrb/standard]
+  gem "standard"
+  # A Standard Ruby plugin that configures rubocop-rails [https://github.com/standardrb/standard-rails]
+  gem "standard-rails"
+
+  # Lint your ERB or HTML files [https://github.com/Shopify/erb_lint]
+  gem "erb_lint", require: false
+
   # Shim to load environment variables from .env into ENV [https://github.com/bkeepers/dotenv]
   gem "dotenv"
 end
@@ -88,12 +96,6 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-
-  # Ruby's bikeshed-proof linter and formatter [https://github.com/standardrb/standard]
-  gem "standard"
-
-  # Lint your ERB or HTML files [https://github.com/Shopify/erb_lint]
-  gem "erb_lint", require: false
 end
 
 group :test do
