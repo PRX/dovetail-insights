@@ -3,6 +3,7 @@
 ### Table of Contents
 
 -   [Recommended Tooling for Development Environment](#recommended-tooling)
+-   [Debugger](#debugger)
 -   [Development Environment Setup](#environment-setup)
 
 ## Development Environment
@@ -65,8 +66,10 @@ These steps assume you have followed PRX's [Local Development Environment guide]
 Once your environment has been setup, you should be able to start the Rails server and load the site in a browser:
 
 ```shell
-bin/rails s
+bin/rails server
 ```
+
+Or see [Debugger](#debugger) for additional information about running the application with a debugger.
 
 The site will be available at [insights.dovetail.prx.test](http://insights.dovetail.prx.test/).
 
@@ -89,3 +92,15 @@ One way to do development work on Insights with comprehensive realtime coverage 
 1. [TypeScript](https://www.typescriptlang.org) support is built into VS Code, and while there is no TypeScript code in Insights directly, the TypeScript compiler is used to check the project's JavaScript code.
 
 Code is checked as part of the project's CI process. To run these checks locally using the tools like `RuboCop` and `ESLint` directly, you can use `bin/rails lint`, which avoids any potential configuration issues or conflicts that may prevent the IDE from fully checking the codebase.
+
+### Debugger
+
+If you are using VS Code and following the [recommended tooling](#recommended-tooling), you may find it helpful to run your local development server with a debugger:
+
+```shell
+bin/rails debug_server
+```
+
+This rake task is also aliased as `dbs` (i.e., `bin/rails dbs`).
+
+When a server is running with a debugger, Ruby LSP can attach to it to provide an interactive debugging session within VS Code. From within the **Run and Debug** panel, select `Attach debugger` (which is defined in `.vscode/launch.json`). You can now [add breakpoints](https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem) to the code, or use VS Code's [native breakpoints](https://code.visualstudio.com/docs/editor/debugging#_breakpoints) to pause and inspect the execution of the program's code at specific points.
