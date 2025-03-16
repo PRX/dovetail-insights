@@ -2,7 +2,7 @@
   <%= tag.td if @tbl_show_group_1_headers %>
 
   <% @meta&.each do |meta_field_name| %>
-    <td><%= prop_or_dim_label(meta_field_name) %></td>
+    <td><%= schema_field_label(meta_field_name) %></td>
   <% end %>
 
   <% if @tbl_show_group_1_totals %>

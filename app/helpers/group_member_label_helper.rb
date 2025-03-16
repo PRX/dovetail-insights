@@ -156,7 +156,7 @@ module GroupMemberLabelHelper
 
   def member_label(composition, group, member_descriptor)
     return "NO GROUP SELECTED" unless group # TODO
-    return "Indeterminate #{prop_or_dim_label(group.dimension)}" unless member_descriptor
+    return "Indeterminate #{schema_field_label(group.dimension)}" unless member_descriptor
 
     dimension_def = DataSchemaUtil.field_definition(group.dimension)
 

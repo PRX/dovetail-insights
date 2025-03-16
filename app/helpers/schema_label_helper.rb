@@ -3,7 +3,7 @@ module SchemaLabelHelper
   # Returns the best label to represent a schema property or dimension to the
   # user.
 
-  def prop_or_dim_label(field_name, group = nil)
+  def schema_field_label(field_name, group = nil)
     return "????" unless field_name # TODO
 
     field_def = DataSchemaUtil.field_definition(field_name)

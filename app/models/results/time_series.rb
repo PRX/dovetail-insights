@@ -16,17 +16,17 @@ module Results
 
         # Add a column for each group (zero or more)
         composition.groups.each do |group|
-          headers << ApplicationController.helpers.prop_or_dim_label(group.dimension, group)
+          headers << ApplicationController.helpers.schema_field_label(group.dimension, group)
 
           dimension_def = DataSchemaUtil.field_definition(group.dimension)
           if dimension_def.has_key?("ExhibitField")
             exhibit_field_name = dimension_def["ExhibitField"]
 
-            headers << ApplicationController.helpers.prop_or_dim_label(exhibit_field_name, group)
+            headers << ApplicationController.helpers.schema_field_label(exhibit_field_name, group)
           end
 
           group&.meta&.each do |meta_field_name|
-            headers << ApplicationController.helpers.prop_or_dim_label(meta_field_name, group)
+            headers << ApplicationController.helpers.schema_field_label(meta_field_name, group)
           end
         end
 

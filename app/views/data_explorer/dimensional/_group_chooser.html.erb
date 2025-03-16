@@ -18,7 +18,7 @@
         data-dimension-type="<%= dimension_def["Type"] %>"
         value="<%= dim_key %>"
         <%= select_eq group&.dimension == dimension_name.to_sym %>>
-        <%= prop_or_dim_label(dimension_name) %>
+        <%= schema_field_label(dimension_name) %>
       </option>
     <% end %>
   </select>
@@ -120,7 +120,7 @@
                 id="<%= x %>"
                 <%= html_attributes(checked: "checked") if group&.meta&.include?(dimension_name.to_sym) %>
                 <%= html_attributes(name: "group.#{group_num}.meta") %>>
-              <%= prop_or_dim_label(dimension_name) %> (raw)
+              <%= schema_field_label(dimension_name) %> (raw)
             </label>
           <% end %>
 
@@ -137,7 +137,7 @@
                 id="<%= x %>"
                 <%= html_attributes(checked: "checked") if group&.meta&.include?(static_field_name.to_sym) %>
                 <%= html_attributes(name: "group.#{group_num}.meta") %>>
-              <%= prop_or_dim_label(static_field_name) %>
+              <%= schema_field_label(static_field_name) %>
             </label>
           <% end %>
         </div>

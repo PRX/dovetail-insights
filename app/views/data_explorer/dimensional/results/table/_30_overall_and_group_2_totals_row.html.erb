@@ -28,7 +28,7 @@
           title = "Total #{metric.metric}: #{number_with_delimiter(total)}"
         else
           text = "n/a"
-          title = "When grouping by #{prop_or_dim_label g1&.dimension} and #{prop_or_dim_label g2&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
+          title = "When grouping by #{schema_field_label g1&.dimension} and #{schema_field_label g2&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
         end
       %>
 
@@ -57,7 +57,7 @@
           text = number_with_delimiter(sum)
 
           title = [
-            "Total #{metric.metric} for #{member_label(@composition, g2, group_2_member_descriptor)} across all #{prop_or_dim_label(g1&.dimension).pluralize}: #{sum}",
+            "Total #{metric.metric} for #{member_label(@composition, g2, group_2_member_descriptor)} across all #{schema_field_label(g1&.dimension).pluralize}: #{sum}",
             "#{sum_as_percent}% of overall total",
             "Mean: #{number_with_delimiter(mean)}",
             "Min: #{number_with_delimiter(min)}",
@@ -65,7 +65,7 @@
             "Range: #{number_with_delimiter(range)}"
           ].join("\n")
         else
-          title = "When grouping by #{prop_or_dim_label g1&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
+          title = "When grouping by #{schema_field_label g1&.dimension}, a total for #{metric.metric} is not displayed. Adding up the #{metric.metric} value for each group does not yield a statistically meaningful number. You should avoid adding these numbers together yourself, as the result likely won't mean what you're expecting."
           text = "n/a"
         end
       %>

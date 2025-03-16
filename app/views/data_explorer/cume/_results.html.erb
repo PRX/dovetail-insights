@@ -3,7 +3,7 @@
     <td>After…</td>
 
     <% @composition.groups[0]&.meta&.each do |meta_field_name| %>
-      <td><%= prop_or_dim_label(meta_field_name) %></td>
+      <td><%= schema_field_label(meta_field_name) %></td>
     <% end %>
 
     <% @composition.results.unique_window_descriptors.each do |window_descriptor| %>
