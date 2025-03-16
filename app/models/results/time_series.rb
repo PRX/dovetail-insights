@@ -96,7 +96,7 @@ module Results
 
     def unique_interval_descriptors
       # Keeping this here for checking actual values coming out of the query
-      # return @rows.map { |row| row[composition.granularity_as] }.compact.uniq.sort
+      # return @rows.pluck(composition.granularity_as).compact.uniq.sort
 
       return @unique_interval_descriptors if @unique_interval_descriptors
 

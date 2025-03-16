@@ -32,7 +32,7 @@ module Compositions
         shaper = QueryShapers::Bigquery::Dimensional.new(self)
 
         erb = ERB.new(File.read(Rails.root.join("app/queries/bigquery/dimensional.sql.erb").to_s))
-        erb.result_with_hash(shaper.to_hash).gsub(/\n{3,}/, "\n\n")
+        erb.result_with_hash(shaper.to_hash).gsub(/\n{3,}/, "\n\n") # Remove extra newlines
       end
     end
 
@@ -65,7 +65,7 @@ module Compositions
     private
 
     def all_metrics_are_valid
-      if (metrics || []).any? { |m| m.invalid? }
+      if metrics&.any? { |m| m.invalid? }
         errors.add(:metrics, :invalid_metrics, message: "must all be valid")
       end
     end
@@ -77,13 +77,13 @@ module Compositions
     end
 
     def all_groups_are_valid
-      if (groups || []).compact.any? { |g| g.invalid? }
+      if groups&.compact&.any? { |g| g.invalid? }
         errors.add(:groups, :invalid_groups, message: "must all be valid")
       end
     end
 
     def all_groups_are_safe
-      if (groups || []).compact.any? { |g| g.unsafe? }
+      if groups&.compact&.any? { |g| g.unsafe? }
         warnings.add(:groups, :unsafe_groups, message: "include configuration that may be unsafe")
       end
     end
