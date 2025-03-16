@@ -1,8 +1,11 @@
 .dx-results {
-  th, td {
+  th,
+  td {
     padding: 0.3em;
     color: #1a1a1a;
   }
 
-  .totals { background-color: palegreen; }
+  .totals {
+    background-color: palegreen;
+  }
 }

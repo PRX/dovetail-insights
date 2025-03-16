@@ -1,7 +1,9 @@
 .filter-chooser.card {
   border-top: 4px solid #75bbe1;
 
-  .active { background-color: aquamarine; }
+  .active {
+    background-color: aquamarine;
+  }
 
   legend {
     font-weight: bold;
@@ -21,17 +23,42 @@
     background-color: white;
   }
 
-  .nulls-chooser { display: none; }
-  &:has(select.filter-operator option[value*=clude]:checked) .nulls-chooser { display: block; }
-  .nulls-chooser .include, .nulls-chooser .exclude { display: none; }
-  &:has(select.filter-operator option[value=include]:checked) .nulls-chooser .include { display: inline; }
-  &:has(select.filter-operator option[value=exclude]:checked) .nulls-chooser .exclude { display: inline; }
+  .nulls-chooser {
+    display: none;
+  }
+  &:has(select.filter-operator option[value*="clude"]:checked) .nulls-chooser {
+    display: block;
+  }
+  .nulls-chooser .include,
+  .nulls-chooser .exclude {
+    display: none;
+  }
+  &:has(select.filter-operator option[value="include"]:checked)
+    .nulls-chooser
+    .include {
+    display: inline;
+  }
+  &:has(select.filter-operator option[value="exclude"]:checked)
+    .nulls-chooser
+    .exclude {
+    display: inline;
+  }
 
   &[data-dimension-type="Timestamp"] {
-    .range, .extract, .truncate { display: none; }
+    .range,
+    .extract,
+    .truncate {
+      display: none;
+    }
 
-    &:has(option[value=Range]:checked) .range { display: block; }
-    &:has(option[value=Extract]:checked) .extract { display: block; }
-    &:has(option[value=Truncate]:checked) .truncate { display: block; }
+    &:has(option[value="Range"]:checked) .range {
+      display: block;
+    }
+    &:has(option[value="Extract"]:checked) .extract {
+      display: block;
+    }
+    &:has(option[value="Truncate"]:checked) .truncate {
+      display: block;
+    }
   }
 }

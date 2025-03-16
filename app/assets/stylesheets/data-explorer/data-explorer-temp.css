@@ -58,55 +58,117 @@ form.nochrome {
   overflow: scroll;
 }
 
-#groups fieldset .timestamp-options { display: none; }
-#groups fieldset:has(select[id^="group."] option[data-dimension-type="Timestamp"]:checked) .timestamp-options { display: block; }
+#groups fieldset .timestamp-options {
+  display: none;
+}
+#groups
+  fieldset:has(
+    select[id^="group."] option[data-dimension-type="Timestamp"]:checked
+  )
+  .timestamp-options {
+  display: block;
+}
 #groups fieldset .timestamp-options .timestamp-ranges,
 #groups fieldset .timestamp-options .truncate-options,
-#groups fieldset .timestamp-options .extract-options { display: none; }
-#groups fieldset:has(select.mode-chooser option[value=range]:checked) .timestamp-ranges { display: block; }
-#groups fieldset:has(select.mode-chooser option[value=extract]:checked) .extract-options { display: block; }
-#groups fieldset:has(select.mode-chooser option[value=truncate]:checked) .truncate-options { display: block; }
-
-#groups fieldset .duration-options { display: none; }
-#groups fieldset:has(select[id^="group."] option[data-dimension-type="Duration"]:checked) .duration-options { display: block; }
-
-#groups div[class^="meta-options-for-"] { display: none; }
-#groups fieldset:has(option[value=podcast]:checked) .meta-options-for-podcast { display: block; }
-#groups fieldset:has(option[value=episode]:checked) .meta-options-for-episode { display: block; }
-#groups fieldset:has(option[value=ua]:checked) .meta-options-for-ua { display: block; }
-#groups fieldset:has(option[value=device]:checked) .meta-options-for-device { display: block; }
-#groups fieldset:has(option[value=os]:checked) .meta-options-for-os { display: block; }
-#groups fieldset:has(option[value=country]:checked) .meta-options-for-country { display: block; }
-#groups fieldset:has(option[value=subdiv]:checked) .meta-options-for-subdiv { display: block; }
-#groups fieldset:has(option[value=city]:checked) .meta-options-for-city { display: block; }
-#groups fieldset:has(option[value=metro]:checked) .meta-options-for-metro { display: block; }
-
-
-#lens-data-parameters:has(input[type=radio][value=timeSeries]:checked) #time-series-compare {
+#groups fieldset .timestamp-options .extract-options {
+  display: none;
+}
+#groups
+  fieldset:has(select.mode-chooser option[value="range"]:checked)
+  .timestamp-ranges {
+  display: block;
+}
+#groups
+  fieldset:has(select.mode-chooser option[value="extract"]:checked)
+  .extract-options {
+  display: block;
+}
+#groups
+  fieldset:has(select.mode-chooser option[value="truncate"]:checked)
+  .truncate-options {
   display: block;
 }
 
-#time-series-compare select[name=compare] option[value=WoW],
-#time-series-compare select[name=compare] option[value=QoQ],
-#time-series-compare select[name=compare] option[value=YoY] {
+#groups fieldset .duration-options {
+  display: none;
+}
+#groups
+  fieldset:has(
+    select[id^="group."] option[data-dimension-type="Duration"]:checked
+  )
+  .duration-options {
+  display: block;
+}
+
+#groups div[class^="meta-options-for-"] {
+  display: none;
+}
+#groups
+  fieldset:has(option[value="podcast"]:checked)
+  .meta-options-for-podcast {
+  display: block;
+}
+#groups
+  fieldset:has(option[value="episode"]:checked)
+  .meta-options-for-episode {
+  display: block;
+}
+#groups fieldset:has(option[value="ua"]:checked) .meta-options-for-ua {
+  display: block;
+}
+#groups fieldset:has(option[value="device"]:checked) .meta-options-for-device {
+  display: block;
+}
+#groups fieldset:has(option[value="os"]:checked) .meta-options-for-os {
+  display: block;
+}
+#groups
+  fieldset:has(option[value="country"]:checked)
+  .meta-options-for-country {
+  display: block;
+}
+#groups fieldset:has(option[value="subdiv"]:checked) .meta-options-for-subdiv {
+  display: block;
+}
+#groups fieldset:has(option[value="city"]:checked) .meta-options-for-city {
+  display: block;
+}
+#groups fieldset:has(option[value="metro"]:checked) .meta-options-for-metro {
+  display: block;
+}
+
+#lens-data-parameters:has(input[type="radio"][value="timeSeries"]:checked)
+  #time-series-compare {
+  display: block;
+}
+
+#time-series-compare select[name="compare"] option[value="WoW"],
+#time-series-compare select[name="compare"] option[value="QoQ"],
+#time-series-compare select[name="compare"] option[value="YoY"] {
   display: none;
 }
 
-form:has(#granularity select[name=granularity] option[value=daily]:checked) {
-  #time-series-compare select[name=compare] option[value=WoW],
-  #time-series-compare select[name=compare] option[value=QoQ],
-  #time-series-compare select[name=compare] option[value=YoY] {
+form:has(
+    #granularity select[name="granularity"] option[value="daily"]:checked
+  ) {
+  #time-series-compare select[name="compare"] option[value="WoW"],
+  #time-series-compare select[name="compare"] option[value="QoQ"],
+  #time-series-compare select[name="compare"] option[value="YoY"] {
     display: initial;
   }
 }
-form:has(#granularity select[name=granularity] option[value=monthly]:checked) {
-  #time-series-compare select[name=compare] option[value=QoQ],
-  #time-series-compare select[name=compare] option[value=YoY] {
+form:has(
+    #granularity select[name="granularity"] option[value="monthly"]:checked
+  ) {
+  #time-series-compare select[name="compare"] option[value="QoQ"],
+  #time-series-compare select[name="compare"] option[value="YoY"] {
     display: initial;
   }
 }
-form:has(#granularity select[name=granularity] option[value=quarterly]:checked) {
-  #time-series-compare select[name=compare] option[value=YoY] {
+form:has(
+    #granularity select[name="granularity"] option[value="quarterly"]:checked
+  ) {
+  #time-series-compare select[name="compare"] option[value="YoY"] {
     display: initial;
   }
 }
@@ -115,7 +177,9 @@ table {
   width: 100%;
   border-collapse: collapse;
 
-  .totals { background-color: palegreen; }
+  .totals {
+    background-color: palegreen;
+  }
 
   th {
     text-align: left;
@@ -171,7 +235,6 @@ table:has(td:nth-child(13):hover) tr th:nth-child(13),
 table:has(td:nth-child(14):hover) tr th:nth-child(14),
 table:has(td:nth-child(15):hover) tr th:nth-child(15),
 table:has(td:nth-child(16):hover) tr th:nth-child(16),
-table:has(td:nth-child(17):hover) tr th:nth-child(17)
-{
+table:has(td:nth-child(17):hover) tr th:nth-child(17) {
   background-color: red;
 }
