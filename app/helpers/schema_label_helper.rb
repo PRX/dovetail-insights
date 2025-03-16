@@ -13,6 +13,8 @@ module SchemaLabelHelper
     # query key if it's available, or default to the name.
     base = I18n.exists?("dimensions.#{field_name}") ? t("dimensions.#{field_name}").titleize : field_key_or_name.to_s.titleize
 
+    # For group types with options, include relevant identifying info in the
+    # label
     if group&.extract
       "#{group.extract.to_s.titleize} of #{base}"
     elsif group&.truncate

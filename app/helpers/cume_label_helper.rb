@@ -7,7 +7,8 @@ module CumeLabelHelper
   # Returns a good label to represent that window to the user.
 
   def cume_window_label(composition, window_descriptor)
-    # Calculate the end of the window from the beginning (the descriptor)
+    # Calculate the end of the window from the beginning (the descriptor) and
+    # the size of the window
     seconds = window_descriptor + composition.window
 
     # Show hours for the first 72 hours, then days. Use seconds if not evenly

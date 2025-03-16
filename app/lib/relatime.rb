@@ -5,8 +5,8 @@ class Relatime
   EXPRESSION_REGEXP = /^now(?:(?:([-+][0-9]+)[mhDWXMQY]?)?\/([mhDWXMQY]))?((?:[+-][0-9]+[smhDM])+)?$/
 
   ##
-  # Takes a specially-crafted relative time _expression_ and converts it to the
-  # correct absolute time, relative to now (or a provide DateTime).
+  # Takes a specially-crafted relative time _expression_ and converts it to
+  # the correct absolute time, relative to now (or a provide DateTime).
   #
   # The absolute time is calculated differently, given the same expression,
   # depending on whether it is being used for the beginning or end of a time
@@ -19,13 +19,12 @@ class Relatime
   # resolves to the current date and time (regardless of which end of the time
   # range the expression is being used for).
   #
-  # Adding a slash and an option alters the expression to return the beginning of
-  # the current specific unit of time. For example, "now/Y" returns the start of
-  # the current year (like 2024-01-01 00:00:00), and "now/M" returns the start of
-  # the current month (like 2024-05-01 00:00:00).
-  # Available: m, h, D, W, X, M, Q, Y
-  # W and X indicate whether weeks are considered to be begin on Sunday (W) or
-  # Monday (X).
+  # Adding a slash and an option alters the expression to return the beginning
+  # of the current specific unit of time. For example, "now/Y" returns the
+  # start of the current year (like 2024-01-01 00:00:00), and "now/M" returns
+  # the start of the current month (like 2024-05-01 00:00:00). Available: m, h,
+  # D, W, X, M, Q, Y. W and X indicate whether weeks are considered to be begin
+  # on Sunday (W) or Monday (X).
   #
   # To move away from the current period, an offset can be given. "now-1Y/Y"
   # resolves to the start of last year, and "now-2Y/Y" resolves to the start of
@@ -34,18 +33,18 @@ class Relatime
   # values must start with a plus sign
   #
   # When an expression with a slash is used for the end of the time range, it
-  # resolves to the _next_ specified unit, as compared to what was just described.
-  # For example, "now-1/Y" resolve to the beginning of the current year (rather
-  # than the beginning of the previous year). This allows for a user to define a
-  # range like "now/Y to now/Y", to cover the entire current year, rather than
-  # needing to do the math to offset the end expression.
+  # resolves to the _next_ specified unit, as compared to what was just
+  # described. For example, "now-1/Y" resolve to the beginning of the current
+  # year (rather than the beginning of the previous year). This allows for a
+  # user to define a range like "now/Y to now/Y", to cover the entire current
+  # year, rather than needing to do the math to offset the end expression.
   #
-  # Additionally, further qualifiers can be added to the end of the expression to
-  # adjust the resolved value a specific amount of time. For example "now/Y+12h"
-  # resolves to 12 hours after the beginning of the current year. "now/Y+1M-12h"
-  # means, "go to the beginning of the current year, then move ahead by 1 month,
-  # then move back by 12 hours" (so, 2024-01-31 12:00:00, or similar).
-  # Available: s, m, h, D, M
+  # Additionally, further qualifiers can be added to the end of the expression
+  # to adjust the resolved value a specific amount of time. For example
+  # "now/Y+12h" resolves to 12 hours after the beginning of the current year.
+  # "now/Y+1M-12h" means, "go to the beginning of the current year, then move
+  # ahead by 1 month, then move back by 12 hours" (so, 2024-01-31 12:00:00, or
+  # similar). Available: s, m, h, D, M
   #
   # Note that when an expression is being resolved for the end of a time range,
   # the automatic offset to the next specific unit happens before any
@@ -53,18 +52,19 @@ class Relatime
   # the beginning of Monday October 14th. And "now-1/X" as the end of a range
   # would resolve to the beginning of Monday October 21st. Therefore, you could
   # **not** use "now-1/X+2D" to create a range that begins on the 14th and ends
-  # two days later, since "now-1/X" as the range end is already more than 2 days
-  # later. You would have to either subtract from "now-1/X", or use "now-2/X"
-  # and add.
+  # two days later, since "now-1/X" as the range end is already more than 2
+  # days later. You would have to either subtract from "now-1/X", or use
+  # "now-2/X" and add.
   #
   # To highlight a point: "now-1/X" as the start of a range is equal to
   # "now-2/X" as the end of a range.
   #
-  # Adjustments are applied in the order listed, so "now/Y+2M-12h-1M" goes to the
-  # beginning of the year, moves ahead 2 months (to the beginning of March), then
-  # moves back 12 hours (to noon on February 29th), then moves back 1 month, to
-  # resolve to noon on January 29. Reordering the expression to "now/Y+2M-1M-12h"
-  # would, instead, end at noon on January 31. This is by design.
+  # Adjustments are applied in the order listed, so "now/Y+2M-12h-1M" goes to
+  # the beginning of the year, moves ahead 2 months (to the beginning of
+  # March), then moves back 12 hours (to noon on February 29th), then moves
+  # back 1 month, to resolve to noon on January 29. Reordering the expression
+  # to "now/Y+2M-1M-12h" would, instead, end at noon on January 31. This is by
+  # design.
   #
   # Note that each adjustment may do some clamping. For example, if it is
   # currently March 31st, "now-1M" resolves to February 28th, as the month

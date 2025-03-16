@@ -1,7 +1,7 @@
 module Compositions
   ##
   # The Time Series lens allows users to analyze 1 or more metrics, aggregated
-  # by some temporal buckets (daily, monthly, etc), and then by 0, 1 or 2
+  # by some temporal bucket (daily, monthly, etc), and then by 0, 1 or 2
   # dimension groups.
   #
   # Additionally, comparisons to related historical data can be included in the
@@ -107,66 +107,65 @@ module Compositions
         standard_jobs << BigqueryClient.instance.query_job(query(nil, nil))
       end
 
-      if comparisons.present?
-        comparisons.each do |comparison|
-          # Override this compositions from/to values to reflect the range for
-          # the comparisons.
-          #
-          # For example if the composition's from is 2024-05-05, and the
-          # comparison is +:YoY+, with a lookback of +2+, we need to run two
-          # additional queries: one where the from is 2023-05-05, and one where
-          # the from is 2022-05-05.
-          #
-          # The results from all the comparison queries are held in an array. The
-          # oldest results should appear earliest in the array (so the 2022 query
-          # from the above example).
-          comparison.lookback.times do |j|
-            thread = Thread.new do
-              # For the example, +comparison.lookback+ will be +2+. On the first
-              # loop, we want to go back 2 years, so the rewind will be +-2+ when
-              # +j=0+. And +rewind=-1+ when +j=1+, etc
-              rewind = -(comparison.lookback - j)
+      comparisons&.each do |comparison|
+        # Override this composition's from/to values to reflect the range for
+        # the comparisons.
+        #
+        # For example if the composition's from is 2024-05-05, and the
+        # comparison is +:YoY+, with a lookback of +2+, we need to run two
+        # additional queries: one where the from is 2023-05-05, and one where
+        # the from is 2022-05-05.
+        #
+        # The results from all the comparison queries are held in an array. The
+        # oldest results should appear earliest in the array (so the 2022 query
+        # from the above example).
+        comparison.lookback.times do |j|
+          thread = Thread.new do
+            # For the example, +comparison.lookback+ will be +2+. On the first
+            # loop, we want to go back 2 years, so the rewind will be +-2+ when
+            # +j=0+. And +rewind=-1+ when +j=1+, etc
+            rewind = -(comparison.lookback - j)
 
-              compare_abs_from = abs_from.dup
-              compare_abs_from = case comparison.period
-              when :YoY
-                compare_abs_from.advance(years: rewind)
-              when :QoQ
-                compare_abs_from.advance(months: 3 * rewind)
-              when :WoW
-                compare_abs_from.advance(weeks: rewind)
-              end
-
-              compare_abs_to = abs_to.dup
-              compare_abs_to = case comparison.period
-              when :YoY
-                compare_abs_to.advance(years: rewind)
-              when :QoQ
-                compare_abs_to.advance(months: 3 * rewind)
-              when :WoW
-                compare_abs_to.advance(weeks: rewind)
-              end
-
-              job = BigqueryClient.instance.query_job(query(compare_abs_from, compare_abs_to))
-
-              # We need to be able to identify the results of this job later,
-              # so we store some identifying metadata alongside it
-              compare_jobs << {
-                job: job,
-                period: comparison.period,
-                idx: j
-              }
+            compare_abs_from = abs_from.dup
+            compare_abs_from = case comparison.period
+            when :YoY
+              compare_abs_from.advance(years: rewind)
+            when :QoQ
+              compare_abs_from.advance(months: 3 * rewind)
+            when :WoW
+              compare_abs_from.advance(weeks: rewind)
             end
 
-            threads << thread
+            compare_abs_to = abs_to.dup
+            compare_abs_to = case comparison.period
+            when :YoY
+              compare_abs_to.advance(years: rewind)
+            when :QoQ
+              compare_abs_to.advance(months: 3 * rewind)
+            when :WoW
+              compare_abs_to.advance(weeks: rewind)
+            end
+
+            job = BigqueryClient.instance.query_job(query(compare_abs_from, compare_abs_to))
+
+            # We need to be able to identify the results of this job later,
+            # so we store some identifying metadata alongside it
+            compare_jobs << {
+              job: job,
+              period: comparison.period,
+              idx: j
+            }
           end
+
+          threads << thread
         end
       end
 
       # Wait for each thread to finish _initiating_ the query jobs
       threads.each(&:join)
 
-      # Load the standard query results in a Results instance
+      # Load the standard query results in a Results instance. This happens
+      # first and separately because it instantiates the Results.
       standard_jobs.each do |job|
         job.wait_until_done!
 
@@ -208,6 +207,7 @@ module Compositions
     private
 
     def comparisons_are_supported_granularity
+      # Supported values are based on what would make reasonable comparisons
       supported = {
         quarterly: [:YoY],
         monthly: [:YoY, :QoQ],
@@ -259,7 +259,7 @@ module Compositions
     def comparisons_are_unique
       # Each possible period (YoY, QoQ, etc), should only be used for one
       # comparison at a time. Using a period in more than one comparison would
-      # just give duplicate results
+      # just give duplicate or overlapping results
       if comparisons.map(&:period).size != comparisons.map(&:period).uniq.size
         errors.add(:comparisons, "must use each period only once")
       end
@@ -267,7 +267,9 @@ module Compositions
 
     def comparison_count_is_correct
       # The system supports any number of comparisons, but it's not super
-      # practical to display more than one, so this limit is enforced
+      # practical to display more than one in the UI, so this limit is enforced
+      # for now, but could be lifted in the future if there is a good way to
+      # get the data to the user.
       if comparisons
         if comparisons.size > 1
           errors.add(:comparisons, "only support a single comparison")
@@ -304,11 +306,11 @@ module Compositions
     def first_interval_precedes_time_range
       return unless abs_from && granularity
 
-      # Create a Results just to get the interval descriptors from it
+      # Create a dummy Results just to get the interval descriptors from it
       results = Results::TimeSeries.new(self, nil)
 
       # The interval's descriptor is the beginning of the range covered by the
-      # interval, so if it is before the composition's from, extends outside
+      # interval, so if it is before the composition's from, it extends outside
       # the included data
       first_interval_start = Time.parse(results.unique_interval_descriptors.first).utc
       if first_interval_start < abs_from
@@ -319,7 +321,7 @@ module Compositions
     def last_interval_exceeds_time_range
       return unless abs_from && abs_to && granularity
 
-      # Create a Results just to get the interval descriptors from it
+      # Create a dummy Results just to get the interval descriptors from it
       results = Results::TimeSeries.new(self, nil)
 
       # The interval's descriptor is the beginning of the range covered by the

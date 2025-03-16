@@ -17,7 +17,7 @@ module Results
       CSV.generate(headers: true) do |csv|
         headers = []
 
-        # Add a column for each group (zero or more). Also add a column for
+        # Add a header for each group (zero or more). Also add a column for
         # the exhibit field and each meta field if necessary.
         composition.groups.each do |group|
           headers << ApplicationController.helpers.prop_or_dim_label(group.dimension, group)
@@ -34,7 +34,7 @@ module Results
           end
         end
 
-        # Add a column for each metric (1 or more)
+        # Add a header for each metric (1 or more)
         composition.metrics.each do |metric|
           headers << metric.metric
         end
@@ -205,7 +205,7 @@ module Results
     end
 
     ##
-    #
+    # TODO
 
     def foo(metric, group = false, member_descriptor = false)
       # If there are groups, we don't want to include nils. For example, if the
@@ -281,6 +281,9 @@ module Results
       bar = foo(metric, group, member_descriptor)
       @calc_max_cache[cache_key] = bar.pluck(metric.as).compact.max
     end
+
+    ##
+    # tktk
 
     def calc_arithmetic_mean(metric, group = false, member_descriptor = false)
       @calc_arith_mean_cache ||= {}

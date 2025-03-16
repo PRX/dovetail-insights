@@ -1,9 +1,5 @@
 module QueryShapers
   module Bigquery
-    ##
-    # Note that time series comparisons are achieved using multiple queries, so
-    # there is no comparison-specific code in the query shaper.
-
     class Cume < Base
       attr_reader :composition
 

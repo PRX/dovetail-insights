@@ -11,6 +11,10 @@ module GroupableResults
     # these descriptors will be like [1,2,3]. When the selector is not an ID,
     # e.g., time zone, this would be like ["America/New York",
     # "Europe/London"].
+    #
+    # This does *not* include all possible descriptors, only those found in the
+    # results. For example, it would not necessarily include every country,
+    # only those countries that were present in the results.
 
     def unique_group_member_descriptors(group)
       return unless group
@@ -37,7 +41,7 @@ module GroupableResults
     end
 
     ##
-    # Looks up a descriptor for a specific property, based on the descriptor
+    # Looks up a descriptor for a specific field, based on the descriptor
     # of the group's actual dimension.
     #
     # For example, with a group where dimension=podcast_id, when given
@@ -45,7 +49,7 @@ module GroupableResults
     # with ID=123.
     #
     # Can be used for things like ExhibitField, SortFields, meta
-    # properties, etc, using the fingerprint to differentiate.
+    # fields, etc, using the fingerprint to differentiate those use cases.
 
     def group_member_descriptor_for_field(group, member_descriptor, field_name, fingerprint)
       @group_member_descriptor_for_field ||= {}

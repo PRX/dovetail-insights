@@ -3,7 +3,9 @@ module QueryShapers
     class Base
       ##
       # Returns all tables required to complete the query, based on parameters
-      # like filters and other parameters of the base composition
+      # like filters and other parameters of the base composition.
+      #
+      # These are logical schema tables.
 
       def all_tables
         # Gather all the tables required directly by filters/etc
@@ -23,7 +25,7 @@ module QueryShapers
       ##
       # For all the base composition parameters (filters, etc),
       # find all the physical BigQuery columns that are required for the given
-      # table name
+      # logical schema table name
 
       def columns_for_table(table_name)
         columns = []
@@ -69,7 +71,9 @@ module QueryShapers
       # When table = "advertisers", the advertisers table joins to the
       # campaigns table, which joins to the impressions table, which joins to
       # the downloads table, so this returns all of those ["advertisers",
-      # "campaigns", "impressions", "downloads"]
+      # "campaigns", "impressions", "downloads"].
+      #
+      # These are logical schema tables, not physical tables in a database.
 
       def all_tables_for_table(table_name)
         tables = []
@@ -106,6 +110,7 @@ module QueryShapers
             if filter.operator == :include
               "#{selector} >= #{from} AND #{selector} < #{to}"
             else
+              # The parens here are important
               "(#{selector} < #{from} OR #{selector} >= #{to})"
             end
           elsif filter.gte
@@ -113,6 +118,7 @@ module QueryShapers
             if filter.operator == :include
               "#{selector} >= #{filter.gte} AND #{selector} < #{filter.lt}"
             else
+              # The parens here are important
               "(#{selector} < #{filter.gte} OR #{selector} >= #{filter.lt})"
             end
           else

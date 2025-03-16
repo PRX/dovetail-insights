@@ -26,6 +26,7 @@ module Compositions
 
           metric = new(metric_name.to_sym)
 
+          # TODO
           # Some metrics include a variable, which will appear in the value
           # after the name, enclosed in parens
           # metric_variable_match_data = metric_param_part.match(/\(([0-9]+)\)/)

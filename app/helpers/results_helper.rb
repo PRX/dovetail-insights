@@ -6,6 +6,11 @@ module ResultsHelper
   #
   # This factors in things like sort properties, labels, and other things that
   # may change the order compared to the raw descriptors.
+  #
+  # The values returned by the +sort_by+ block are arrays, where the first
+  # element is some integer used to sort classes of values. Any number of other
+  # elements can follow, but +sort_by+ generally expects them to all be the
+  # same type (or at least comparable).
 
   def default_group_member_descriptor_sort(compostion, group, member_descriptors)
     member_descriptors.sort_by do |member_descriptor|
@@ -74,7 +79,7 @@ module ResultsHelper
   #
   # For example, if the input value is an episode UUID coming from the
   # `episode_id` field, this would not replace that value with the episode's
-  # name. The point of this is to display the raw value.
+  # name. The intention of this method is to display the raw value.
 
   def meta_descriptor_label(group, meta_value)
     meta_value

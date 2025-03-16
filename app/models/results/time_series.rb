@@ -148,6 +148,9 @@ module Results
       @unique_interval_descriptors = descriptors.reverse.filter { |m| m < composition.abs_to }
     end
 
+    ##
+    # tktk
+
     def comparison_descriptor_for_interval_descriptor(interval_descriptor, comparison, rewind)
       raise "Must include a rewind when including a comparison" if comparison && !rewind
       raise "Must include a comparison when including a rewind" if rewind && !comparison
@@ -227,6 +230,9 @@ module Results
       # default to a value like +0+.
       @lookup_data_point_cache[cache_key] = row && row[metric.as]
     end
+
+    ##
+    # tktk
 
     def calc_interval_sum(metric, interval_descriptor, comparison = nil, rewind = nil)
       raise "Must include a rewind when including a comparison" if comparison && !rewind

@@ -26,8 +26,8 @@ module Compositions
     # the value of TERMINATOR_INDEX.
 
     class Group
-      # When changing these, be sure to also change the view helpers that
-      # transform these values into database engine specific arguments.
+      # When changing these, be sure to also change the query shaper constant
+      # that transform these values into database engine specific arguments.
       #
       # In BigQuery, DAYOFWEEK returns values 1-7, 1=Sunday
       EXTRACT_OPTS = %i[hour day_of_week day week month year]

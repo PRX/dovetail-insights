@@ -91,6 +91,14 @@ module Compositions
       end
     end
 
+    ##
+    # We want to ensure that all queries include data for specific podcasts.
+    # When combined with the +only_authorized_podcasts+ validation, this
+    # ensures that data can't leak out for podcasts that a user is not
+    # authorized to view, like would be possible if a user set an
+    # EXCLUDE podcast=[3,4,5] filter, even if they were authorized for podcasts
+    # 3, 4 and 5, as that query would leak data for podcasts 1, 2, 6, 7, etc.
+
     def require_explicit_podcast_selection
       podcast_filter = filters&.find { |f| f.dimension == :podcast_id }
 
@@ -122,7 +130,6 @@ module Compositions
         errors.add(:filters, :unauthorized, message: "must not include unauthorized podcasts (#{invalid_podcasts.join(", ")})")
 
         # TODO Adding errors outside of #validate doesn't play nicely with .valid?
-        podcast_filter = filters&.find { |f| f.dimension == :podcast_id }
         podcast_filter.errors.add(:values, "must not include unauthorized podcasts")
       end
     end

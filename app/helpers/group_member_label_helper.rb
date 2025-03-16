@@ -9,6 +9,8 @@ module GroupMemberLabelHelper
   # Any value that isn't evenly divisible remains in seconds.
   # E.g., 1000 => "1,000 seconds"
   #
+  # Supports days, weeks, and years
+  #
   # TODO Localize units
 
   def human_duration(seconds)
@@ -29,6 +31,9 @@ module GroupMemberLabelHelper
   ##
   # Given a timestamp string like 2025-01-01T12:34:56Z, removes the time part
   # of the string if it is midnight, returning just the date
+  #
+  # 2025-01-01T12:34:56Z => "2025-01-01T12:34:56Z"
+  # 2025-01-01T00:00:00Z => "2025-01-01"
 
   def compact_timestamp_string(time_string)
     time_string.gsub("T00:00:00Z", "")
@@ -37,10 +42,15 @@ module GroupMemberLabelHelper
   ##
   # Takes a group member descriptor, which will be a number, for a duration
   # range and returns a string that describes that range in words.
+  #
+  # The descriptor represents the exclusive end of the range, while the
+  # inclusive beginning of the range is the previous value defined in the
+  # +group+.
 
   def duration_label(composition, group, member_descriptor)
     index_of_index = group.indices.index(member_descriptor.to_i)
 
+    # The last range returned by the query uses a special descriptor
     if member_descriptor == Compositions::Components::Group::TERMINATOR_INDEX
       "#{human_duration(group.indices.last)} and over"
     elsif index_of_index == 0
@@ -75,10 +85,15 @@ module GroupMemberLabelHelper
   ##
   # Takes a group member descriptor for a single timestamp range, which will be
   # a timestamp string, and returns a string that describes that range in words
+  #
+  # The descriptor represents the exclusive end of the range, while the
+  # inclusive beginning of the range is the previous value defined in the
+  # +group+.
 
   def timestamp_range_label(composition, group, member_descriptor)
     index_of_index = group.abs_indices.index(member_descriptor)
 
+    # The last range returned by the query uses a special descriptor
     if member_descriptor == Compositions::Components::Group::TERMINATOR_INDEX
       "At/after #{compact_timestamp_string group.abs_indices.last}"
     elsif index_of_index == 0
@@ -105,7 +120,7 @@ module GroupMemberLabelHelper
   end
 
   ##
-  # Handes labels for various types of Timestamp groups, like range, extact
+  # Handles labels for various types of Timestamp groups, like range, extact
   # and truncate.
 
   def timestamp_label(composition, group, member_descriptor)
@@ -127,7 +142,7 @@ module GroupMemberLabelHelper
   # meant to be used instead of the descriptor. In some situations, the
   # descriptor or exhibitition are further refined or replaced by this helper.
   #
-  # Some times refinement happens for an entire class of members, like how all
+  # Sometimes refinement happens for an entire class of members, like how all
   # duration descriptors are replaced to be more meaningful and readible. Other
   # time, an individual value may need to be replaced before being displayed to
   # the user, like we may want to override the name of a specific user agent.
