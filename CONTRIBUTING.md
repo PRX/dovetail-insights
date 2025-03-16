@@ -8,9 +8,9 @@
 
 ## Development Environment
 
-These steps assume you have followed PRX's [Local Development Environment guide](https://github.com/PRX/internal/wiki/Guide:-Local-Development-Environment), which will install a number of dependencies. You can fulfill those dependencies however you'd like, but you may need alter the procedures in this document to match your environment.
-
 ### Environment Setup
+
+These steps assume you have followed PRX's [Local Development Environment guide](https://github.com/PRX/internal/wiki/Guide:-Local-Development-Environment), which will install a number of dependencies. You can fulfill those dependencies however you'd like, but you may need alter the procedures in this document to match your environment.
 
 1.  Clone the project repository:
 
@@ -60,6 +60,14 @@ These steps assume you have followed PRX's [Local Development Environment guide]
     ```shell
     yarn install
     ```
+
+1.  Setup databases
+
+    ```shell
+    bin/rails db:prepare
+    ```
+
+    By default, development uses SQLite databases, so no additional database server configuration is necessary.
 
 ### Running the Application
 
