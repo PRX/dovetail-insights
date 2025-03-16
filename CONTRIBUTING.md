@@ -81,6 +81,8 @@ Or see [Debugger](#debugger) for additional information about running the applic
 
 The site will be available at [insights.dovetail.prx.test](http://insights.dovetail.prx.test/).
 
+If you are developing Sass stylesheet files, also run `yarn watch:css` to automatically compile them to CSS as you make changes.
+
 ### Recommended Tooling
 
 Integrating your IDE with the various tools that this project uses to maintain code quality and styles can lead to faster development, by catching issues during development rather than when they reach CI.
