@@ -5,6 +5,11 @@
 # directly with standardrb, will produce the expected results.
 inherit_gem:
   standard: config/base.yml
+  standard-performance: config/base.yml
+  standard-custom: config/base.yml
   standard-rails: config/base.yml
+plugins:
+  - standard-performance
+  - standard-custom
 require:
   - rubocop-rails
