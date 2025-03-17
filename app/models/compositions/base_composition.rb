@@ -64,7 +64,7 @@ module Compositions
       obj[:from] = from if from
       obj[:to] = to if to
 
-      obj[:filters] = filters.map { |f| f.as_json(options) } if filters
+      obj[:filters] = filters.map { |f| f.as_json(options) } if filters.present?
 
       obj
     end
