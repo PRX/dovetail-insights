@@ -41,6 +41,13 @@ module Compositions
         @lookback = lookback
       end
 
+      def as_json(options = {})
+        {
+          period: period,
+          lookback: lookback
+        }
+      end
+
       private
 
       def period_is_supported

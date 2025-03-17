@@ -56,8 +56,8 @@ module Compositions
     def as_json(options = {})
       obj = super
 
-      obj[:groups] = groups.map { |g| g.as_json(options) } if groups
-      obj[:metrics] = metrics.map { |g| g.as_json(options) } if metrics
+      obj[:groups] = groups.map { |g| g.as_json(options) } if groups.present?
+      obj[:metrics] = metrics.map { |m| m.as_json(options) } if metrics.present?
 
       obj
     end

@@ -199,7 +199,7 @@ module Compositions
       obj[:granularity] = granularity if granularity
       obj[:window] = window if window
 
-      # TODO comparisons
+      obj[:comparisons] = comparisons.map { |c| c.as_json(options) } if comparisons
 
       obj
     end
