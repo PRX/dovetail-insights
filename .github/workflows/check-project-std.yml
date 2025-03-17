@@ -7,3 +7,7 @@ jobs:
     uses: prx/.github/.github/workflows/check-project-std-javascript.yml@main
   check-ruby:
     uses: prx/.github/.github/workflows/check-project-std-ruby.yml@main
+  check-css:
+    uses: prx/.github/.github/workflows/check-project-std-css.yml@main
+  check-yaml:
+    uses: prx/.github/.github/workflows/check-project-std-yaml.yml@main
