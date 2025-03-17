@@ -8,9 +8,10 @@
       multiple>
 
       <% Lists.list_for(dim_key, @current_user_podcast_accounts).each do |item| %>
+        <% vals = filter&.values %>
         <option
           <%= html_attributes(value: item[item.keys[0]]) %>
-          <%= select_eq filter&.value?(item[item.keys[0]].to_s) %>>
+          <%= select_eq vals&.include?(item[item.keys[0]].to_s) %>>
 
           <%= item[item.keys[1]] %>
         </option>
