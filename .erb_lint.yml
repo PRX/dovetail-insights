@@ -2,6 +2,7 @@
 EnableDefaultLinters: true
 exclude:
   - "**/*.sql.erb"
+  - "**/vendor/**/*"
 linters:
   Rubocop:
     enabled: true
