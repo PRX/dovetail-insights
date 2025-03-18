@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/prx/prx_auth-rails.git
-  revision: 652491d0a2cfc7b4f0b9519719167f7cbcc59316
-  specs:
-    prx_auth-rails (4.2.1)
-      actionpack
-      prx_auth (>= 1.8.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -304,6 +296,9 @@ GEM
       json (>= 1.8.1)
       json-jwt (>= 1.12.0)
       rack (>= 1.5.2)
+    prx_auth-rails (4.2.1)
+      actionpack
+      prx_auth (>= 1.8.0)
     psych (5.2.3)
       date
       stringio
@@ -521,7 +516,7 @@ DEPENDENCIES
   ostruct
   pg (~> 1.5)
   propshaft
-  prx_auth-rails!
+  prx_auth-rails
   puma (>= 5.0)
   rails (~> 8.0.0)
   rubocop-rails-omakase

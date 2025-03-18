@@ -48,7 +48,7 @@ gem "activerecord-session_store"
 gem "google-cloud-bigquery"
 
 # Rails integration for PRX authorization system [https://github.com/PRX/prx_auth-rails]
-gem "prx_auth-rails", github: "prx/prx_auth-rails"
+gem "prx_auth-rails"
 
 # A Rails engine that helps you put together a super-flexible admin dashboard [https://github.com/thoughtbot/administrate]
 gem "administrate", "~> 1.0.0.beta3"
