@@ -150,7 +150,9 @@ form.nochrome {
 }
 
 form:has(
-    #granularity select[name="granularity"] option[value="daily"]:checked
+    .granularity-chooser
+      select[name="granularity"]
+      option[value="daily"]:checked
   ) {
   #time-series-compare select[name="compare"] option[value="WoW"],
   #time-series-compare select[name="compare"] option[value="QoQ"],
@@ -159,7 +161,9 @@ form:has(
   }
 }
 form:has(
-    #granularity select[name="granularity"] option[value="monthly"]:checked
+    .granularity-chooser
+      select[name="granularity"]
+      option[value="monthly"]:checked
   ) {
   #time-series-compare select[name="compare"] option[value="QoQ"],
   #time-series-compare select[name="compare"] option[value="YoY"] {
@@ -167,7 +171,9 @@ form:has(
   }
 }
 form:has(
-    #granularity select[name="granularity"] option[value="quarterly"]:checked
+    .granularity-chooser
+      select[name="granularity"]
+      option[value="quarterly"]:checked
   ) {
   #time-series-compare select[name="compare"] option[value="YoY"] {
     display: initial;
