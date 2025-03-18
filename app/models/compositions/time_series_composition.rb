@@ -246,13 +246,8 @@ module Compositions
     end
 
     def each_comparison_is_valid
-      (comparisons || []).each do |comparison|
-        unless comparison.valid?
-          comparison.errors.each do |e|
-            # TODO Not sure which attribute to add these to yet
-            errors.add("comparison.#{comparison.period}", e.full_message)
-          end
-        end
+      if comparisons&.any? { |c| c.invalid? }
+        errors.add(:comparisons, :invalid_comparisons, message: "must all be valid")
       end
     end
 
