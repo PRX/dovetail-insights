@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/prx/prx_auth-rails.git
-  revision: 652491d0a2cfc7b4f0b9519719167f7cbcc59316
+  revision: 0dd93ceb3f2dcef582555e3b0e76dde0182581b5
   specs:
-    prx_auth-rails (4.2.1)
+    prx_auth-rails (4.3.0)
       actionpack
       prx_auth (>= 1.8.0)
 
