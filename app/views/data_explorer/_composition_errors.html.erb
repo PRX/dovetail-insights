@@ -23,5 +23,11 @@
         <li><%= group.dimension %> group: <%= msg %></li>
       <% end %>
     <% end %>
+
+    <% @composition.try(:comparisons)&.each do |comparison| %>
+      <% comparison&.errors&.full_messages&.each do |msg| %>
+        <li><%= comparison.period %> comparison: <%= msg %></li>
+      <% end %>
+    <% end %>
   </ul>
 </fieldset>
