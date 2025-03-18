@@ -33,6 +33,15 @@
         <% group_1_label_displayed = true %>
       <% end %>
 
+      <% @meta&.each do |meta_field_name| %>
+        <% meta_descriptor = @composition.results.group_meta_descriptor(@composition.groups[0], group_1_member_descriptor, meta_field_name) %>
+        <td
+          <%= html_attributes("data-dx-group-1-meta-#{meta_field_name.to_s.tr("_", "-")}": meta_descriptor) %>>
+
+          <%= meta_descriptor_label(@composition.groups[0], meta_descriptor) %>
+        </td>
+      <% end %>
+
       <%= group_table_header_tag(@composition, @composition.groups[1], group_2_member_descriptor, :row) if @tbl_show_group_2_headers %>
 
       <% @composition.results.unique_interval_descriptors.each do |interval_descriptor| %>

@@ -38,6 +38,8 @@
   @display_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
   @display_group_2_member_descriptors << nil # if @tbl_show_group_2_unknowns
   @display_group_2_member_descriptors = default_group_member_descriptor_sort(@composition, @composition.groups[1], @display_group_2_member_descriptors)
+
+  @meta = @composition.groups[0]&.meta
 %>
 
 <table

@@ -1,5 +1,10 @@
 <tr class="totals">
   <% if @tbl_show_group_1_headers %><th scope="row">TOTAL</th><% end %>
+
+  <% @meta&.each do |meta_field_name| %>
+    <td></td>
+  <% end %>
+
   <%= tag.td if @tbl_show_group_2_headers %>
 
   <% @composition.results.unique_interval_descriptors.each do |interval_descriptor| %>
