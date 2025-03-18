@@ -55,12 +55,23 @@
         </div>
       <% end %>
 
-      <div class="dropdown">
+      <div class="dropdown me-1">
         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           <span class="material-icons" aria-hidden="true">highlight</span> Highlight
         </button>
         <div class="dropdown-menu p-3" style="min-width: 575px;">
           <%= render partial: "data_explorer/highlight_chooser" %>
+        </div>
+      </div>
+
+      <div class="dropdown me-1">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="material-icons" aria-hidden="true">sort</span> Sort
+        </button>
+        <div class="dropdown-menu p-3" style="min-width: 675px;">
+          <% if @composition.instance_of?(Compositions::DimensionalComposition) %>
+            <%= render partial: "data_explorer/dimensional/sort_chooser" %>
+          <% end %>
         </div>
       </div>
     <% end %>
@@ -81,6 +92,6 @@
       </a>
     <% end %>
 
-    <input data-bs-toggle="tooltip" data-bs-title="Use Command+Enter to explore quickly" class="btn btn-success" type="submit" value="Explore →">
+    <input data-bs-toggle="tooltip" data-bs-title="Use Command+Enter to explore quickly" class="btn btn-success" type="submit" value="Explore ⌘⏎">
   </div>
 </div>

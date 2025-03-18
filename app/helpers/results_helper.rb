@@ -56,6 +56,14 @@ module ResultsHelper
   def group_table_header_tag(composition, group, member_descriptor, th_scope, skip_content = false)
     group_num = composition.groups&.index(group)&.+ 1
 
+    dimension_def = DataSchemaUtil.field_definition(group&.dimension)
+
+    sort_values = if dimension_def&.[]("SortFields").present?
+      dimension_def["SortFields"].map { |field_name| composition.results.group_sort_descriptor(group, member_descriptor, field_name) }
+    else
+      [member_descriptor || "__nil__"]
+    end
+
     opts = {
       colspan: (th_scope == :colgroup) ? composition.metrics&.size : 1,
       scope: th_scope,
@@ -63,6 +71,7 @@ module ResultsHelper
         action: "click->data-explorer--results-table-sort#sort",
         "dx-group-#{group_num}-dimension-name": group&.dimension,
         "dx-group-#{group_num}-member-descriptor": member_descriptor || "__nil__",
+        "dx-group-#{group_num}-member-sort-values": sort_values.join(","),
         "dx-metric": (composition.metrics&.size == 1) ? composition.metrics[0].metric : nil
       }
     }

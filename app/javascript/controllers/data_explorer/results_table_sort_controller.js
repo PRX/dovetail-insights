@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Controller } from "@hotwired/stimulus";
 
 // TODO proof of concept
@@ -5,10 +6,73 @@ import { Controller } from "@hotwired/stimulus";
 // TODO Dimensional, allow sorting by group 1 totals
 // TODO Allow sorting by group 1 (i.e., horizontally)
 export default class extends Controller {
-  static targets = ["table", "row"];
+  static targets = ["table", "row", "rowSortOpt"];
+
+  sort() {
+    const sortedDataRows = this.rowTargets.sort((rowA, rowB) => {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const rowSortOpt of this.rowSortOptTargets) {
+        const sortDirection = rowSortOpt.querySelector(".sort-direction").value;
+        // The value of the sort-by <select> is going to be a CSS selector to
+        // find a particular cell in each row, which will be used for the
+        // comparison.
+        const sortBy = rowSortOpt.querySelector(".sort-by").value;
+
+        if (sortBy && sortBy !== "no-sort") {
+          // Get the relevant cells. There are four types of cell that may be
+          // found:
+          //  - Data Point cell, with [data-dx-data-point] which is used for
+          //    the comparison value
+          //  - A meta field cell, with [data-dx-group-1-meta-<some field name>]
+          //    whose cell text is used for the comparison
+          //  - A total, TODO
+          //  - The row header cell, wih [dx-group-<group_num>-member-sort-values],
+          //    where the value of that attribute is a LIST of values that are
+          //    compared in order
+          const rowACell = rowA.querySelector(`*${sortBy}`);
+          const rowBCell = rowB.querySelector(`*${sortBy}`);
+
+          if (rowACell && rowBCell) {
+            let result;
+
+            if (sortBy == "[data-dx-group-1-member-sort-values]") {
+              // TODO This currently only supports a single sort field, but it
+              // should support an arbitrary number of sort fields
+              const rowAValue = rowACell
+                .getAttribute("data-dx-group-1-member-sort-values")
+                .split(",")[0];
+              const rowBValue = rowBCell
+                .getAttribute("data-dx-group-1-member-sort-values")
+                .split(",")[0];
+
+              result = rowAValue.localeCompare(rowBValue);
+            } else if (rowACell.dataset.dxDataPoint) {
+              const rowAValue = rowACell.dataset.dxDataPoint;
+              const rowBValue = rowBCell.dataset.dxDataPoint;
+              result = +rowAValue - +rowBValue;
+            } else {
+              const rowAValue = rowACell.innerText;
+              const rowBValue = rowBCell.innerText;
+              result = rowAValue.localeCompare(rowBValue);
+            }
+
+            if (sortDirection === "desc") result *= -1;
+
+            if (result !== 0) return result;
+          }
+        }
+      }
+      return 0;
+    });
+
+    const body = this.tableTarget.querySelector("tbody");
+
+    sortedDataRows.forEach((el) => el.remove());
+    sortedDataRows.forEach((el) => body.append(el));
+  }
 
   // eslint-disable-next-line class-methods-use-this
-  sort(event) {
+  old_sort(event) {
     // TODO support multiple metrics and comparisons
 
     const metric = event.target.dataset.dxMetric;

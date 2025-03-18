@@ -1,0 +1,51 @@
+<% g1 = @composition.groups[0] %>
+<% g2 = @composition.groups[1] %>
+
+<fieldset class="sort-chooser" data-data-explorer--results-table-sort-target="chooser">
+  <legend>Sort Options</legend>
+
+  <% 5.times do |i| %>
+    <% if g1 %>
+      <div class="row-sort-opt" data-data-explorer--results-table-sort-target="rowSortOpt">
+        <select
+          data-data-explorer--results-table-sort-target="foo"
+          data-action="data-explorer--results-table-sort#sort"
+          class="sort-by">
+
+          <% if i > 0 %>
+            <option value="no-sort">Add a Column…</option>
+          <% end %>
+
+          <option value="[data-dx-group-1-member-sort-values]">Default sorting for <%= schema_field_label @composition.groups[0].dimension %> group</option>
+
+          <% g1&.meta&.each do |meta_field_name| %>
+            <option value="<%= "[data-dx-group-1-meta-#{meta_field_name.to_s.tr("_", "-")}]" %>"><%= meta_field_name %></option>
+          <% end %>
+
+          <%
+            display_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
+            display_group_2_member_descriptors << nil
+            display_group_2_member_descriptors = default_group_member_descriptor_sort(@composition, @composition.groups[1], display_group_2_member_descriptors)
+          %>
+
+          <% display_group_2_member_descriptors.each do |group_2_member_descriptor| %>
+            <% @composition.metrics.each do |metric| %>
+              <option
+                value="<%= "[data-dx-metric='#{metric.metric}'][data-dx-group-2-member-descriptor='#{group_2_member_descriptor || "__nil__"}']" %>">
+
+                <%= member_label(@composition, @composition.groups[1], group_2_member_descriptor) %> <%= metric.metric %>
+              </option>
+            <% end %>
+          <% end %>
+        </select>
+        <select
+          data-action="data-explorer--results-table-sort#sort"
+          class="sort-direction">
+
+          <option value="asc">Ascending (1, 2, 3…)</option>
+          <option value="desc">Descending (3, 2, 1…)</option>
+        </select>
+      </div>
+    <% end %>
+  <% end %>
+</fieldset>

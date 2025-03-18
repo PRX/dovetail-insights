@@ -126,7 +126,7 @@
 
           <%# List all the static fields for this dimension, but exclude the exhibit field, since it %>
           <%# will already be displayed. %>
-          <% dimension_def["StaticFields"]&.filter { |p| p != dimension_def["ExhibitField"] }&.each do |static_field_name| %>
+          <% dimension_def["StaticFields"]&.each do |static_field_name| %>
             <% static_field_def = DataSchemaUtil.field_definition(static_field_name) %>
             <% static_field_key = static_field_def["QueryKey"] || static_field_name %>
             <% x = "meta-#{static_field_name}-#{dimension_name}" %>

@@ -1,0 +1,29 @@
+/* Always show the first control group. Don't show the direction selector
+  unless a column has been selected. Only show the next control group once the
+  previous control group has been used. But always show any control group that
+  has been used. */
+.sort-chooser {
+  .row-sort-opt {
+    display: none;
+
+    .sort-direction {
+      display: none;
+    }
+
+    &:first-of-type {
+      display: block;
+    }
+
+    &:not(:has(option[value="no-sort"]:checked)) {
+      display: block;
+
+      .sort-direction {
+        display: inline;
+      }
+
+      & + .row-sort-opt {
+        display: block;
+      }
+    }
+  }
+}

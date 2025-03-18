@@ -9,7 +9,11 @@
 
   <% @meta&.each do |meta_field_name| %>
     <% meta_descriptor = @composition.results.group_meta_descriptor(g1, group_1_member_descriptor, meta_field_name) %>
-    <td><%= meta_descriptor_label(g1, meta_descriptor) %></td>
+    <td
+      <%= html_attributes("data-dx-group-1-meta-#{meta_field_name.to_s.tr("_", "-")}": meta_descriptor) %>>
+
+      <%= meta_descriptor_label(g1, meta_descriptor) %>
+    </td>
   <% end %>
 
   <%# Totals for this member of group 1 (a total for each metric) %>
