@@ -6,7 +6,7 @@ Metrics:
         downloads: [request_uuid]
   "count(impressions)":
     BigQuery:
-      Selector: COUNT(DISTINCT impressions.request_uuid, impressions.segment)
+      Selector: COUNT(DISTINCT CONCAT(impressions.request_uuid, impressions.segment))
       RequiredColumns:
         impressions: [timestamp, request_uuid, segment]
   "count(uniques)":
