@@ -226,6 +226,8 @@ Dimensions:
     StaticFields:
       - country_iso_code
       - country_name
+    SortFields:
+      - country_name
     MetricAggregations:
       Sum:
         - count(downloads)
