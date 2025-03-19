@@ -6,10 +6,15 @@
 # you're free to overwrite the RESTful controller actions.
 module Admin
   class ApplicationController < Administrate::ApplicationController
+    include PrxAuth::Rails::Controller
+
+    before_action :set_after_sign_in_path, :authenticate! # authenticate! is provided by prx_auth-rails
     before_action :authenticate_admin
 
     def authenticate_admin
-      # TODO Add authentication logic here.
+      unless current_user.scopes.include?("prxadmin")
+        render "errors/no_access", layout: "plain", status: :unauthorized
+      end
     end
 
     # Override this value to specify the number of elements to display at a time
