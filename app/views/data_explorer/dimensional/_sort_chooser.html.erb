@@ -19,7 +19,7 @@
           <option value="[data-dx-group-1-member-sort-values]">Default sorting for <%= schema_field_label @composition.groups[0].dimension %> group</option>
 
           <% g1&.meta&.each do |meta_field_name| %>
-            <option value="<%= "[data-dx-group-1-meta-#{meta_field_name.to_s.tr("_", "-")}]" %>"><%= meta_field_name %></option>
+            <option value="<%= "[data-dx-group-1-meta-#{meta_field_name.to_s.tr("_", "-")}]" %>"><%= schema_field_label meta_field_name %></option>
           <% end %>
 
           <%
@@ -33,7 +33,7 @@
               <option
                 value="<%= "[data-dx-metric='#{metric.metric}'][data-dx-group-2-member-descriptor='#{group_2_member_descriptor || "__nil__"}']" %>">
 
-                <%= member_label(@composition, @composition.groups[1], group_2_member_descriptor) %> <%= metric.metric %>
+                <%= member_label(@composition, @composition.groups[1], group_2_member_descriptor) %> – <%= metric.metric %>
               </option>
             <% end %>
           <% end %>
