@@ -64,7 +64,7 @@ module Compositions
       @comparisons ||= comparisons
     end
 
-    def query(abs_from, abs_to)
+    def query(abs_from = nil, abs_to = nil)
       return unless valid?
 
       @query ||= begin
