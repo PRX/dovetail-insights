@@ -224,6 +224,7 @@ Dimensions:
     QueryKey: country
     ExhibitField: country_name
     StaticFields:
+      - country_iso_code
       - country_name
     MetricAggregations:
       Sum:
