@@ -32,7 +32,13 @@
         end
       %>
 
-      <td class="totals" title="<%= title %>"><%= text %></td>
+      <td
+        data-dx-metric="<%= metric.metric %>"
+        class="totals"
+        title="<%= title %>">
+
+        <%= text %>
+      </td>
     <% end %>
   <% end %>
 
@@ -70,7 +76,15 @@
         end
       %>
 
-      <td class="totals" title="<%= title %>"><%= text %></td>
+      <td
+        data-dx-group-2-member-descriptor="<%= group_2_member_descriptor || "__nil__" %>"
+        data-dx-metric="<%= metric.metric %>"
+        data-dx-agg-point-sum="<%= sum %>"
+        class="totals"
+        title="<%= title %>">
+
+        <%= text %>
+      </td>
     <% end %>
   <% end %>
 </tr>

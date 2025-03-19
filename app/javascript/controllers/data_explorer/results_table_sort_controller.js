@@ -3,12 +3,10 @@ import { Controller } from "@hotwired/stimulus";
 
 // TODO proof of concept
 // TODO allow sorting on time series with 0 or 1 groups. Doesn't make sense with 2
-// TODO Dimensional, allow sorting by group 1 totals
-// TODO Allow sorting by group 1 (i.e., horizontally)
 export default class extends Controller {
   static targets = ["table", "row", "rowSortOpt"];
 
-  sort() {
+  sort_rows() {
     const sortedDataRows = this.rowTargets.sort((rowA, rowB) => {
       // eslint-disable-next-line no-restricted-syntax
       for (const rowSortOpt of this.rowSortOptTargets) {
@@ -35,20 +33,21 @@ export default class extends Controller {
           if (rowACell && rowBCell) {
             let result;
 
-            if (sortBy == "[data-dx-group-1-member-sort-values]") {
-              // TODO This currently only supports a single sort field, but it
-              // should support an arbitrary number of sort fields
-              const rowAValue = rowACell
-                .getAttribute("data-dx-group-1-member-sort-values")
-                .split(",")[0];
-              const rowBValue = rowBCell
-                .getAttribute("data-dx-group-1-member-sort-values")
-                .split(",")[0];
-
-              result = rowAValue.localeCompare(rowBValue);
+            if (sortBy === "[data-dx-group-1-default-sort-index]") {
+              const rowAValue = rowACell.getAttribute(
+                "data-dx-group-1-default-sort-index",
+              );
+              const rowBValue = rowBCell.getAttribute(
+                "data-dx-group-1-default-sort-index",
+              );
+              result = +rowAValue - +rowBValue;
             } else if (rowACell.dataset.dxDataPoint) {
               const rowAValue = rowACell.dataset.dxDataPoint;
               const rowBValue = rowBCell.dataset.dxDataPoint;
+              result = +rowAValue - +rowBValue;
+            } else if (rowACell.dataset.dxAggPointSum) {
+              const rowAValue = rowACell.dataset.dxAggPointSum;
+              const rowBValue = rowBCell.dataset.dxAggPointSum;
               result = +rowAValue - +rowBValue;
             } else {
               const rowAValue = rowACell.innerText;
@@ -71,86 +70,106 @@ export default class extends Controller {
     sortedDataRows.forEach((el) => body.append(el));
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  old_sort(event) {
-    // TODO support multiple metrics and comparisons
+  sort_cols() {
+    const sortDirection = document.querySelector(".col-sort-direction").value;
+    const sortBy = document.querySelector(".col-sort-by").value;
 
-    const metric = event.target.dataset.dxMetric;
+    let sortRow;
 
-    let selector;
-    let dimensionName;
-    let memberDescriptor;
-    if (event.target.getAttribute("data-dx-group-1-dimension-name")) {
-      selector = "data-dx-group-1-dimension-name";
-      dimensionName = event.target.getAttribute(
-        "data-dx-group-1-dimension-name",
-      );
-      memberDescriptor = event.target.getAttribute(
-        "data-dx-group-1-member-descriptor",
-      );
-    } else if (event.target.getAttribute("data-dx-group-2-dimension-name")) {
-      selector = "data-dx-group-2-dimension-name";
-      dimensionName = event.target.getAttribute(
-        "data-dx-group-2-dimension-name",
-      );
-      memberDescriptor = event.target.getAttribute(
-        "data-dx-group-2-member-descriptor",
+    if (sortBy === "default") {
+      sortRow = this.tableTarget.querySelector("thead tr:first-of-type");
+    } else if (sortBy === "total") {
+      sortRow = this.tableTarget.querySelector("tbody tr:first-of-type");
+    } else if (sortBy === "first-row") {
+      sortRow = this.tableTarget.querySelector(
+        "tbody tr:has(td[data-dx-data-point])",
       );
     }
 
-    if (event.target.dataset.dxSortConfig?.startsWith("0,")) {
-      // this is already the active sort for this dimension
+    const sortRowCellsInCurrentOrder = [...sortRow.querySelectorAll("th,td")];
 
-      if (event.target.dataset.dxSortConfig.endsWith(",ASC")) {
-        event.target.dataset.dxSortConfig = "0,DESC";
-      } else {
-        event.target.dataset.dxSortConfig = "0,ASC";
-      }
-    } else {
-      // Reset the sort property of all elements that belong to this group
-      this.tableTarget
-        .querySelectorAll(`*[${selector}="${dimensionName}"]`)
-        .forEach((el) => {
-          el.dataset.dxSortConfig = "";
-        });
+    // This will get sorted in place
+    const sortedSortRowCells = [...sortRow.querySelectorAll("th,td")];
 
-      // Set the config for the chosen element to make it the active sort
-      event.target.dataset.dxSortConfig = "0,DESC";
-    }
-
-    const containingRow = event.target.closest("tr");
-    const cellIdx = Array.from(containingRow.cells).indexOf(event.target);
-
-    if (cellIdx === 0) {
-      // event was on a row header and we should sort the columns
-    } else {
-      // event was on a column header and we should sort the row
-
-      // Sort the rows by the values found in cells that match the target's
-      // group and metric
-      const sortedDataRows = this.rowTargets.sort((tr1, tr2) => {
-        const tr1Cell = tr1.querySelector(
-          `td[data-dx-metric="${metric}"][data-dx-group-2-member-descriptor="${memberDescriptor}"]`,
-        );
-        const tr2Cell = tr2.querySelector(
-          `td[data-dx-metric="${metric}"][data-dx-group-2-member-descriptor="${memberDescriptor}"]`,
-        );
-
-        if (!tr1Cell || !tr2Cell) {
+    if (sortBy === "default") {
+      sortedSortRowCells.sort((cellA, cellB) => {
+        if (!cellA.getAttribute("data-dx-group-2-default-sort-index")) {
           return -1;
         }
 
-        return +tr2Cell.dataset.dxDataPoint - +tr1Cell.dataset.dxDataPoint;
+        const cellAValue = cellA.getAttribute(
+          "data-dx-group-2-default-sort-index",
+        );
+        const cellBValue = cellB.getAttribute(
+          "data-dx-group-2-default-sort-index",
+        );
+
+        return (
+          (+cellAValue - +cellBValue) * (sortDirection === "desc" ? -1 : 1)
+        );
       });
+    } else if (sortBy === "total") {
+      sortedSortRowCells.sort((cellA, cellB) => {
+        if (!cellA.dataset.dxAggPointSum) {
+          return -1;
+        }
 
-      const body = this.tableTarget.querySelector("tbody");
+        const cellAValue = cellA.dataset.dxAggPointSum;
+        const cellBValue = cellB.dataset.dxAggPointSum;
 
-      if (event.target.dataset.dxSortConfig.endsWith(",ASC")) {
-        sortedDataRows.reverse();
-      }
+        return (
+          (+cellAValue - +cellBValue) * (sortDirection === "desc" ? -1 : 1)
+        );
+      });
+    } else if (sortBy === "first-row") {
+      sortedSortRowCells.sort((cellA, cellB) => {
+        if (!cellA.dataset.dxDataPoint) {
+          return -1;
+        }
 
-      sortedDataRows.forEach((el) => el.remove());
-      sortedDataRows.forEach((el) => body.append(el));
+        const cellAValue = cellA.dataset.dxDataPoint;
+        const cellBValue = cellB.dataset.dxDataPoint;
+
+        return (
+          (+cellAValue - +cellBValue) * (sortDirection === "desc" ? -1 : 1)
+        );
+      });
     }
+
+    const sortMap = sortedSortRowCells.map((cell) => {
+      return sortRowCellsInCurrentOrder.indexOf(cell);
+    });
+
+    const rows = [...this.tableTarget.querySelectorAll("tr")];
+    rows.forEach((row) => {
+      const cells = [...row.querySelectorAll("th,td")];
+      cells.forEach((cell) => cell.remove());
+
+      sortMap.forEach((mapping) => {
+        const cell = cells[mapping];
+        row.append(cell);
+      });
+    });
+
+    // ["thead", "tbody"].forEach((sectionTag) => {
+    //   const section = this.tableTarget.querySelector(sectionTag);
+    //   const rows = [...section.querySelectorAll("tr")];
+
+    //   rows.forEach((row) => {
+    //     const cells = [...row.querySelectorAll("th,td")];
+
+    //     cells.forEach((cell) => cell.remove());
+
+    //     sortMap.forEach((mapping) => {
+    //       const cell = cells[mapping];
+    //       row.append(cell);
+    //     });
+    //   });
+    // });
+  }
+
+  sort() {
+    this.sort_rows();
+    this.sort_cols();
   }
 }

@@ -11,9 +11,15 @@
     <% end %>
   <% end %>
 
-  <% @display_group_2_member_descriptors.each do |_| %>
+  <% @display_group_2_member_descriptors.each do |group_2_member_descriptor| %>
     <% @composition.metrics.each do |metric| %>
-      <th scope="col"><%= metric.metric %></th>
+      <th
+        data-dx-group-2member-descriptor="<%= group_2_member_descriptor || "__nil__" %>"
+        data-dx-metric="<%= metric.metric %>"
+        scope="col">
+
+        <%= metric.metric %>
+      </th>
     <% end %>
   <% end %>
 </tr>
