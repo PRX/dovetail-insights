@@ -25,19 +25,16 @@ module GroupableResults
         members = group.abs_indices.map { |i| i.to_s }
         members.push(Compositions::Components::Group::TERMINATOR_INDEX)
       else
-        rows
-          .pluck(group.as)
-          .compact
-          .uniq
+        rows.pluck(group.as).compact.uniq
       end
     end
 
     def group_1_unique_member_descriptors
-      @group_1_unique_member_descriptors ||= unique_group_member_descriptors(composition.groups[0])
+      unique_group_member_descriptors(composition.groups[0])
     end
 
     def group_2_unique_member_descriptors
-      @group_2_unique_member_descriptors ||= unique_group_member_descriptors(composition.groups[1])
+      unique_group_member_descriptors(composition.groups[1])
     end
 
     ##
