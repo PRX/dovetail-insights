@@ -175,7 +175,7 @@ module QueryShapers
 
             cases << "ELSE '#{Compositions::Components::Group::TERMINATOR_INDEX}'"
 
-            selects << "CASE \n #{cases.join("\n")} \n END AS #{group.as}"
+            selects << "CASE \n\t\t#{cases.join("\n\t\t")}\n\t\tEND AS #{group.as}"
           else
             selects << "#{selector} AS #{group.as}"
           end
