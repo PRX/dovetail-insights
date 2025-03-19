@@ -51,7 +51,7 @@ module Compositions
     end
 
     def granularity_as
-      @granularity_as ||= "granularity_#{ShortRandom.value(self)}"
+      @granularity_as ||= :"granularity_#{ShortRandom.value(self)}"
     end
 
     def rolling?
