@@ -1,10 +1,6 @@
-require "ostruct"
-require "csv"
-
 class DataExplorerController < ApplicationController
-  rate_limit to: 4, within: 1.minute unless Rails.env.development?
-
   before_action :load_composition
+  rate_limit to: 6, within: 1.minute, if: -> { @composition.valid? }, with: -> { render "errors/rate_limit", layout: "plain", status: :too_many_requests } unless Rails.env.development?
 
   def index
     if @composition.valid? && @composition.results && @composition.bigquery_total_bytes_billed
