@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
       # namespace (aka app) by default. Anyone with read-private permissions
       # to Insights will be allowed to use the app
       unless current_user.globally_authorized?(:read_private) || current_user.authorized_account_ids(:read_private).any?
-        render "errors/no_access", layout: "plain"
+        render "errors/no_access", layout: "plain", status: :unauthorized
       end
     end
   end
