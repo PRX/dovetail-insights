@@ -32,6 +32,8 @@ module QueryShapers
       def to_hash
         @to_hash ||= {
           composition: composition,
+          abs_from: composition.abs_from,
+          abs_to: composition.abs_to,
           selects: selects,
           joins: joins,
           wheres: wheres,

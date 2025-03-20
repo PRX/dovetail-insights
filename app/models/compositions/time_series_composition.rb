@@ -64,8 +64,10 @@ module Compositions
       @comparisons ||= comparisons
     end
 
-    def query(abs_from = nil, abs_to = nil)
+    def query(query_from = abs_from, query_to = abs_to)
       return unless valid?
+
+      p "#{query_from} #{query_to}"
 
       @query ||= begin
         shaper = QueryShapers::Bigquery::TimeSeries.new(self)
@@ -73,7 +75,7 @@ module Compositions
         # dimensional.sql.erb is suitable for both dimensional and time series
         # queries.
         erb = ERB.new(File.read(Rails.root.join("app/queries/bigquery/dimensional.sql.erb").to_s))
-        erb.result_with_hash(shaper.to_hash.merge({abs_from: abs_from, abs_to: abs_to}))
+        erb.result_with_hash(shaper.to_hash.merge({abs_from: query_from, abs_to: query_to}))
       end
     end
 
@@ -104,7 +106,7 @@ module Compositions
       # Start a query job for the standard query (this happens even when there
       # are no comparisons)
       threads << Thread.new do
-        standard_jobs << BigqueryClient.instance.query_job(query(nil, nil))
+        standard_jobs << BigqueryClient.instance.query_job(query)
       end
 
       comparisons&.each do |comparison|
@@ -126,24 +128,22 @@ module Compositions
             # +j=0+. And +rewind=-1+ when +j=1+, etc
             rewind = -(comparison.lookback - j)
 
-            compare_abs_from = abs_from.dup
             compare_abs_from = case comparison.period
             when :YoY
-              compare_abs_from.advance(years: rewind)
+              abs_from.advance(years: rewind)
             when :QoQ
-              compare_abs_from.advance(months: 3 * rewind)
+              abs_from.advance(months: 3 * rewind)
             when :WoW
-              compare_abs_from.advance(weeks: rewind)
+              abs_from.advance(weeks: rewind)
             end
 
-            compare_abs_to = abs_to.dup
             compare_abs_to = case comparison.period
             when :YoY
-              compare_abs_to.advance(years: rewind)
+              abs_to.advance(years: rewind)
             when :QoQ
-              compare_abs_to.advance(months: 3 * rewind)
+              abs_to.advance(months: 3 * rewind)
             when :WoW
-              compare_abs_to.advance(weeks: rewind)
+              abs_to.advance(weeks: rewind)
             end
 
             job = BigqueryClient.instance.query_job(query(compare_abs_from, compare_abs_to))
