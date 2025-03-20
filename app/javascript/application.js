@@ -3,16 +3,7 @@ import "@hotwired/turbo-rails";
 // eslint-disable-next-line import/no-unresolved
 import "controllers";
 import { Tooltip } from "bootstrap";
-import SlimSelect from "slim-select";
-
-document
-  .querySelectorAll(".filter-chooser select.token-select")
-  .forEach((el) => {
-    // eslint-disable-next-line no-new, no-undef
-    new SlimSelect({
-      select: el,
-    });
-  });
+// import SlimSelect from "slim-select";
 
 (() => {
   document.addEventListener("DOMContentLoaded", () => {
