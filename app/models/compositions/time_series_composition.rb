@@ -67,16 +67,12 @@ module Compositions
     def query(query_from = abs_from, query_to = abs_to)
       return unless valid?
 
-      p "#{query_from} #{query_to}"
+      shaper = QueryShapers::Bigquery::TimeSeries.new(self)
 
-      @query ||= begin
-        shaper = QueryShapers::Bigquery::TimeSeries.new(self)
-
-        # dimensional.sql.erb is suitable for both dimensional and time series
-        # queries.
-        erb = ERB.new(File.read(Rails.root.join("app/queries/bigquery/dimensional.sql.erb").to_s))
-        erb.result_with_hash(shaper.to_hash.merge({abs_from: query_from, abs_to: query_to}))
-      end
+      # dimensional.sql.erb is suitable for both dimensional and time series
+      # queries.
+      erb = ERB.new(File.read(Rails.root.join("app/queries/bigquery/dimensional.sql.erb").to_s))
+      erb.result_with_hash(shaper.to_hash.merge({abs_from: query_from, abs_to: query_to}))
     end
 
     ##
