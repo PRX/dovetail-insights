@@ -29,7 +29,7 @@
     })();
   </script>
 
-  <select id="temp_add_filter">
+  <select id="temp_add_filter" style="margin-bottom: 20px;">
     <option value="default">+ Add Filter</option>
     <% sorted_dims.each do |dimension_name, dimension_def| %>
       <% unless @composition.filters&.find { |f| f.dimension == dimension_name.to_sym } %>
