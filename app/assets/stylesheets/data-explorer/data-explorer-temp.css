@@ -23,7 +23,7 @@ form {
 
 form.nochrome {
   grid-template-columns: 1fr;
-  grid-template-rows: auto auto;
+  grid-template-rows: 52px auto;
   gap: 0px 0px;
   grid-template-areas:
     "toolbar"
