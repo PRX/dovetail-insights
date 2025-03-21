@@ -1,5 +1,10 @@
 .filter-chooser.card {
   border-top: 4px solid #75bbe1;
+  display: none;
+
+  &.filter-added {
+    display: block;
+  }
 
   .active {
     background-color: aquamarine;

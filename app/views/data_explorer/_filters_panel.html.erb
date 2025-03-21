@@ -10,6 +10,34 @@
       (b_filter ? 1 : 0) - (a_filter ? 1 : 0)
     end
   %>
+
+  <script>
+    (function () {
+      document.addEventListener("DOMContentLoaded", (event) => {
+        document.querySelector("#temp_add_filter").addEventListener("change", (ev) => {
+          const dimName = ev.target.value;
+
+          if (dimName !== "default") {
+            const chooserForDimension = document.querySelector(`.filter-chooser[data-dimension-name="${dimName}"]`)
+            chooserForDimension.classList.add("filter-added");
+
+            document.querySelector(`#temp_add_filter option[value="${dimName}"]`).remove();
+            document.querySelector("#temp_add_filter").value = "default";
+          }
+        });
+      });
+    })();
+  </script>
+
+  <select id="temp_add_filter">
+    <option value="default">+ Add Filter</option>
+    <% sorted_dims.each do |dimension_name, dimension_def| %>
+      <% unless @composition.filters&.find { |f| f.dimension == dimension_name.to_sym } %>
+        <option value="<%= dimension_name %>"><%= schema_field_label(dimension_name) %></option>
+      <% end %>
+    <% end %>
+  </select>
+
   <% sorted_dims.each do |dimension_name, dimension_def| %>
     <%= render partial: "data_explorer/filter_chooser", locals: {dimension_name: dimension_name, dimension_def: dimension_def} %>
   <% end %>

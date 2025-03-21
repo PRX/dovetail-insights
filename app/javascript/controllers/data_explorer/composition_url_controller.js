@@ -88,6 +88,11 @@ export default class extends Controller {
 
     // For each filter chooser
     this.filterChooserTargets.forEach((filterChooser) => {
+      // Ignore if the chooser isn't visible
+      if (filterChooser.classList.contains("filter-added")) {
+        return;
+      }
+
       // Get the dimension key for the associated dimension
       const { dimensionKey } = filterChooser.dataset;
 

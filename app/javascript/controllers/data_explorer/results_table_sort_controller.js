@@ -2,7 +2,7 @@
 import { Controller } from "@hotwired/stimulus";
 
 // TODO proof of concept
-// TODO allow sorting on time series with 0 or 1 groups. Doesn't make sense with 2
+// TODO allow sorting on time series with 1 group. Doesn't make sense with 0 or 2
 export default class extends Controller {
   static targets = ["table", "row", "rowSortOpt"];
 

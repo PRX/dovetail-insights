@@ -332,7 +332,9 @@ Dimensions:
   feed:
     Type: Token
     QueryKey: feed
-    StaticFields: []
+    StaticFields:
+      - podcast_id
+      - podcast_name
     MetricAggregations:
       Sum:
         - count(downloads)

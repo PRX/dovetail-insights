@@ -1,15 +1,16 @@
 <% if Lists.list_for(dim_key) %>
+  <% vals = filter&.values %>
+
   <div class="form-floating input-group">
     <select
       data-action="blur->blank-field#blur"
       data-controller="slim-select"
-      class="form-select form-control-blank token-select <%= "field_with_errors" if filter&.errors&.include?(:values) %>"
+      class="form-select token-select <%= "form-control-blank" if vals.blank? %> <%= "field_with_errors" if filter&.errors&.include?(:values) %>"
       id="<%= "filter.#{dim_key}.values" %>"
       name="<%= "filter.#{dim_key}.values" %>"
       multiple>
 
       <% Lists.list_for(dim_key, @current_user_podcast_accounts).each do |item| %>
-        <% vals = filter&.values %>
         <option
           <%= html_attributes(value: item[item.keys[0]]) %>
           <%= select_eq vals&.include?(item[item.keys[0]].to_s) %>>
