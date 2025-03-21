@@ -6,7 +6,7 @@
 <%# = html_attributes(class: "active") if filter.try(:valid?) %>
 <% classes = ["filter-chooser", "card", "mb-3", "bg-white"] %>
 <% classes << "field_with_errors" if filter.try(:invalid?) %>
-<% classes << "filter-added" if filter %>
+<% classes << "filter-added" if filter || dimension_name == "podcast_id" %>
 <div
   class="<%= classes.join(" ") %>"
   data-data-explorer--composition-url-target="filterChooser"
