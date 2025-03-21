@@ -1,3 +1,5 @@
+@import "dovetail-app/bootstrap-variables";
+
 // Imports bootstrap styles from the npm module
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons";
@@ -7,7 +9,3 @@
 
 // Import local project styles
 @import "dovetail-app/shared";
-
-.bg-primary-dark {
-  background-color: $blue-dark;
-}
