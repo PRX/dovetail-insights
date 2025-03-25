@@ -96,6 +96,15 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # Profiling toolkit for Rack applications with Rails integration [https://miniprofiler.com/]
+  gem "rack-mini-profiler"
+
+  # Flamegraph support for arbitrary Ruby apps [https://github.com/SamSaffron/flamegraph]
+  gem "flamegraph"
+
+  # A sampling call-stack profiler for Ruby [https://github.com/tmm1/stackprof]
+  gem "stackprof"
 end
 
 group :test do
