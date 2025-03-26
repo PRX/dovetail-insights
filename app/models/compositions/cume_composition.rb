@@ -54,7 +54,7 @@ module Compositions
     end
 
     def query
-      return unless valid?
+      return unless memo_valid?
 
       @query ||= begin
         shaper = QueryShapers::Bigquery::Cume.new(self)
@@ -65,7 +65,7 @@ module Compositions
     end
 
     def results
-      return unless valid?
+      return unless memo_valid?
 
       @results ||= begin
         job = BigqueryClient.instance.query_job(query)

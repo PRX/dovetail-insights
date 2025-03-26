@@ -1,9 +1,9 @@
 class DataExplorerController < ApplicationController
   before_action :load_composition
-  rate_limit to: 6, within: 1.minute, if: -> { @composition.valid? }, with: -> { render "errors/rate_limit", layout: "plain", status: :too_many_requests } unless Rails.env.development?
+  rate_limit to: 6, within: 1.minute, if: -> { @composition.memo_valid? }, with: -> { render "errors/rate_limit", layout: "plain", status: :too_many_requests } unless Rails.env.development?
 
   def index
-    if @composition.valid? && @composition.results && @composition.bigquery_total_bytes_billed
+    if @composition.memo_valid? && @composition.results && @composition.bigquery_total_bytes_billed
       CompositionResultMetadataLog.create!(user_id: current_user.user_id, total_bytes_processed: @composition.bigquery_total_bytes_billed, params: params.to_s)
     end
 
@@ -15,7 +15,7 @@ class DataExplorerController < ApplicationController
   end
 
   def export
-    if @composition.valid?
+    if @composition.memo_valid?
       send_data(
         @composition.results.as_csv,
         filename: "export.csv",

@@ -17,7 +17,7 @@
       <p><b><%= number_to_human_size(@composition.bigquery_total_bytes_billed) %> (<%= number_to_currency(@composition.bigquery_total_bytes_billed.to_f / 2.0**40 * BIGQUERY_PRICE_PER_TIB, precision: 5) %>)</b></p>
     <% end %>
 
-    <%= render "data_explorer/composition_errors" if @composition.invalid? %>
+    <%= render "data_explorer/composition_errors" unless @composition.memo_valid? %>
     <%= render "data_explorer/composition_warnings" if @composition.unsafe? %>
 
     <%= render partial: "data_explorer/range_chooser", locals: {form: form} %>
@@ -41,7 +41,7 @@
     <% end %>
 
     <div id="results">
-      <% if @composition.valid? && @composition&.results %>
+      <% if @composition.memo_valid? && @composition&.results %>
         <% if @composition.lens == "dimensional" %>
           <%= render "data_explorer/dimensional/results" %>
         <% elsif @composition.lens == "timeSeries" %>

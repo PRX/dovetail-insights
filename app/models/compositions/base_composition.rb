@@ -57,6 +57,12 @@ module Compositions
       filters.filter { |f| !f.disabled }
     end
 
+    # Calling +valid?+ seems to run validations more than I would expect, since
+    # they shoud be memoized. This is a workaround to strictly memoize result.
+    def memo_valid?
+      @memo_valid ||= valid?
+    end
+
     def as_json(options = {})
       obj = {}
 

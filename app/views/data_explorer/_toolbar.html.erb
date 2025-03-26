@@ -1,6 +1,6 @@
 <div id="toolbar" class="prx-app-bar navbar p-0 bg-white">
   <nav class="ms-2 nav">
-    <% if @composition.valid? && @composition.results %>
+    <% if @composition.memo_valid? && @composition.results %>
 
       <% if @composition.is_a?(Compositions::TimeSeriesComposition) %>
         <div class="dropdown me-1">
@@ -82,7 +82,7 @@
       Reset <span class="material-icons" aria-hidden="true">refresh</span>
     </a>
 
-    <% if @composition.valid? && @composition.results %>
+    <% if @composition.memo_valid? && @composition.results %>
       <a class="btn btn-primary" href="#" role="button">
         Save <span class="material-icons" aria-hidden="true">save</span>
       </a>

@@ -65,7 +65,7 @@ module Compositions
     end
 
     def query(query_from = abs_from, query_to = abs_to)
-      return unless valid?
+      return unless memo_valid?
 
       shaper = QueryShapers::Bigquery::TimeSeries.new(self)
 
@@ -88,7 +88,7 @@ module Compositions
     # query for each lookback interval.
 
     def results
-      return unless valid?
+      return unless memo_valid?
 
       return @results if @results
 

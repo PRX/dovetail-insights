@@ -26,7 +26,7 @@ module Compositions
     caution :range_includes_future
 
     def query
-      return unless valid?
+      return unless memo_valid?
 
       @query ||= begin
         shaper = QueryShapers::Bigquery::Dimensional.new(self)
@@ -41,7 +41,7 @@ module Compositions
     # analysis.
 
     def results
-      return unless valid?
+      return unless memo_valid?
 
       @results ||= begin
         job = BigqueryClient.instance.query_job(query)
