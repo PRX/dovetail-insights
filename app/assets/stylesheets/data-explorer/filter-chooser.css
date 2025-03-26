@@ -8,6 +8,10 @@
     display: block;
   }
 
+  .filter-operator {
+    padding: 0 2.25rem 0 0.5rem;
+  }
+
   .active {
     background-color: aquamarine;
   }
