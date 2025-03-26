@@ -132,7 +132,7 @@ module Compositions
         !podcast || !authed
       end
 
-      if !user || invalid_podcasts.size > 0
+      if !user || (invalid_podcasts && invalid_podcasts.size > 0)
         errors.add(:filters, :unauthorized, message: "must not include unauthorized podcasts (#{invalid_podcasts.join(", ")})")
 
         # TODO Adding errors outside of #validate doesn't play nicely with .valid?
