@@ -10,6 +10,7 @@
   @tbl_show_comparison_headers = true
   @tbl_show_group_2_headers = true
   @tbl_show_group_1_headers = true
+  @tbl_show_group_1_totals = true
 
   ##
   # Turn things off for certain permutations of groups, metrics, and comparisons.
@@ -19,6 +20,11 @@
 
   # If there are no comparisons, don't show the headers
   @tbl_show_comparison_headers = false if @composition.comparisons.size < 1
+
+  # tktk
+  @tbl_show_group_1_totals = false if @composition.groups.size == 0
+  @tbl_show_group_1_totals = false if @composition.groups.size > 1
+  @tbl_show_group_1_totals = false if @composition.comparisons.present?
 
   # tktk
   @tbl_show_group_2_headers = false if @composition.groups.size < 2

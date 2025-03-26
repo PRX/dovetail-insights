@@ -1,3 +1,6 @@
+<% g1 = @composition.groups[0] %>
+<% g2 = @composition.groups[1] %>
+
 <% group_1_label_displayed = false %>
 
 <% @display_group_2_member_descriptors.each do |group_2_member_descriptor| %>
@@ -40,6 +43,23 @@
 
           <%= meta_descriptor_label(@composition.groups[0], meta_descriptor) %>
         </td>
+      <% end %>
+
+      <% if @tbl_show_group_1_totals %>
+        <% @composition.metrics.each do |metric| %>
+          <%
+            # Don't display a total for this group 1 member if group 1 is not summable for this metric
+            if !g1 || g1&.summable?(metric)
+              sum = @composition.results.calc_sum(metric, g1, group_1_member_descriptor)
+
+              text = number_with_delimiter sum
+            else
+              text = "n/a"
+            end
+          %>
+
+          <td class="totals"><%= text %></td>
+        <% end %>
       <% end %>
 
       <%= group_table_header_tag(@composition, @composition.groups[1], group_2_member_descriptor, :row) if @tbl_show_group_2_headers %>

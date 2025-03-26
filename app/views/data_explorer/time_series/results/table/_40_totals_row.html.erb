@@ -1,8 +1,27 @@
+<% g1 = @composition.groups[0] %>
+
 <tr class="totals">
   <% if @tbl_show_group_1_headers %><th scope="row">TOTAL</th><% end %>
 
   <% @meta&.each do |meta_field_name| %>
     <td></td>
+  <% end %>
+
+  <% if @tbl_show_group_1_totals %>
+    <% @composition.metrics.each do |metric| %>
+      <%
+        # Don't display a total if group 1 is not summable for this metric
+        if !g1 || g1&.summable?(metric)
+          sum = @composition.results.calc_interval_sum(metric)
+
+          text = number_with_delimiter sum
+        else
+          text = "n/a"
+        end
+      %>
+
+      <td class="totals"><%= text %></td>
+    <% end %>
   <% end %>
 
   <%= tag.td if @tbl_show_group_2_headers %>
@@ -12,13 +31,34 @@
       <% @composition.comparisons.each do |comparison| %>
         <% comparison.lookback.times do |j| %>
           <% rewind = -(comparison.lookback - j) %>
-          <% total = @composition.results.calc_interval_sum(metric, interval_descriptor, comparison, rewind) %>
-          <td><%= number_with_delimiter(total) %></td>
+
+          <%
+            # Don't display a total for this interval if group 1 is not summable for this metric
+            if !g1 || g1&.summable?(metric)
+              sum = @composition.results.calc_interval_sum(metric, interval_descriptor, comparison, rewind)
+
+              text = number_with_delimiter sum
+            else
+              text = "n/a"
+            end
+          %>
+
+          <% total = %>
+          <td><%= text %></td>
         <% end %>
       <% end %>
 
-      <% total = @composition.results.calc_interval_sum(metric, interval_descriptor) %>
-      <td><%= number_with_delimiter(total) %></td>
+      <%
+        # Don't display a total for this interval if group 1 is not summable for this metric
+        if !g1 || g1&.summable?(metric)
+          sum = @composition.results.calc_interval_sum(metric, interval_descriptor)
+
+          text = number_with_delimiter sum
+        else
+          text = "n/a"
+        end
+      %>
+      <td class="totals"><%= text %></td>
     <% end %>
   <% end %>
 </tr>

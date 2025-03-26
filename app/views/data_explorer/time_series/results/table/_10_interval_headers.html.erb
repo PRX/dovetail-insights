@@ -5,6 +5,12 @@
     <td><%= schema_field_label(meta_field_name) %></td>
   <% end %>
 
+  <% if @tbl_show_group_1_totals %>
+    <% @composition.metrics.each do |metric| %>
+      <td></td>
+    <% end %>
+  <% end %>
+
   <%= tag.td if @tbl_show_group_2_headers %>
 
   <%# A cell for each granularity period, spanning all metrics and comparisons %>

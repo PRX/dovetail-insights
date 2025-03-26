@@ -5,6 +5,12 @@
     <td></td>
   <% end %>
 
+  <% if @tbl_show_group_1_totals %>
+    <% @composition.metrics.each do |metric| %>
+      <td><%= metric.metric %></td>
+    <% end %>
+  <% end %>
+
   <%= tag.td if @tbl_show_group_2_headers %>
 
   <% @composition.results.unique_interval_descriptors.each do |_| %>

@@ -155,6 +155,7 @@ module Results
       raise "Must include a rewind when including a comparison" if comparison && !rewind
       raise "Must include a comparison when including a rewind" if rewind && !comparison
 
+      return if !interval_descriptor
       return interval_descriptor if !comparison
 
       interval_timestamp = Time.parse(interval_descriptor).utc
@@ -234,7 +235,7 @@ module Results
     ##
     # tktk
 
-    def calc_interval_sum(metric, interval_descriptor, comparison = nil, rewind = nil)
+    def calc_interval_sum(metric, interval_descriptor = nil, comparison = nil, rewind = nil)
       raise "Must include a rewind when including a comparison" if comparison && !rewind
       raise "Must include a comparison when including a rewind" if rewind && !comparison
 
@@ -248,7 +249,11 @@ module Results
 
       descriptor_to_use = comparison_descriptor_for_interval_descriptor(interval_descriptor, comparison, rewind)
 
-      @calc_interval_sum_cache[cache_key] = rows_to_use.filter { |row| row[composition.granularity_as] == descriptor_to_use }.inject(0) { |sum, row| sum + row[metric.as] }
+      @calc_interval_sum_cache[cache_key] = if descriptor_to_use
+        rows_to_use.filter { |row| row[composition.granularity_as] == descriptor_to_use }.inject(0) { |sum, row| sum + row[metric.as] }
+      else
+        rows_to_use.inject(0) { |sum, row| sum + row[metric.as] }
+      end
     end
   end
 end
