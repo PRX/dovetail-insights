@@ -8,4 +8,12 @@
   .totals {
     background-color: palegreen;
   }
+
+  td.totals::before,
+  th.totals::before {
+    content: "∑ ";
+    font-weight: 800;
+    opacity: 0.4;
+    font-size: 80%;
+  }
 }

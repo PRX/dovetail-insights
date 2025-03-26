@@ -205,10 +205,6 @@ table {
   width: 100%;
   border-collapse: collapse;
 
-  .totals {
-    background-color: palegreen;
-  }
-
   th {
     text-align: left;
   }
