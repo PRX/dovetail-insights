@@ -28,7 +28,7 @@
     })();
   </script>
 
-  <select id="temp_add_filter" style="margin-bottom: 20px;">
+  <select id="temp_add_filter" style="margin-bottom: 20px; float: right;">
     <option value="default">+ Add Filter</option>
     <% sorted_dims.each do |dimension_name, dimension_def| %>
       <% unless @composition.filters&.find { |f| f.dimension == dimension_name.to_sym } %>
@@ -36,6 +36,7 @@
       <% end %>
     <% end %>
   </select>
+  <div style="clear: both;"></div>
 
   <% sorted_dims.each do |dimension_name, dimension_def| %>
     <%= render partial: "data_explorer/filter_chooser", locals: {dimension_name: dimension_name, dimension_def: dimension_def} %>

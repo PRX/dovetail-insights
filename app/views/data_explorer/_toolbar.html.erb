@@ -4,7 +4,7 @@
 
       <% if @composition.is_a?(Compositions::TimeSeriesComposition) %>
         <div class="dropdown me-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="material-icons" aria-hidden="true">date_range</span> Granularity
           </button>
           <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -15,7 +15,7 @@
 
       <% if @composition.is_a?(Compositions::CumeComposition) %>
         <div class="dropdown me-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="material-icons" aria-hidden="true">date_range</span> Window
           </button>
           <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -26,7 +26,7 @@
 
       <% if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
         <div class="dropdown me-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="material-icons" aria-hidden="true">functions</span> Metrics
           </button>
           <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -35,7 +35,7 @@
         </div>
 
         <div class="dropdown me-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="material-icons" aria-hidden="true">table_chart</span> Groups
           </button>
           <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -46,7 +46,7 @@
 
       <% if @composition.is_a?(Compositions::TimeSeriesComposition) %>
         <div class="dropdown me-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="material-icons" aria-hidden="true">compare_arrows</span> Comparisons
           </button>
           <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -56,7 +56,7 @@
       <% end %>
 
       <div class="dropdown me-1">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
           <span class="material-icons" aria-hidden="true">highlight</span> Highlight
         </button>
         <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -65,7 +65,7 @@
       </div>
 
       <div class="dropdown me-1">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
           <span class="material-icons" aria-hidden="true">sort</span> Sort
         </button>
         <div class="dropdown-menu p-3" style="min-width: 675px;">
