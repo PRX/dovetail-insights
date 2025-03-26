@@ -21,7 +21,6 @@
             const chooserForDimension = document.querySelector(`.filter-chooser[data-dimension-name="${dimName}"]`)
             chooserForDimension.classList.add("filter-added");
 
-            document.querySelector(`#temp_add_filter option[value="${dimName}"]`).remove();
             document.querySelector("#temp_add_filter").value = "default";
           }
         });

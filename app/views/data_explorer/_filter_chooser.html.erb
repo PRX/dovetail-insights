@@ -3,6 +3,14 @@
 <%# Look for an existing Filter instance for this dimension – it may not exist %>
 <% filter = @composition.filters&.find { |f| f.dimension == dimension_name.to_sym } %>
 
+<style>
+  .filters-panel:has(div.filter-added[data-dimension-name="<%= dimension_name %>"]) {
+    #temp_add_filter option[value="<%= dimension_name %>"] {
+      display: none;
+    }
+  }
+</style>
+
 <%# = html_attributes(class: "active") if filter.try(:valid?) %>
 <% classes = ["filter-chooser", "card", "mb-3", "bg-white"] %>
 <% classes << "field_with_errors" if filter.try(:invalid?) %>
@@ -36,6 +44,10 @@
           <option value="include" <%= select_eq filter&.operator == :include %>>Include</option>
           <option value="exclude" <%= select_eq filter&.operator == :exclude %>>Exclude</option>
         </select>
+
+        <button style="border: none; background: none; color: var(--bs-danger);" onclick="this.closest('.filter-added').remove();">
+          <span class="material-icons">delete</span>
+        </button>
       <% end %>
     </div>
 
