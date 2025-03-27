@@ -1,10 +1,10 @@
-<div id="toolbar" class="prx-app-bar navbar p-0 bg-white">
-  <nav class="ms-2 nav">
+<div id="toolbar" class="prx-app-bar navbar bg-white px-2">
+  <nav class="nav gap-2">
     <% if @composition.memo_valid? && @composition.results %>
 
       <% if @composition.is_a?(Compositions::TimeSeriesComposition) %>
-        <div class="dropdown me-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <div class="dropdown">
+          <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="material-icons" aria-hidden="true">date_range</span> Granularity
           </button>
           <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -14,8 +14,8 @@
       <% end %>
 
       <% if @composition.is_a?(Compositions::CumeComposition) %>
-        <div class="dropdown me-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <div class="dropdown">
+          <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="material-icons" aria-hidden="true">date_range</span> Window
           </button>
           <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -25,8 +25,8 @@
       <% end %>
 
       <% if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
-        <div class="dropdown me-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <div class="dropdown">
+          <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="material-icons" aria-hidden="true">functions</span> Metrics
           </button>
           <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -34,8 +34,8 @@
           </div>
         </div>
 
-        <div class="dropdown me-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <div class="dropdown">
+          <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="material-icons" aria-hidden="true">table_chart</span> Groups
           </button>
           <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -45,8 +45,8 @@
       <% end %>
 
       <% if @composition.is_a?(Compositions::TimeSeriesComposition) %>
-        <div class="dropdown me-1">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <div class="dropdown">
+          <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <span class="material-icons" aria-hidden="true">compare_arrows</span> Comparisons
           </button>
           <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -55,8 +55,8 @@
         </div>
       <% end %>
 
-      <div class="dropdown me-1">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+      <div class="dropdown">
+        <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
           <span class="material-icons" aria-hidden="true">highlight</span> Highlight
         </button>
         <div class="dropdown-menu p-3" style="min-width: 575px;">
@@ -64,8 +64,8 @@
         </div>
       </div>
 
-      <div class="dropdown me-1">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+      <div class="dropdown">
+        <button class="btn btn-light btn-sm text-bg-opacity-25 dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
           <span class="material-icons" aria-hidden="true">sort</span> Sort
         </button>
         <div class="dropdown-menu p-3" style="min-width: 675px;">
@@ -77,21 +77,21 @@
     <% end %>
   </nav>
 
-  <div class="me-2 my-2">
-    <a class="btn btn-danger" href="/data-explorer?lens=<%= @composition.lens %>" role="button">
+  <div class="nav gap-2">
+    <a class="btn btn-danger btn-sm" href="/data-explorer?lens=<%= @composition.lens %>" role="button">
       Reset <span class="material-icons" aria-hidden="true">refresh</span>
     </a>
 
     <% if @composition.memo_valid? && @composition.results %>
-      <a class="btn btn-primary" href="#" role="button">
+      <a class="btn btn-primary btn-sm" href="#" role="button">
         Save <span class="material-icons" aria-hidden="true">save</span>
       </a>
 
-      <a download class="btn btn-primary" href="<%= request.original_url.sub("/data-explorer", "/data-explorer/export") %>" role="button">
+      <a download class="btn btn-primary btn-sm" href="<%= request.original_url.sub("/data-explorer", "/data-explorer/export") %>" role="button">
         Export <span class="material-icons" aria-hidden="true">file_download</span>
       </a>
     <% end %>
 
-    <input data-bs-toggle="tooltip" data-bs-title="Use Command+Enter to explore quickly" class="btn btn-success" type="submit" value="Explore ⌘⏎">
+    <input data-bs-toggle="tooltip" data-bs-title="Use Command+Enter to explore quickly" class="btn btn-success btn-sm" type="submit" value="Explore ⌘⏎">
   </div>
 </div>

@@ -1,5 +1,5 @@
 <div class="prx-app-bar navbar p-0 bg-white">
-  <nav class="prx-app-nav navbar-nav navbar-expand">
+  <nav class="prx-app-nav navbar-nav navbar-expand flex-fill">
     <div class="collapse navbar-collapse">
       <%= active_link_to "Home", root_path, class: "nav-link", active: :exclusive %>
       <%= active_link_to "Data Explorer", data_explorer_path, class: "nav-link" %>
@@ -7,33 +7,40 @@
     </div>
   </nav>
 
-  <div><!-- TODO -->
-    <div class="dropdown me-1">
-      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <span class="material-icons" aria-hidden="true">history</span> Query History
-      </button>
-
-      <div class="dropdown-menu p-3" style="min-width: 575px; max-height: 575px; overflow: scroll;">
-        <% foo = CompositionResultMetadataLog.where(user_id: current_user.user_id).order(created_at: :desc).limit(100) %>
-        <ul style="list-style: none;" class="p-0 m-0">
-          <% foo.each do |query| %>
-            <li>
-              <% scary_params = eval(query.params) # rubocop:disable Security/Eval %>
-              <a href="/data-explorer?<%= scary_params.to_query %>">
-                <%= time_ago_in_words query.created_at %> —
-                <%= scary_params["lens"] %>:
-                [<%= RangeDescription.in_words(scary_params["from"].tr(" ", "+"), scary_params["to"].tr(" ", "+")) %>]
-                <%= scary_params["granularity"] || "" %>
-                <%= scary_params["group.1"] || "" %>
-                <%= scary_params["group.2"] || "" %>
-                </a>
-            </li>
-          <% end %>
-        </ul>
-      </div>
+  <div class="d-flex align-items-center">
+    <div class="navbar-text p-2">
+      Last 48 hours: <%= number_to_human_size(@bytes) %> (<%= number_to_currency(@bytes.to_f / 2.0**40 * BIGQUERY_PRICE_PER_TIB, precision: 5) %>)
     </div>
+    <button class="btn text-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasHistory" aria-controls="offcanvasHistory">
+      <span class="material-icons" aria-label="Query History">history</span>
+    </button>
   </div>
-  <div class="navbar-text p-2">
-    Last 48 hours: <%= number_to_human_size(@bytes) %> (<%= number_to_currency(@bytes.to_f / 2.0**40 * BIGQUERY_PRICE_PER_TIB, precision: 5) %>)
+</div>
+
+
+<div class="offcanvas offcanvas-end bg-body" tabindex="-1" id="offcanvasHistory" aria-labelledby="offcanvasHistoryLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title d-flex align-items-center mb-0" id="offcanvasHistoryLabel"><span class="material-icons me-2" aria-label="hidden">history</span> Query History</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <% foo = CompositionResultMetadataLog.where(user_id: current_user.user_id).order(created_at: :desc).limit(100) %>
+    <% foo.each do |query| %>
+      <div class="card shadow border-0 border-top border-5 border-warning rounded mb-2">
+        <div class="card-body">
+          <% scary_params = eval(query.params) # rubocop:disable Security/Eval %>
+          <h6>
+            <a href="/data-explorer?<%= scary_params.to_query %>" class="stretched-link link-secondary text-camelcase link-underline-opacity-0"><%= scary_params["lens"] %></a>
+          </h6>
+          <p class="mb-0">
+            <%= time_ago_in_words query.created_at %> —
+            [<%= RangeDescription.in_words(scary_params["from"].tr(" ", "+"), scary_params["to"].tr(" ", "+")) %>]
+            <%= scary_params["granularity"] || "" %>
+            <%= scary_params["group.1"] || "" %>
+            <%= scary_params["group.2"] || "" %>
+          </p>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>

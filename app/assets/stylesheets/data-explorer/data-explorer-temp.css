@@ -27,7 +27,12 @@
   }
 }
 
-form {
+/* subtracts the height of the navbars + toolbar to always fill the height */
+.prx-form-row {
+  min-height: calc(100vh - 160px);
+}
+
+/*form {
   margin: 0;
   padding: 0;
   width: 100vw;
@@ -64,7 +69,7 @@ form.nochrome {
 #global-data-parameters {
   grid-area: global-data-parameters;
   padding: 8px;
-}
+}*/
 
 .nochrome #global-data-parameters,
 .nochrome #lens-data-parameters {
@@ -76,7 +81,7 @@ form.nochrome {
 }
 
 #lens {
-  grid-area: lens;
+ /* grid-area: lens;*/
   overflow: scroll;
 }
 
@@ -200,7 +205,6 @@ form:has(
     display: initial;
   }
 }
-
 table {
   width: 100%;
   border-collapse: collapse;
