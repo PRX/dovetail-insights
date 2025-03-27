@@ -25,7 +25,7 @@
     <%= render "data_explorer/filters_panel" %>
   </div>
 
-  <div id="lens">
+  <div id="lens" class="bg-white m-0 p-4 shadow">
     <% if !@composition.instance_of?(Compositions::BaseComposition) && !@composition.results %>
       <div id="lens-data-parameters">
         <%= render partial: "data_explorer/time_series/granularity_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>

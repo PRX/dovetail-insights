@@ -3,16 +3,18 @@
  */
 
 body {
-  --#{$prefix}body-font-family: "Roboto", "Helvetica Neue", sans-serif;
-  --#{$prefix}body-bg: #{$gray-100};
-  --#{$prefix}body-color: #{$gray-600};
+  --prefix-body-font-family: "Roboto", "Helvetica Neue", sans-serif;
+  --prefix-body-bg: #{$blue-100};
+  --prefix-body-color: #{$gray-600};
+
+  font-family: var(--prefix-body-font-family);
+  background-color: var(--prefix-body-bg);
+  color: var(--prefix-body-color);
 
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
-
-  background-image: image-url("prx-mark-outlined.svg");
   background-repeat: repeat;
   background-position: top left;
 }

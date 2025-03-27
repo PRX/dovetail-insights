@@ -1,40 +1,60 @@
-<ul>
-  <li><a href="/data-explorer?lens=dimensional&from=now-1/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=time&group.1.extract=hour&group.2=time&group.2.extract=day_of_week">Heatmap by hour and day of the week</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-1/M&to=now-1/M&filter.podcast=include&filter.podcast.values=3&filter.lag=exclude&filter.lag.gte=0&filter.lag.lt=36h&metrics=count(downloads)&group.1=time&group.1.extract=hour&group.2=time&group.2.extract=day_of_week">Heatmap by hour and day of week, excluding drop spikes (first 36 hours)</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-1/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&filter.country=include&filter.country.values=CA,MX,US&metrics=count(downloads)&group.1=country&group.2=os">Country vs. OS, continental North America</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-4/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&granularity=weekly&metrics=count(downloads)&group.1=lag&group.1.indices=7D,28D,90D,180D,365D">Freshness by week</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-6/M&to=now-1/M&filter.podcast=include&filter.podcast.values=59,93,3&granularity=monthly&metrics=count(downloads)&group.1=podcast&compare.YoY=2">Multiple shows, monthly downloads with YoY comparison</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/M&to=now-1/M&filter.podcast=include&filter.podcast.values=3,93,3&granularity=weekly&metrics=count(uniques)&group.1=podcast">Weekly uniques for multiple shows</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-4/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&filter.published=include&filter.published.from=now-20/Y&filter.published.to=now-6/Y&granularity=weekly&metrics=count(downloads)&group.1=episode">Recent activity, by week, on episodes older than 5 years, by episode</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-30/D&to=now-1/D&filter.podcast=include&filter.podcast.values=3&filter.lag=exclude&filter.lag.gte=0&filter.lag.lt=36h&granularity=daily&metrics=count(downloads)&group.1=ua">Daily downloads by app, excluding drop spikes (first 36 hours)</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-6/M&to=now-1/M&filter.podcast=include&filter.podcast.values=3&filter.published=include&filter.published.from=now-6/M&filter.published.to=now&filter.age=exclude&filter.age.gte=0&filter.age.lt=28D&filter.lag=include&filter.lag.gte=0&filter.lag.lt=28D&metrics=count(downloads)&group.1=episode">28D downloads, for episodes in the last 6 months, no partial data</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/M&to=now&filter.podcast=include&filter.podcast.values=224,332,187,30,59,143,3723,287,8013,2238,366,26,2073,3492,231,274,232,35,135,72,93,25,98,36,4944,380,97,52,282,4548,1116,3&granularity=monthly&metrics=count(downloads)&group.1=podcast">Monthly downloads for all Radiotopia shows</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-2/Y&to=now-1/Y&filter.podcast=include&filter.podcast.values=&metrics=count(downloads)&group.1=published&group.1.extract=year&group.2=time&group.2.extract=year">Dowloads by year and year the episode was published</a></li>
-</ul>
+<div class="container-fluid p-4">
+  <div class="row gap-2">
+    <div class="col">
+      <div class="card shadow border-0 border-top border-5 border-primary rounded">
+        <div class="card-body">
+          <ul>
+            <li><a href="/data-explorer?lens=dimensional&from=now-1/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=time&group.1.extract=hour&group.2=time&group.2.extract=day_of_week">Heatmap by hour and day of the week</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-1/M&to=now-1/M&filter.podcast=include&filter.podcast.values=3&filter.lag=exclude&filter.lag.gte=0&filter.lag.lt=36h&metrics=count(downloads)&group.1=time&group.1.extract=hour&group.2=time&group.2.extract=day_of_week">Heatmap by hour and day of week, excluding drop spikes (first 36 hours)</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-1/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&filter.country=include&filter.country.values=CA,MX,US&metrics=count(downloads)&group.1=country&group.2=os">Country vs. OS, continental North America</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-4/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&granularity=weekly&metrics=count(downloads)&group.1=lag&group.1.indices=7D,28D,90D,180D,365D">Freshness by week</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-6/M&to=now-1/M&filter.podcast=include&filter.podcast.values=59,93,3&granularity=monthly&metrics=count(downloads)&group.1=podcast&compare.YoY=2">Multiple shows, monthly downloads with YoY comparison</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/M&to=now-1/M&filter.podcast=include&filter.podcast.values=3,93,3&granularity=weekly&metrics=count(uniques)&group.1=podcast">Weekly uniques for multiple shows</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-4/W&to=now-1/W&filter.podcast=include&filter.podcast.values=3&filter.published=include&filter.published.from=now-20/Y&filter.published.to=now-6/Y&granularity=weekly&metrics=count(downloads)&group.1=episode">Recent activity, by week, on episodes older than 5 years, by episode</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-30/D&to=now-1/D&filter.podcast=include&filter.podcast.values=3&filter.lag=exclude&filter.lag.gte=0&filter.lag.lt=36h&granularity=daily&metrics=count(downloads)&group.1=ua">Daily downloads by app, excluding drop spikes (first 36 hours)</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-6/M&to=now-1/M&filter.podcast=include&filter.podcast.values=3&filter.published=include&filter.published.from=now-6/M&filter.published.to=now&filter.age=exclude&filter.age.gte=0&filter.age.lt=28D&filter.lag=include&filter.lag.gte=0&filter.lag.lt=28D&metrics=count(downloads)&group.1=episode">28D downloads, for episodes in the last 6 months, no partial data</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/M&to=now&filter.podcast=include&filter.podcast.values=224,332,187,30,59,143,3723,287,8013,2238,366,26,2073,3492,231,274,232,35,135,72,93,25,98,36,4944,380,97,52,282,4548,1116,3&granularity=monthly&metrics=count(downloads)&group.1=podcast">Monthly downloads for all Radiotopia shows</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-2/Y&to=now-1/Y&filter.podcast=include&filter.podcast.values=&metrics=count(downloads)&group.1=published&group.1.extract=year&group.2=time&group.2.extract=year">Dowloads by year and year the episode was published</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-<h3>Smoke tests</h3>
-<ul>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)">Dimensional: 0 groups, 1 metric</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads),count(uniques)">Dimensional: 0 groups, 2+ metrics</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=continent">Dimensional: 1 groups, 1 metrics, 0 meta</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=country&group.1.meta=country">Dimensional: 1 groups, 1 metrics, 1+ meta</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads),count(uniques)&group.1=continent">Dimensional: 1 groups, 2+ metrics, 0 meta</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=continent&group.2=device">Dimensional: 2 groups, 1 metric, 0 meta</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=country&group.1.meta=country&group.2=device">Dimensional: 2 groups, 1 metric, 1 meta</a></li>
-  <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads),count(uniques)&group.1=continent&group.2=device">Dimensional: 2 groups, 2+ metrics</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)">Time Series: Daily, 0 groups, 1 metric, 0 comparisons</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads),count(uniques)">Time Series: Daily, 0 groups, 2+ metrics, 0 comparisons</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&group.1=continent">Time Series: Daily, 1 group, 1 metric, 0 comparisons</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads),count(uniques)&group.1=continent">Time Series: Daily, 1 group, 2+ metrics, 0 comparisons</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&group.1=continent&group.2=device">Time Series: Daily, 2 groups, 1 metric, 0 comparisons</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&group.1=continent&group.2=device">Time Series: Daily, 2 groups, 2+ metrics, 0 comparisons</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&compare.WoW=1">Time Series: Daily, 0 groups, 1 metric, 1 comparison</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&compare.WoW=1">Time Series: Daily, 0 groups, 2+ metrics, 1 comparison</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&group.1=continent&compare.WoW=1">Time Series: Daily, 1 group, 1 metric, 1 comparison</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads),count(uniques)&group.1=continent&compare.WoW=1">Time Series: Daily, 1 group, 2+ metrics, 1 comparison</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&group.1=continent&group.2=device&compare.WoW=1">Time Series: Daily, 2 groups, 1 metric, 1 comparison</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads),count(uniques)&group.1=continent&group.2=device&compare.WoW=1">Time Series: Daily, 2 groups, 2+ metrics, 1 comparison</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=2025-02-22T00:00:00Z&to=2025-02-26T00:00:00Z&filter.podcast=include&filter.podcast.values=3&filter.country=include&filter.country.values=AI&granularity=daily&metrics=count(downloads)">Time Series: with missing intervals</a></li>
-  <li><a href="/data-explorer?lens=timeSeries&from=2025-02-05&to=2025-02-21&filter.podcast=include&filter.podcast.values=3&granularity=weekly&metrics=count(downloads)">Time Series: with partial intervals</a></li>
-  <li><a href="/data-explorer?lens=cume&from=now-1/M&to=now-1/M&filter.published=include&filter.published.from=now-1/M&filter.published.to=now-1/M&filter.podcast=include&filter.podcast.values=59&group.1=episode">Cume</a></li>
-</ul>
+    <div class="col">
+      <div class="card shadow border-0 border-top border-5 border-primary rounded">
+        <h3 class="card-header border-0">Smoke tests</h3>
+        <div class="card-body">
+          <ul>
+            <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)">Dimensional: 0 groups, 1 metric</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads),count(uniques)">Dimensional: 0 groups, 2+ metrics</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=continent">Dimensional: 1 groups, 1 metrics, 0 meta</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=country&group.1.meta=country">Dimensional: 1 groups, 1 metrics, 1+ meta</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads),count(uniques)&group.1=continent">Dimensional: 1 groups, 2+ metrics, 0 meta</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=continent&group.2=device">Dimensional: 2 groups, 1 metric, 0 meta</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads)&group.1=country&group.1.meta=country&group.2=device">Dimensional: 2 groups, 1 metric, 1 meta</a></li>
+            <li><a href="/data-explorer?lens=dimensional&from=now-12h&to=now&filter.podcast=include&filter.podcast.values=3&metrics=count(downloads),count(uniques)&group.1=continent&group.2=device">Dimensional: 2 groups, 2+ metrics</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)">Time Series: Daily, 0 groups, 1 metric, 0 comparisons</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads),count(uniques)">Time Series: Daily, 0 groups, 2+ metrics, 0 comparisons</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&group.1=continent">Time Series: Daily, 1 group, 1 metric, 0 comparisons</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads),count(uniques)&group.1=continent">Time Series: Daily, 1 group, 2+ metrics, 0 comparisons</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&group.1=continent&group.2=device">Time Series: Daily, 2 groups, 1 metric, 0 comparisons</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&group.1=continent&group.2=device">Time Series: Daily, 2 groups, 2+ metrics, 0 comparisons</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&compare.WoW=1">Time Series: Daily, 0 groups, 1 metric, 1 comparison</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&compare.WoW=1">Time Series: Daily, 0 groups, 2+ metrics, 1 comparison</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&group.1=continent&compare.WoW=1">Time Series: Daily, 1 group, 1 metric, 1 comparison</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads),count(uniques)&group.1=continent&compare.WoW=1">Time Series: Daily, 1 group, 2+ metrics, 1 comparison</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads)&group.1=continent&group.2=device&compare.WoW=1">Time Series: Daily, 2 groups, 1 metric, 1 comparison</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=now-3/D&to=now/D&filter.podcast=include&filter.podcast.values=3&granularity=daily&metrics=count(downloads),count(uniques)&group.1=continent&group.2=device&compare.WoW=1">Time Series: Daily, 2 groups, 2+ metrics, 1 comparison</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=2025-02-22T00:00:00Z&to=2025-02-26T00:00:00Z&filter.podcast=include&filter.podcast.values=3&filter.country=include&filter.country.values=AI&granularity=daily&metrics=count(downloads)">Time Series: with missing intervals</a></li>
+            <li><a href="/data-explorer?lens=timeSeries&from=2025-02-05&to=2025-02-21&filter.podcast=include&filter.podcast.values=3&granularity=weekly&metrics=count(downloads)">Time Series: with partial intervals</a></li>
+            <li><a href="/data-explorer?lens=cume&from=now-1/M&to=now-1/M&filter.published=include&filter.published.from=now-1/M&filter.published.to=now-1/M&filter.podcast=include&filter.podcast.values=59&group.1=episode">Cume</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
