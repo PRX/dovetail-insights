@@ -11,45 +11,48 @@
       } do |form| %>
   <%= render partial: "data_explorer/toolbar", locals: {form: form} %>
 
-  <div id="global-data-parameters">
+  <div class="prx-form-row row m-0 p-0 d-flex h-100">
 
-    <% if @composition.bigquery_total_bytes_billed %>
-      <p><b><%= number_to_human_size(@composition.bigquery_total_bytes_billed) %> (<%= number_to_currency(@composition.bigquery_total_bytes_billed.to_f / 2.0**40 * BIGQUERY_PRICE_PER_TIB, precision: 5) %>)</b></p>
-    <% end %>
+    <div id="global-data-parameters" class="col-4 col-lg-3">
 
-    <%= render "data_explorer/composition_errors" unless @composition.memo_valid? %>
-    <%= render "data_explorer/composition_warnings" if @composition.unsafe? %>
-
-    <%= render partial: "data_explorer/range_chooser", locals: {form: form} %>
-
-    <%= render "data_explorer/filters_panel" %>
-  </div>
-
-  <div id="lens" class="bg-white m-0 p-4 shadow">
-    <% if !@composition.instance_of?(Compositions::BaseComposition) && !@composition.results %>
-      <div id="lens-data-parameters">
-        <%= render partial: "data_explorer/time_series/granularity_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
-
-        <%= render partial: "data_explorer/cume/window_chooser", locals: {form: form} if @composition.is_a? Compositions::CumeComposition %>
-
-        <%= render partial: "data_explorer/dimensional/metrics_chooser" if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
-
-        <%= render partial: "data_explorer/dimensional/groups_panel" if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
-
-        <%= render partial: "data_explorer/time_series/comparison_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
-      </div>
-    <% end %>
-
-    <div id="results">
-      <% if @composition.memo_valid? && @composition&.results %>
-        <% if @composition.lens == "dimensional" %>
-          <%= render "data_explorer/dimensional/results" %>
-        <% elsif @composition.lens == "timeSeries" %>
-          <%= render "data_explorer/time_series/results" %>
-        <% elsif @composition.lens == "cume" %>
-          <%= render "data_explorer/cume/results" %>
-        <% end %>
+      <% if @composition.bigquery_total_bytes_billed %>
+        <p><b><%= number_to_human_size(@composition.bigquery_total_bytes_billed) %> (<%= number_to_currency(@composition.bigquery_total_bytes_billed.to_f / 2.0**40 * BIGQUERY_PRICE_PER_TIB, precision: 5) %>)</b></p>
       <% end %>
+
+      <%= render "data_explorer/composition_errors" unless @composition.memo_valid? %>
+      <%= render "data_explorer/composition_warnings" if @composition.unsafe? %>
+
+      <%= render partial: "data_explorer/range_chooser", locals: {form: form} %>
+
+      <%= render "data_explorer/filters_panel" %>
+    </div>
+
+    <div id="lens" class="col-8 col-lg-9 bg-white m-0 p-4 border-start">
+      <% if !@composition.instance_of?(Compositions::BaseComposition) && !@composition.results %>
+        <div id="lens-data-parameters">
+          <%= render partial: "data_explorer/time_series/granularity_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
+
+          <%= render partial: "data_explorer/cume/window_chooser", locals: {form: form} if @composition.is_a? Compositions::CumeComposition %>
+
+          <%= render partial: "data_explorer/dimensional/metrics_chooser" if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
+
+          <%= render partial: "data_explorer/dimensional/groups_panel" if @composition.is_a?(Compositions::DimensionalComposition) || @composition.is_a?(Compositions::CumeComposition) %>
+
+          <%= render partial: "data_explorer/time_series/comparison_chooser", locals: {form: form} if @composition.is_a? Compositions::TimeSeriesComposition %>
+        </div>
+      <% end %>
+
+      <div id="results">
+        <% if @composition.memo_valid? && @composition&.results %>
+          <% if @composition.lens == "dimensional" %>
+            <%= render "data_explorer/dimensional/results" %>
+          <% elsif @composition.lens == "timeSeries" %>
+            <%= render "data_explorer/time_series/results" %>
+          <% elsif @composition.lens == "cume" %>
+            <%= render "data_explorer/cume/results" %>
+          <% end %>
+        <% end %>
+      </div>
     </div>
   </div>
 <% end %>
