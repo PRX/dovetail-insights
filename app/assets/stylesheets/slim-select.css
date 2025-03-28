@@ -76,7 +76,7 @@
 
 .ss-main .ss-values .ss-value {
   background-color: var(--bs-gray-200);
-  height: 24px;
+  padding: 3px 0;
 
   .ss-value-text {
     padding: 0 5px;
