@@ -5,7 +5,7 @@
     <select
       data-action="blur->blank-field#blur"
       data-controller="slim-select"
-      class="form-select token-select <%= "form-control-blank" if vals.blank? %> <%= "field_with_errors" if filter&.errors&.include?(:values) %>"
+      class="form-select token-select <%= "field_with_errors" if filter&.errors&.include?(:values) %>"
       id="<%= "filter.#{dim_key}.values" %>"
       name="<%= "filter.#{dim_key}.values" %>"
       multiple>

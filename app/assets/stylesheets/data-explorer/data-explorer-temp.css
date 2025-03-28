@@ -6,27 +6,6 @@
   }
 }
 
-.ss-content .ss-list .ss-option {
-  padding: 3px 8px;
-  font-size: 0.8rem;
-  line-height: 1.4;
-}
-
-.ss-main .ss-values .ss-value {
-  background-color: var(--bs-gray-500);
-  height: 24px;
-
-  .ss-value-text {
-    padding: 0 5px;
-  }
-
-  .ss-value-delete,
-  .ss-value-delete svg {
-    width: 11px;
-    height: 11px;
-  }
-}
-
 form {
   margin: 0;
   padding: 0;

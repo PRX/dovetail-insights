@@ -8,16 +8,8 @@ export default class extends Controller {
       settings: {
         placeholderText: "",
         showSearch: this.showSearch,
-      },
-      events: {
-        afterChange: (val) => {
-          if (val.length > 0) {
-            this.slim.selectEl.classList.remove("form-control-blank");
-          } else {
-            this.slim.selectEl.classList.add("form-control-blank");
-          }
-          this.element.dispatchEvent(new Event("blur"));
-        },
+        closeOnSelect: false,
+        allowDeselect: true,
       },
     });
   }
