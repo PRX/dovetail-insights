@@ -88,6 +88,12 @@ export default class extends Controller {
     // eslint-disable-next-line no-new
     new SlimSelect({
       select: this.valuesTarget,
+      settings: {
+        placeholderText: "Select…",
+        showSearch: false,
+        closeOnSelect: false,
+        allowDeselect: true,
+      },
     });
   }
 }

@@ -1,19 +1,24 @@
+/*  By default, these cards are hidden. They are only displayed once the filter
+has been selected by the user. */
 .filter-chooser.card {
   border-top: 4px solid var(--bs-cyan);
   border-bottom: 4px solid var(--bs-gray-400);
   display: none;
   border-radius: 4px;
 
+  /* Once the filter is added by the user, the `filter-added` class is added
+  to the card. */
   &.filter-added {
     display: block;
   }
 
-  .filter-operator {
-    padding: 0 2.25rem 0 0.5rem;
+  &.field_with_errors {
+    border-top-color: var(--bs-danger);
   }
 
-  .active {
-    background-color: aquamarine;
+  select.field_with_errors,
+  input.field_with_errors {
+    border-color: var(--bs-danger);
   }
 
   legend {
@@ -22,20 +27,27 @@
   }
 
   h3.card-title {
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 500;
   }
 
-  select.filter-operator {
+  select.form-select {
     font-size: 0.7rem;
     width: inherit;
     height: 1.9rem;
     border-radius: 2px;
     background-color: white;
+    padding: 0 2.25rem 0 0.5rem;
   }
 
+  /* Some filter cards have this nulls chooser. When available, it only shows
+  up once the operator (include vs. exclude) has been chosen. The label of the
+  checkbox changes to match the operator, so some elements are displayed
+  conditionally. */
   .nulls-chooser {
     display: none;
+    font-size: 0.86rem;
+    padding: 0.5rem 0 0;
   }
   &:has(select.filter-operator option[value*="clude"]:checked) .nulls-chooser {
     display: block;

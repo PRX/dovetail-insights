@@ -1,33 +1,35 @@
-<fieldset>
-  <legend>Composition Errors</legend>
+<% if !params[:lens] || params.keys.size > 3 %>
+  <fieldset id="composition-errors">
+    <legend>Errors</legend>
 
-  <ul>
-    <% @composition.errors.full_messages.each do |msg| %>
-      <li><%= msg %></li>
-    <% end %>
-
-    <% @composition.filters&.each do |filter| %>
-      <% filter.errors.full_messages.each do |msg| %>
-        <li><%= filter.dimension %> filter: <%= msg %></li>
+    <ul>
+      <% @composition.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
       <% end %>
-    <% end %>
 
-    <% @composition.try(:metrics)&.each do |metric| %>
-      <% metric.errors.full_messages.each do |msg| %>
-        <li><%= metric.metric %> metric: <%= msg %></li>
+      <% @composition.filters&.each do |filter| %>
+        <% filter.errors.full_messages.each do |msg| %>
+          <li><%= filter.dimension %> filter: <%= msg %></li>
+        <% end %>
       <% end %>
-    <% end %>
 
-    <% @composition.try(:groups)&.each do |group| %>
-      <% group&.errors&.full_messages&.each do |msg| %>
-        <li><%= group.dimension %> group: <%= msg %></li>
+      <% @composition.try(:metrics)&.each do |metric| %>
+        <% metric.errors.full_messages.each do |msg| %>
+          <li><%= metric.metric %> metric: <%= msg %></li>
+        <% end %>
       <% end %>
-    <% end %>
 
-    <% @composition.try(:comparisons)&.each do |comparison| %>
-      <% comparison&.errors&.full_messages&.each do |msg| %>
-        <li><%= comparison.period %> comparison: <%= msg %></li>
+      <% @composition.try(:groups)&.each do |group| %>
+        <% group&.errors&.full_messages&.each do |msg| %>
+          <li><%= group.dimension %> group: <%= msg %></li>
+        <% end %>
       <% end %>
-    <% end %>
-  </ul>
-</fieldset>
+
+      <% @composition.try(:comparisons)&.each do |comparison| %>
+        <% comparison&.errors&.full_messages&.each do |msg| %>
+          <li><%= comparison.period %> comparison: <%= msg %></li>
+        <% end %>
+      <% end %>
+    </ul>
+  </fieldset>
+<% end %>

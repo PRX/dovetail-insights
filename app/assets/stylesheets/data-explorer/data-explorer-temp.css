@@ -1,17 +1,10 @@
-.field_with_errors {
-  background: lightcoral !important;
-
-  input {
-    border: 1px solid red;
-  }
-}
-
 form {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
   display: grid;
+  background-color: #f7f9fd;
   grid-template-rows: 52px auto;
   grid-template-columns: 330px 1fr;
   gap: 0px 0px;

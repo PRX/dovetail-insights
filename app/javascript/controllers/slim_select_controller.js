@@ -6,7 +6,7 @@ export default class extends Controller {
     this.slim = new SlimSelect({
       select: this.element,
       settings: {
-        placeholderText: "",
+        placeholderText: "Select…",
         showSearch: this.showSearch,
         closeOnSelect: false,
         allowDeselect: true,

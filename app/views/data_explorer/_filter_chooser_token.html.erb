@@ -19,7 +19,7 @@
         </option>
       <% end %>
     </select>
-    <label for="<%= "filter.#{dim_key}.values" %>">Values:</label>
+    <!-- <label for="<%= "filter.#{dim_key}.values" %>">Values:</label> -->
   </div>
 <% else %>
   <div class="form-floating input-group">
@@ -37,17 +37,17 @@
 <% end %>
 
 <% if dimension_def["PermitNulls"] %>
-  <div class="nulls-chooser">
-    <label
-      for="filter.<%= dim_key %>.nulls">
-
-      <span class="include">Include</span><span class="exclude">Exclude</span> NULLs:
-    </label>
-
+  <div class="nulls-chooser form-check">
     <input
       name="<%= "filter.#{dim_key}.nulls" %>"
       id="<%= "filter.#{dim_key}.nulls" %>"
       type="checkbox"
       <%= html_attributes(checked: "checked") if filter&.nulls == :follow %>>
+
+    <label
+      for="filter.<%= dim_key %>.nulls">
+
+      <span class="include">Include</span><span class="exclude">Exclude</span> NULLs
+    </label>
   </div>
 <% end %>

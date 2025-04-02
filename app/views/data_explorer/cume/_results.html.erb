@@ -11,7 +11,8 @@
     <% end %>
   </tr>
 
-  <% @composition.results.group_1_unique_member_descriptors.each do |group_1_member_descriptor| %>
+  <% d = default_group_member_descriptor_sort(@composition, @composition.groups[0], @composition.results.group_1_unique_member_descriptors) %>
+  <% d.each do |group_1_member_descriptor| %>
     <tr>
       <td><%= member_label(@composition, @composition.groups[0], group_1_member_descriptor) %></td>
 

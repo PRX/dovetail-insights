@@ -13,7 +13,7 @@
       <% checked = @composition.try(:metrics) && @composition.metrics.find { |m| m.metric == metric_name.to_sym } %>
       <label>
         <input type="checkbox" data-data-explorer--composition-url-target="metric" <%= html_attributes(value: metric_name) %> <%= html_attributes(checked: "checked") if checked %>>
-        <%= metric_name %>
+        <%= t "metrics.#{metric_name}" %>
       </label>
     <% end %>
   <% end %>

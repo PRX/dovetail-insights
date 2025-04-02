@@ -15,6 +15,10 @@ en:
     subdivision_name: state/province/region name
     time_zone: time zone
     user_agent_id: app & browser
+  metrics:
+    "count(downloads)": Downloads
+    "count(impressions)": Impressions
+    "count(uniques)": Unique Listeners
   filter_choosers:
     hints:
       podcast_id: Include/exclude data for specific podcasts (e.g., Include only data for Podcast A and Podcast B)

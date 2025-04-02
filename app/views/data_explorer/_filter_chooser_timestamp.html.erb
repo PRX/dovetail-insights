@@ -1,4 +1,4 @@
-<select class="timestamp-mode" <%= html_attributes(name: "filter.#{dim_key}.timestamp-mode") %>>
+<select class="timestamp-mode form-select" <%= html_attributes(name: "filter.#{dim_key}.timestamp-mode") %>>
   <option value="Range">Range</option>
   <option value="Extract" <%= select_eq filter&.extract %>>Extract</option>
 </select>
@@ -19,6 +19,7 @@
 
 <div class="extract" data-controller="data-explorer--filter-chooser">
   <select
+    class="form-select"
     data-data-explorer--filter-chooser-target="extractBy"
     data-action="data-explorer--filter-chooser#setExtract"
     name="<%= "filter.#{dim_key}.extract" %>">
@@ -36,6 +37,7 @@
   <label for="<%= "filter.#{dim_key}.values" %>">Values:</label>
   <select
     multiple
+    class="form-select"
     data-data-explorer--filter-chooser-target="values"
     id="<%= "filter.#{dim_key}.values" %>"
     name="<%= "filter.#{dim_key}.values" %>">
