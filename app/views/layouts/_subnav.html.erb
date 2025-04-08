@@ -3,7 +3,6 @@
     <div class="collapse navbar-collapse">
       <%= active_link_to "Home", root_path, class: "nav-link", active: :exclusive %>
       <%= active_link_to "Data Explorer", data_explorer_path, class: "nav-link" %>
-      <%= active_link_to "Admin", admin_root_path, class: "nav-link" if current_user.scopes.include?("prxadmin") %>
     </div>
   </nav>
 
