@@ -37,8 +37,8 @@ export default class extends Controller {
     };
 
     Object.keys(this.element.dataset).forEach((key) => {
-      if (key.startsWith("ss-opt-")) {
-        // For an element with `data-ss-opt-allowDeselect="foo"`…
+      if (key.startsWith("ssOpt")) {
+        // For an element with `data-ss-opt-allow-deselect="foo"`…
         // key will be `ssOptAllowDeselect`
 
         // Transform `ssOptAllowDeselect` to `allowDeselect`
