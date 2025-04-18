@@ -34,13 +34,17 @@
       <% else %>
         <select
           name="<%= "filter.#{dim_key}" %>"
+          data-bs-toggle="tooltip"
+          data-bs-title="Choose if data matching this filter should be included or excluded from the results"
+          data-bs-delay='{"show":440,"hide":10}'
+          data-bs-trigger="hover"
           class="
             filter-operator
             form-select
             <%= "field_with_errors" if filter&.errors&.include?(:operator) %>
           ">
 
-          <option></option>
+          <%# <option></option> %>
           <option value="include" <%= select_eq filter&.operator == :include %>>Include</option>
           <option value="exclude" <%= select_eq filter&.operator == :exclude %>>Exclude</option>
         </select>
