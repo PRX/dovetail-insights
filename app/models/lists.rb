@@ -110,17 +110,6 @@ class Lists
 
         rows.filter { |r| r[r.keys[0]].present? }
       end
-    elsif dimension_key == "cityX"
-      Rails.cache.fetch("city3", expires_in: 12.hours) do
-        data = BigqueryClient.instance.query("SELECT geoname_id AS t1, CONCAT(city_name, ', ', subdivision_1_name, ', ', country_name) AS t2 FROM #{ENV.fetch("BIGQUERY_DATASET", "staging")}.geonames WHERE city_name <> '' GROUP BY geoname_id, country_iso_code, country_name, subdivision_1_iso_code, subdivision_1_name, subdivision_2_iso_code, city_name ORDER BY city_name ASC, country_name ASC")
-
-        rows = []
-        data.all do |row|
-          rows << row
-        end
-
-        rows.filter { |r| r[r.keys[0]].present? }
-      end
     elsif dimension_key == "advertiserX"
       Rails.cache.fetch("advertiser", expires_in: 12.hours) do
         data = BigqueryClient.instance.query("SELECT id, name FROM #{ENV.fetch("BIGQUERY_DATASET", "staging")}.advertisers ORDER BY name ASC")

@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   get "/data-explorer/export", to: "data_explorer#export"
   get "/data-explorer/sql", to: "data_explorer#sql"
 
+  get "typeahead/cities", to: "typeahead#cities", as: :cities_typeahead
+
   get "/.well-known/change-password", to: redirect("https://#{ENV["ID_HOST"]}/.well-known/change-password", status: 302)
 
   # Defines the root path route ("/")

@@ -1,4 +1,19 @@
-<% if Lists.list_for(dim_key) %>
+<% if ["city"].include? dim_key %>
+  <div class="form-floating input-group">
+    <select
+      data-action="blur->blank-field#blur"
+      data-controller="slim-select"
+      data-slim-select-async-search-enabled-value="true"
+      data-slim-select-async-search-endpoint-path-value="<%= cities_typeahead_path %>"
+      class="form-select token-select <%= "field_with_errors" if filter&.errors&.include?(:values) %>"
+      id="<%= "filter.#{dim_key}.values" %>"
+      name="<%= "filter.#{dim_key}.values" %>"
+      multiple>
+
+    </select>
+  </div>
+
+<% elsif Lists.list_for(dim_key) %>
   <% vals = filter&.values %>
 
   <div class="form-floating input-group">
@@ -19,7 +34,6 @@
         </option>
       <% end %>
     </select>
-    <!-- <label for="<%= "filter.#{dim_key}.values" %>">Values:</label> -->
   </div>
 <% else %>
   <div class="form-floating input-group">
