@@ -2,61 +2,75 @@
 <% g2 = @composition.groups[1] %>
 
 <fieldset class="sort-chooser" data-data-explorer--results-table-sort-target="chooser">
-  <legend>Sort Options</legend>
-
   <% 5.times do |i| %>
     <% if g1 %>
-      <div class="row-sort-opt" data-data-explorer--results-table-sort-target="rowSortOpt">
-        <select
-          data-data-explorer--results-table-sort-target="foo"
-          data-action="data-explorer--results-table-sort#sort"
-          class="sort-by">
+      <div
+        class="row-sort-opt d-flex"
+        data-data-explorer--results-table-sort-target="rowSortOpt">
 
-          <% if i > 0 %>
-            <option value="no-sort">Add a Column…</option>
-          <% end %>
+        <div class="form-floating input-group mb-3 flex-grow-1">
+          <select
+            data-data-explorer--results-table-sort-target="foo"
+            data-action="data-explorer--results-table-sort#sort"
+            class="sort-by form-select"
+            data-controller="slim-select"
+            data-ss-opt-allow-deselect="false"
+            data-ss-opt-close-on-select="true"
+            data-ss-opt-placeholder-text="">
 
-          <option value="[data-dx-group-1-default-sort-index]">Default sorting for <%= schema_field_label g1.dimension %> group</option>
-
-          <% g1&.meta&.each do |meta_field_name| %>
-            <option value="<%= "[data-dx-group-1-meta-#{meta_field_name.to_s.tr("_", "-")}]" %>"><%= schema_field_label meta_field_name %></option>
-          <% end %>
-
-          <% if g2 %>
-            <hr>
-            <% @composition.metrics.each do |metric| %>
-              <option
-                value="<%= "[data-dx-metric='#{metric.metric}'][data-dx-agg-point-sum][data-dx-group-1-member-descriptor]" %>">
-
-                <%= metric.metric %> total
-              </option>
+            <% if i > 0 %>
+              <option value="no-sort">Add a Column…</option>
             <% end %>
-            <hr>
-          <% end %>
 
-          <%
-            display_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
-            display_group_2_member_descriptors << nil
-            display_group_2_member_descriptors = default_group_member_descriptor_sort(@composition, g2, display_group_2_member_descriptors)
-          %>
+            <option value="[data-dx-group-1-default-sort-index]">Default sorting for <%= schema_field_label g1.dimension %> group</option>
 
-          <% display_group_2_member_descriptors.each do |group_2_member_descriptor| %>
-            <% @composition.metrics.each do |metric| %>
-              <option
-                value="<%= "[data-dx-metric='#{metric.metric}'][data-dx-group-2-member-descriptor='#{group_2_member_descriptor || "__nil__"}']" %>">
-
-                <%= member_label(@composition, g2, group_2_member_descriptor) %> – <%= metric.metric %>
-              </option>
+            <% g1&.meta&.each do |meta_field_name| %>
+              <option value="<%= "[data-dx-group-1-meta-#{meta_field_name.to_s.tr("_", "-")}]" %>"><%= schema_field_label meta_field_name %></option>
             <% end %>
-          <% end %>
-        </select>
-        <select
-          data-action="data-explorer--results-table-sort#sort"
-          class="sort-direction">
 
-          <option value="asc">Ascending (1, 2, 3…)</option>
-          <option value="desc">Descending (3, 2, 1…)</option>
-        </select>
+            <% if g2 %>
+              <hr>
+              <% @composition.metrics.each do |metric| %>
+                <option
+                  value="<%= "[data-dx-metric='#{metric.metric}'][data-dx-agg-point-sum][data-dx-group-1-member-descriptor]" %>">
+
+                  <%= t "metrics.#{metric.metric}" %> total
+                </option>
+              <% end %>
+              <hr>
+            <% end %>
+
+            <%
+              display_group_2_member_descriptors = @composition.results.group_2_unique_member_descriptors || []
+              display_group_2_member_descriptors << nil
+              display_group_2_member_descriptors = default_group_member_descriptor_sort(@composition, g2, display_group_2_member_descriptors)
+            %>
+
+            <% display_group_2_member_descriptors.each do |group_2_member_descriptor| %>
+              <% @composition.metrics.each do |metric| %>
+                <option
+                  value="<%= "[data-dx-metric='#{metric.metric}'][data-dx-group-2-member-descriptor='#{group_2_member_descriptor || "__nil__"}']" %>">
+
+                  <%= member_label(@composition, g2, group_2_member_descriptor) %> – <%= t "metrics.#{metric.metric}" %>
+                </option>
+              <% end %>
+            <% end %>
+          </select>
+        </div>
+
+        <div class="form-floating input-group flex-shrink-1 mb-3 ms-2 w-50">
+          <select
+            data-action="data-explorer--results-table-sort#sort"
+            class="sort-direction form-select"
+            data-controller="slim-select"
+            data-ss-opt-allow-deselect="false"
+            data-ss-opt-close-on-select="true"
+            data-ss-opt-placeholder-text="">
+
+            <option value="asc">Ascending (1, 2, 3…)</option>
+            <option value="desc">Descending (3, 2, 1…)</option>
+          </select>
+        </div>
       </div>
     <% end %>
   <% end %>
@@ -64,35 +78,49 @@
   <% if g2 && @composition.metrics.size == 1 %>
     <h3>Sort Columns WIP</h3>
 
-    <select
-      data-action="data-explorer--results-table-sort#sort"
-      class="col-sort-by">
+    <div class="d-flex">
+      <div class="form-floating input-group mb-3 flex-grow-1">
+        <select
+          data-action="data-explorer--results-table-sort#sort"
+          class="col-sort-by form-select"
+          data-controller="slim-select"
+          data-ss-opt-allow-deselect="false"
+          data-ss-opt-close-on-select="true"
+          data-ss-opt-placeholder-text="">
 
-      <option value="default">Default sorting for <%= schema_field_label g2.dimension %> group</option>
+          <option value="default">Default sorting for <%= schema_field_label g2.dimension %> group</option>
 
-      <% @composition.metrics.each do |metric| %>
-        <option
-          value="total">
+          <% @composition.metrics.each do |metric| %>
+            <option
+              value="total">
 
-          <%= metric.metric %> total
-        </option>
-      <% end %>
-      <hr>
+              <%= t "metrics.#{metric.metric}" %> total
+            </option>
+          <% end %>
+          <hr>
 
-      <% @composition.metrics.each do |metric| %>
-        <option
-          value="first-row">
+          <% @composition.metrics.each do |metric| %>
+            <option
+              value="first-row">
 
-          First row by <%= metric.metric %>
-        </option>
-      <% end %>
-    </select>
-    <select
-      data-action="data-explorer--results-table-sort#sort"
-      class="col-sort-direction">
+              First row by <%= t "metrics.#{metric.metric}" %>
+            </option>
+          <% end %>
+        </select>
+      </div>
+      <div class="form-floating input-group flex-shrink-1 mb-3 ms-2 w-50">
+        <select
+          data-action="data-explorer--results-table-sort#sort"
+          class="col-sort-direction form-select"
+          data-controller="slim-select"
+          data-ss-opt-allow-deselect="false"
+          data-ss-opt-close-on-select="true"
+          data-ss-opt-placeholder-text="">
 
-      <option value="asc">Ascending (1, 2, 3…)</option>
-      <option value="desc">Descending (3, 2, 1…)</option>
-    </select>
+          <option value="asc">Ascending (1, 2, 3…)</option>
+          <option value="desc">Descending (3, 2, 1…)</option>
+        </select>
+      </div>
+    </div>
   <% end %>
 </fieldset>

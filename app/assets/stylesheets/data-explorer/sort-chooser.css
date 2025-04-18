@@ -4,25 +4,25 @@
   has been used. */
 .sort-chooser {
   .row-sort-opt {
-    display: none;
+    display: none !important;
 
-    .sort-direction {
-      display: none;
+    .ss-main.sort-direction {
+      display: none !important;
     }
 
     &:first-of-type {
-      display: block;
+      display: block !important;
     }
 
     &:not(:has(option[value="no-sort"]:checked)) {
-      display: block;
+      display: flex !important;
 
-      .sort-direction {
-        display: inline;
+      .ss-main.sort-direction {
+        display: flex !important;
       }
 
       & + .row-sort-opt {
-        display: block;
+        display: flex !important;
       }
     }
   }
