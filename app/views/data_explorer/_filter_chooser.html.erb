@@ -45,7 +45,7 @@
           <option value="exclude" <%= select_eq filter&.operator == :exclude %>>Exclude</option>
         </select>
 
-        <button style="border: none; background: none; color: var(--bs-danger);" onclick="event.preventDefault();this.closest('.filter-added').classList.remove('filter-added');">
+        <button style="border: none; background: none; color: var(--bs-danger); padding-right: 0;" onclick="event.preventDefault();this.closest('.filter-added').classList.remove('filter-added');">
           <span class="material-icons">delete</span>
         </button>
       <% end %>
