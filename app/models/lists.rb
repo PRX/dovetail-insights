@@ -15,8 +15,8 @@ class Lists
 
   def self.list_for(dimension_key, accounts = [])
     if dimension_key == "country"
-      Rails.cache.fetch("country", expires_in: 12.hours) do
-        data = BigqueryClient.instance.query("SELECT country_iso_code, country_name FROM #{ENV.fetch("BIGQUERY_DATASET", "staging")}.geonames WHERE country_name <> '' AND subdivision_1_iso_code IS NULL AND subdivision_2_iso_code IS NULL AND city_name IS NULL ORDER BY country_name ASC")
+      Rails.cache.fetch("country2", expires_in: 12.hours) do
+        data = BigqueryClient.instance.query("SELECT country_iso_code, country_name FROM #{ENV.fetch("BIGQUERY_DATASET", "staging")}.geonames WHERE country_name <> '' AND (subdivision_1_iso_code IS NULL OR subdivision_1_iso_code = '') AND (subdivision_2_iso_code IS NULL OR subdivision_2_iso_code = '') AND (city_name IS NULL OR city_name = '') ORDER BY country_name ASC")
 
         rows = []
         data.all do |row|
