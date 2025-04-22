@@ -25,7 +25,7 @@ module GroupableResults
         # For indices that are given as Relatimes, each value will be a
         # +DateTime+, and we want to use the standard formatting for those
         # values. Everything else can use the given value as a string.
-        members = group.abs_indices.map { |i| i.is_a? DateTime ? i.strftime("%Y-%m-%dT%H:%M:%SZ") : i.to_s }
+        members = group.abs_indices.map { |i| i.is_a?(DateTime) ? i.strftime("%Y-%m-%dT%H:%M:%SZ") : i.to_s }
         members.push(Compositions::Components::Group::TERMINATOR_INDEX)
       else
         rows.pluck(group.as).compact.uniq
