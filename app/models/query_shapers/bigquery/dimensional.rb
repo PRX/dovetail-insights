@@ -169,7 +169,7 @@ module QueryShapers
             group.abs_indices.each_with_index do |i, idx|
               cases << if dimension_def["BigQuery"]["Type"] == "TIMESTAMP"
                 # Wrap TIMESTAMPS in quotes
-                "WHEN #{selector} < '#{i}' THEN '#{group.abs_indices[idx]}'"
+                "WHEN #{selector} < '#{i}' THEN '#{group.abs_indices[idx].strftime("%Y-%m-%dT%H:%M:%SZ")}'"
               else
                 "WHEN #{selector} < #{i} THEN '#{group.abs_indices[idx]}'"
               end

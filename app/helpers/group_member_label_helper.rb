@@ -95,11 +95,11 @@ module GroupMemberLabelHelper
 
     # The last range returned by the query uses a special descriptor
     if member_descriptor == Compositions::Components::Group::TERMINATOR_INDEX
-      "At/after #{compact_timestamp_string group.abs_indices.last}"
+      "At/after #{compact_timestamp_string group.abs_indices.last.strftime("%Y-%m-%dT%H:%M:%SZ")}"
     elsif index_of_index == 0
       "Before #{compact_timestamp_string member_descriptor}"
     else
-      "At/after #{compact_timestamp_string group.abs_indices[index_of_index - 1]} and before #{compact_timestamp_string member_descriptor}"
+      "At/after #{compact_timestamp_string group.abs_indices[index_of_index - 1].strftime("%Y-%m-%dT%H:%M:%SZ")} and before #{compact_timestamp_string member_descriptor}"
     end
   end
 
