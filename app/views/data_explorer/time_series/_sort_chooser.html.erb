@@ -1,0 +1,95 @@
+<% g1 = @composition.groups[0] %>
+<% g2 = @composition.groups[1] %>
+
+<% if @composition.groups.size == 1 && @composition.metrics.size == 1 %>
+  <fieldset class="sort-chooser" data-data-explorer--results-table-sort-target="chooser">
+    <%# 5 here is arbitrary, it could be any reasonable number of sort options %>
+    <% 5.times do |i| %>
+      <div
+        class="row-sort-opt d-flex"
+        data-data-explorer--results-table-sort-target="rowSortOpt">
+
+        <div class="form-floating input-group mb-3 flex-grow-1">
+          <select
+            data-data-explorer--results-table-sort-target="foo"
+            data-action="data-explorer--results-table-sort#sort"
+            class="sort-by form-select"
+            data-controller="slim-select"
+            data-ss-opt-allow-deselect="false"
+            data-ss-opt-close-on-select="true"
+            data-ss-opt-placeholder-text="">
+
+            <% if i > 0 %>
+              <option value="no-sort">Add a Column…</option>
+            <% end %>
+
+            <option value="[data-dx-group-1-default-sort-index]">Default sorting for <%= schema_field_label g1.dimension %> group</option>
+
+            <% g1&.meta&.each do |meta_field_name| %>
+              <option value="<%= "[data-dx-group-1-meta-#{meta_field_name.to_s.tr("_", "-")}]" %>"><%= schema_field_label meta_field_name %></option>
+            <% end %>
+
+            <hr>
+            <% @composition.metrics.each do |metric| %>
+              <option
+                value="<%= "[data-dx-metric='#{metric.metric}'][data-dx-agg-point-sum][data-dx-group-1-member-descriptor]" %>">
+
+                <%= t "metrics.#{metric.metric}" %> total
+              </option>
+            <% end %>
+            <hr>
+
+            <%
+              interval_descriptors = @composition.results.unique_interval_descriptors || []
+            %>
+
+            <% interval_descriptors.each do |interval_descriptor| %>
+              <% @composition.metrics.each do |metric| %>
+                <option
+                  value="<%= "[data-dx-metric='#{metric.metric}'][data-dx-interval-descriptor='#{interval_descriptor || "__nil__"}']" %>">
+
+                  <%= interval_label(@composition, interval_descriptor) %> – <%= t "metrics.#{metric.metric}" %>
+                </option>
+              <% end %>
+            <% end %>
+          </select>
+        </div>
+
+        <div class="form-floating input-group flex-shrink-1 mb-3 ms-2 w-50">
+          <select
+            data-action="data-explorer--results-table-sort#sort"
+            class="sort-direction form-select"
+            data-controller="slim-select"
+            data-ss-opt-allow-deselect="false"
+            data-ss-opt-close-on-select="true"
+            data-ss-opt-placeholder-text="">
+
+            <option value="asc">Ascending (1, 2, 3…)</option>
+            <option value="desc">Descending (3, 2, 1…)</option>
+          </select>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="d-flex">
+      <input type="hidden" class="col-sort-by" value="interval">
+
+      <div class="form-floating input-group flex-shrink-1 mb-3 ms-2 w-50">
+        <select
+          data-action="data-explorer--results-table-sort#sort"
+          class="col-sort-direction form-select"
+          data-controller="slim-select"
+          data-ss-opt-allow-deselect="false"
+          data-ss-opt-close-on-select="true"
+          data-ss-opt-placeholder-text="">
+
+          <option value="asc">Ascending (1, 2, 3…)</option>
+          <option value="desc">Descending (3, 2, 1…)</option>
+        </select>
+      </div>
+    </div>
+  </fieldset>
+<% else %>
+  <p class="text-center">Sorting is not currently available</p>
+  <p class="text-center"><small>With <b>time series</b> data, sorting is available when exactly 1 group and 1 metric are selected</small></p>
+<% end %>

@@ -6,7 +6,7 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = ["table", "row", "rowSortOpt"];
 
-  sort_rows() {
+  sortRows() {
     const sortedDataRows = this.rowTargets.sort((rowA, rowB) => {
       // eslint-disable-next-line no-restricted-syntax
       for (const rowSortOpt of this.rowSortOptTargets) {
@@ -29,6 +29,9 @@ export default class extends Controller {
           //    compared in order
           const rowACell = rowA.querySelector(`*${sortBy}`);
           const rowBCell = rowB.querySelector(`*${sortBy}`);
+
+          console.log(rowACell);
+          console.log(rowBCell);
 
           if (rowACell && rowBCell) {
             let result;
@@ -70,13 +73,17 @@ export default class extends Controller {
     sortedDataRows.forEach((el) => body.append(el));
   }
 
-  sort_cols() {
+  sortCols() {
     const sortDirection = document.querySelector(".col-sort-direction").value;
+    // sortBy will be one of: default, interval, total, first-row
     const sortBy = document.querySelector(".col-sort-by").value;
 
+    // Get the row (some actual tr node) that contains the values being used to
+    // determine the sort order.
     let sortRow;
-
     if (sortBy === "default") {
+      sortRow = this.tableTarget.querySelector("thead tr:first-of-type");
+    } else if (sortBy === "interval") {
       sortRow = this.tableTarget.querySelector("thead tr:first-of-type");
     } else if (sortBy === "total") {
       sortRow = this.tableTarget.querySelector("tbody tr:first-of-type");
@@ -86,54 +93,58 @@ export default class extends Controller {
       );
     }
 
+    // Get the cells from the sort row
     const sortRowCellsInCurrentOrder = [...sortRow.querySelectorAll("th,td")];
 
+    // Make another copy of the cells from the sort row that we can sort.
     // This will get sorted in place
     const sortedSortRowCells = [...sortRow.querySelectorAll("th,td")];
 
+    function sortNumeric(cells, direction, attribute) {
+      cells.sort((cellA, cellB) => {
+        if (!cellA.getAttribute(attribute)) {
+          return -1;
+        }
+
+        const cellAValue = cellA.getAttribute(attribute);
+        const cellBValue = cellB.getAttribute(attribute);
+
+        return (+cellAValue - +cellBValue) * (direction === "desc" ? -1 : 1);
+      });
+    }
+
+    function sortString(cells, direction, attribute) {
+      cells.sort((cellA, cellB) => {
+        if (!cellA.getAttribute(attribute)) {
+          return -1;
+        }
+
+        const cellAValue = cellA.getAttribute(attribute);
+        const cellBValue = cellB.getAttribute(attribute);
+
+        return (
+          cellAValue.localeCompare(cellBValue) * (direction === "desc" ? -1 : 1)
+        );
+      });
+    }
+
+    //
     if (sortBy === "default") {
-      sortedSortRowCells.sort((cellA, cellB) => {
-        if (!cellA.getAttribute("data-dx-group-2-default-sort-index")) {
-          return -1;
-        }
-
-        const cellAValue = cellA.getAttribute(
-          "data-dx-group-2-default-sort-index",
-        );
-        const cellBValue = cellB.getAttribute(
-          "data-dx-group-2-default-sort-index",
-        );
-
-        return (
-          (+cellAValue - +cellBValue) * (sortDirection === "desc" ? -1 : 1)
-        );
-      });
+      sortNumeric(
+        sortedSortRowCells,
+        sortDirection,
+        "data-dx-group-2-default-sort-index",
+      );
+    } else if (sortBy === "interval") {
+      sortString(
+        sortedSortRowCells,
+        sortDirection,
+        "data-dx-interval-descriptor",
+      );
     } else if (sortBy === "total") {
-      sortedSortRowCells.sort((cellA, cellB) => {
-        if (!cellA.dataset.dxAggPointSum) {
-          return -1;
-        }
-
-        const cellAValue = cellA.dataset.dxAggPointSum;
-        const cellBValue = cellB.dataset.dxAggPointSum;
-
-        return (
-          (+cellAValue - +cellBValue) * (sortDirection === "desc" ? -1 : 1)
-        );
-      });
+      sortNumeric(sortedSortRowCells, sortDirection, "data-dx-agg-point-sum");
     } else if (sortBy === "first-row") {
-      sortedSortRowCells.sort((cellA, cellB) => {
-        if (!cellA.dataset.dxDataPoint) {
-          return -1;
-        }
-
-        const cellAValue = cellA.dataset.dxDataPoint;
-        const cellBValue = cellB.dataset.dxDataPoint;
-
-        return (
-          (+cellAValue - +cellBValue) * (sortDirection === "desc" ? -1 : 1)
-        );
-      });
+      sortNumeric(sortedSortRowCells, sortDirection, "data-dx-data-point");
     }
 
     const sortMap = sortedSortRowCells.map((cell) => {
@@ -169,7 +180,7 @@ export default class extends Controller {
   }
 
   sort() {
-    this.sort_rows();
-    this.sort_cols();
+    this.sortRows();
+    this.sortCols();
   }
 }

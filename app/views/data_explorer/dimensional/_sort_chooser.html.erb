@@ -2,6 +2,7 @@
 <% g2 = @composition.groups[1] %>
 
 <fieldset class="sort-chooser" data-data-explorer--results-table-sort-target="chooser">
+  <%# 5 here is arbitrary, it could be any reasonable number of sort options %>
   <% 5.times do |i| %>
     <% if g1 %>
       <div
@@ -75,7 +76,11 @@
     <% end %>
   <% end %>
 
+  <%# Column sorting is only available when a second group is selected and only %>
+  <%# 1 metric is selected %>
   <% if g2 && @composition.metrics.size == 1 %>
+    <hr>
+
     <h3>Sort Columns WIP</h3>
 
     <div class="d-flex">

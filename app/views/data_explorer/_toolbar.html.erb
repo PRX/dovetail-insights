@@ -71,6 +71,8 @@
         <div class="dropdown-menu p-3" style="min-width: 675px;">
           <% if @composition.instance_of?(Compositions::DimensionalComposition) %>
             <%= render partial: "data_explorer/dimensional/sort_chooser" %>
+          <% elsif @composition.instance_of?(Compositions::TimeSeriesComposition) %>
+            <%= render partial: "data_explorer/time_series/sort_chooser" %>
           <% end %>
         </div>
       </div>

@@ -30,7 +30,7 @@
   %>
 
   <% if display_row %>
-    <tr>
+    <tr data-data-explorer--results-table-sort-target="row">
       <% if @tbl_show_group_1_headers %>
         <%= group_table_header_tag(@composition, @composition.groups[0], group_1_member_descriptor, :row, group_1_label_displayed) %>
         <% group_1_label_displayed = true %>
@@ -58,7 +58,14 @@
             end
           %>
 
-          <td class="totals"><%= text %></td>
+          <td
+            class="totals"
+            data-dx-group-1-member-descriptor="<%= group_1_member_descriptor || "__nil__" %>"
+            data-dx-metric="<%= metric.metric %>"
+            data-dx-agg-point-sum="<%= sum %>">
+
+            <%= text %>
+          </td>
         <% end %>
       <% end %>
 
