@@ -1,5 +1,15 @@
 import { Controller } from "@hotwired/stimulus";
 
+// Takes a set of +arrays+, and returns a new set of arrays where each array
+// represents a unique combination of values from the input arrays.
+//
+// E.g. generateCombinations([ [cat, dog], [apple, banana] ])
+// => [
+//      [cat, apple]
+//      [cat, banana]
+//      [dog, apple]
+//      [dog, banana]
+//    ]
 function generateCombinations(arrays, depth = 0, path = [], result = []) {
   if (depth === arrays.length) {
     result.push([...path]);
@@ -14,28 +24,62 @@ function generateCombinations(arrays, depth = 0, path = [], result = []) {
   return result;
 }
 
-// TODO Proof of concept
-// TODO For time series comparisons, there should be an option to highlight
-// based on the change over time within a group.
+/**
+ * This controller is intended to set the background color of cells in a table
+ * of composition results. A results table may include cells that are not
+ * standard data values (like headers, aggregate values, etc.). This controller
+ * will only highlight cells that are +cell+ targets of this controller.
+ *
+ * The full colorization process is meant to run each time any of the
+ * highlighting options (scales, palettes, etc.) are changed.
+ *
+ * Based on the selected options, each cell is placed into a set with some
+ * other cells. The intensity of the color of a given sell (the alpha value of
+ * the applied background color) is determined by where that cell's value lands
+ * in the range of values for that set. E.g., in a set with [0, 10, 50], the
+ * cell containing 0 will be fully transparent, the cell containing 10 will be
+ * slightly saturated, and the cell containing 50 will be fully saturated. If
+ * in another group in the same table the values were [50, 100, 1000], the 50
+ * cell would be transparent, and the other cells would be appropriately
+ * saturated.
+ *
+ * The partition option determines how cells are placed into sets. The value of
+ * the +partitionsSelectorTarget+ is a comma-separated list of values, where
+ * each value is an HTML element attribute name. The controller will create
+ * sets of cells where the values of the specified attributes are the match.
+ *
+ * For example, if the +partitionsSelectorTarget+ value is +data-dx-metric+,
+ * and the table contains some cells with +data-dx-metric="downlodas"+ and
+ * other cells with +data-dx-metric="impressions"+, the controller will create
+ * two sets of cells, one for downloads and one for impressions.
+ *
+ * If instead the +partitionsSelectorTarget+ value is
+ * "data-dx-metric,data-dx-group-1-member-descriptor", and the table also
+ * contains cells for both Song Exploder and Ear Hustle, each unique
+ * combination of metrics and group 1 members will be used to create sets, thus
+ * 4 total sets will be made.
+ */
 export default class extends Controller {
   static targets = [
     "table",
     "chooser",
-    "scale",
-    "palette",
-    "divisions",
+    "scaleSelector",
+    "paletteSelector",
+    "partitionsSelector",
     "cell",
   ];
 
-  highlightValues(spectrumCellSets) {
-    const paletteOpt = this.paletteTarget.value;
+  highlightValues(cellPartitions) {
+    const paletteOpt = this.paletteSelectorTarget.value;
 
     let i = 0;
-    spectrumCellSets.forEach((cellSet) => {
+    // cellPartitions will be an array of arrays. Each array is a set of cells
+    cellPartitions.forEach((cells) => {
       let max = 0;
       let min = 99999999;
 
-      cellSet.forEach((cell) => {
+      // Look through all cells in this partition and find the min and max
+      cells.forEach((cell) => {
         const val = cell.dataset.dxDataPoint
           ? +cell.dataset.dxDataPoint
           : undefined;
@@ -54,6 +98,9 @@ export default class extends Controller {
       let h;
 
       if (paletteOpt === "rainbow") {
+        // Give a color to this partition. The goal is to have neighboring cells
+        // in the table have sufficiently distinct colors while not using so
+        // many different colors that the table looks ridiculous.
         const numColors = 10; // Any even number
         const maxHue = 295;
         const hueStep = maxHue / (numColors - 1);
@@ -65,8 +112,8 @@ export default class extends Controller {
         const adj = Math.round((i % numColors) / numColors);
 
         // Rather than [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5]
-        // We want     [0,2,4,6,8,1,3,5,7,9,0,2,4,6,8,1]
-        // To keep a litte more color distance between adjacent rows/columns
+        // we want     [0,2,4,6,8,1,3,5,7,9,0,2,4,6,8,1]
+        // to keep a litte more color distance between adjacent rows/columns
         const factor = ((cycle * 2) % numColors) + adj;
 
         h = hueStep * factor;
@@ -74,7 +121,9 @@ export default class extends Controller {
         h = 30;
       }
 
-      cellSet.forEach((cell) => {
+      // Apply the color for each cell, comparing the cell's value to the
+      // min/max for the partition it belongs to, based on the selected scale.
+      cells.forEach((cell) => {
         const val = cell.dataset.dxDataPoint
           ? +cell.dataset.dxDataPoint
           : undefined;
@@ -82,10 +131,10 @@ export default class extends Controller {
         if (val) {
           let relativeValue;
 
-          if (this.scaleTarget.value === "log") {
+          if (this.scaleSelectorTarget.value === "log") {
             relativeValue =
               (Math.log(val) - Math.log(min)) / (Math.log(max) - Math.log(min));
-          } else if (this.scaleTarget.value === "linear") {
+          } else if (this.scaleSelectorTarget.value === "linear") {
             relativeValue = (val - min) / (max - min);
           }
 
@@ -97,13 +146,13 @@ export default class extends Controller {
     });
   }
 
-  highlightDeltas(spectrumCellSets) {
-    const paletteOpt = this.paletteTarget.value;
+  highlightDeltas(cellPartitions) {
+    const paletteOpt = this.paletteSelectorTarget.value;
 
-    spectrumCellSets.forEach((cellSet) => {
+    cellPartitions.forEach((cells) => {
       let previousValue;
 
-      cellSet.forEach((cell) => {
+      cells.forEach((cell) => {
         const val = +cell.dataset.dxDataPoint;
 
         if (previousValue) {
@@ -128,56 +177,60 @@ export default class extends Controller {
 
   highlight() {
     if (this.hasTableTarget) {
-      const spectrumsOpt = this.divisionsTarget.value;
+      // Get the comma separated options from the form. This will be a string
+      // like "data-dx-metric" or
+      // "data-dx-metric,data-dx-group-1-member-descriptor"
+      const partitionsOpt = this.partitionsSelectorTarget.value;
 
-      const showDeltas = spectrumsOpt.startsWith("delta,");
-      const aspects = spectrumsOpt.replace("delta,", "").split(",");
+      // The +deltas+ options is a special case; we detect if it's present and
+      // then drop it from options.
+      const showDeltas = partitionsOpt.startsWith("delta,");
+      const partitionAttrs = partitionsOpt.replace("delta,", "").split(",");
 
       const cells = this.cellTargets;
-      const cellDivisions = [];
 
-      const uniques = {
-        "data-dx-metric": new Set([...cells].map((c) => c.dataset.dxMetric)),
-        "data-dx-group-1-member-descriptor": new Set(
-          [...cells].map((c) =>
-            c.getAttribute("data-dx-group-1-member-descriptor"),
-          ),
-        ),
-        "data-dx-group-2-member-descriptor": new Set(
-          [...cells].map((c) =>
-            c.getAttribute("data-dx-group-2-member-descriptor"),
-          ),
-        ),
-        "data-dx-interval-descriptor": new Set(
-          [...cells].map((c) => c.getAttribute("data-dx-interval-descriptor")),
-        ),
-        "data-dx-comparison-rewind": new Set(
-          [...cells].map((c) => c.getAttribute("data-dx-comparison-rewind")),
-        ),
-      };
+      // cellPartitions will be an array or arrays.
+      const cellPartitions = [];
 
-      if (!spectrumsOpt) {
-        // Put all cells in a single division
-        cellDivisions.push(cells);
+      if (!partitionsOpt) {
+        // Put all cells in a single partition
+        cellPartitions.push(cells);
       } else {
-        const aspectUniqs = aspects.map((a) => uniques[a]);
+        // For each attribute listed in the partition option, look up all the
+        // unique values for that attribute present in the table. This will
+        // result in an array of arrays.
+        const partitionAttrsUniqs = partitionAttrs.map(
+          (a) => new Set([...cells].map((c) => c.getAttribute(a))),
+        );
 
-        generateCombinations(aspectUniqs).forEach((combo) => {
-          const selector = `td${combo.map((v, idx) => `[${aspects[idx]}="${v}"]`).join("")}`;
-          const cellsForDivision = this.tableTarget.querySelectorAll(selector);
+        // Collect all unique combinations of the attribute values. Each
+        // combination is a desired partition.
+        generateCombinations(partitionAttrsUniqs).forEach((combo) => {
+          // Create a CSS selector using the values in this combination for the
+          // related attributes.
+          //
+          // E.g. if the combo is ["downloads", "song exploder"], and the
+          // partitionAttrs are ["data-dx-metric", "data-dx-group-1-member-descriptor"],
+          // the selector will be:
+          // td[data-dx-metric="downloads"][data-dx-group-1-member-descriptor="song exploder"]
+          const selector = `td${combo.map((v, idx) => `[${partitionAttrs[idx]}="${v}"]`).join("")}`;
+          // Find all the cells that match the selector and belong to this
+          // partition
+          const cellsForPartition = this.tableTarget.querySelectorAll(selector);
 
-          cellsForDivision.forEach((cell) => {
+          // Reset all background colors before highlighting.
+          cellsForPartition.forEach((cell) => {
             cell.style.background = `hsla(0 0% 0% / 0)`;
           });
 
-          cellDivisions.push(cellsForDivision);
+          cellPartitions.push(cellsForPartition);
         });
       }
 
       if (showDeltas) {
-        this.highlightDeltas(cellDivisions);
+        this.highlightDeltas(cellPartitions);
       } else {
-        this.highlightValues(cellDivisions);
+        this.highlightValues(cellPartitions);
       }
     }
   }

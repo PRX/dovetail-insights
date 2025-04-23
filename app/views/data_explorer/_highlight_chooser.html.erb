@@ -1,9 +1,9 @@
 <fieldset data-data-explorer--results-table-highlight-target="chooser">
   <div class="form-floating input-group mb-3">
     <select
-      id="hi-scale"
+      id="highlight-chooser-scale-selector"
       class="form-select"
-      data-data-explorer--results-table-highlight-target="scale"
+      data-data-explorer--results-table-highlight-target="scaleSelector"
       data-action="data-explorer--results-table-highlight#highlight"
       data-controller="slim-select"
       data-ss-opt-allow-deselect="false"
@@ -13,14 +13,14 @@
       <option value="linear">Linear</option>
     </select>
 
-    <label for="hi-scale">Scale</label>
+    <label for="highlight-chooser-scale-selector">Scale</label>
   </div>
 
   <div class="form-floating input-group mb-3">
     <select
-      id="hi-palette"
+      id="highlight-chooser-palette-selector"
       class="form-select"
-      data-data-explorer--results-table-highlight-target="palette"
+      data-data-explorer--results-table-highlight-target="paletteSelector"
       data-action="data-explorer--results-table-highlight#highlight"
       data-controller="slim-select"
       data-ss-opt-allow-deselect="false"
@@ -30,14 +30,14 @@
       <option value="monochrome">Monochrome</option>
     </select>
 
-    <label for="hi-palette">Palette</label>
+    <label for="highlight-chooser-palette-selector">Palette</label>
   </div>
 
   <div class="form-floating input-group">
     <select
-      id="hi-divisions"
+      id="highlight-chooser-partitions-selector"
       class="form-select"
-      data-data-explorer--results-table-highlight-target="divisions"
+      data-data-explorer--results-table-highlight-target="partitionsSelector"
       data-action="data-explorer--results-table-highlight#highlight"
       data-controller="slim-select"
       data-ss-opt-allow-deselect="false"
@@ -46,25 +46,44 @@
       <option value="">All values</option>
 
       <% if @composition.try(:metrics) && @composition.metrics.size > 1 %>
-        <option value="data-dx-metric">Per metric</option>
+        <option value="data-dx-metric">Each metric</option>
       <% end %>
 
       <%# Partition for each group 1 member. %>
       <%# Always sensible for time series (since there's always intervals) %>
       <%# Also sensible for dimensional when there's a group 2 %>
       <% if @composition.try(:groups)&.[](1) || (@composition.is_a?(Compositions::TimeSeriesComposition) && @composition.try(:groups)&.[](0)) %>
-        <option value="data-dx-metric,data-dx-group-1-member-descriptor">Amongst each <%= schema_field_label(@composition.groups[0].dimension, @composition.groups[0]).downcase %></option>
+        <option value="data-dx-metric,data-dx-group-1-member-descriptor">
+          <% if @composition.try(:metrics) && @composition.metrics.size > 1 %>
+            Each metric and <%= schema_field_label(@composition.groups[0].dimension, @composition.groups[0]).downcase %>
+          <% else %>
+            Each <%= schema_field_label(@composition.groups[0].dimension, @composition.groups[0]).downcase %>
+          <% end %>
+        </option>
       <% end %>
 
       <%# Partition for each group 2 member, sensible any time there's a group 2 %>
       <% if @composition.try(:groups)&.[](1) %>
-        <option value="data-dx-metric,data-dx-group-2-member-descriptor">Amongst each <%= schema_field_label(@composition.groups[1].dimension, @composition.groups[1]).downcase %></option>
+        <option value="data-dx-metric,data-dx-group-2-member-descriptor">
+          <% if @composition.try(:metrics) && @composition.metrics.size > 1 %>
+            Each metric and <%= schema_field_label(@composition.groups[1].dimension, @composition.groups[1]).downcase %>
+          <% else %>
+            Each <%= schema_field_label(@composition.groups[1].dimension, @composition.groups[1]).downcase %>
+          <% end %>
+        </option>
       <% end %>
 
       <%# Time series-only partitions %>
       <% if @composition.is_a? Compositions::TimeSeriesComposition %>
-        <%# Always sensible to partition by interval %>
-        <option value="data-dx-metric,data-dx-interval-descriptor">Amongst <%= @composition.granularity %> intervals</option>
+        <% if @composition&.groups.size > 0 %>
+          <option value="data-dx-metric,data-dx-interval-descriptor">
+            <% if @composition.try(:metrics) && @composition.metrics.size > 1 %>
+              Each metric and <%= @composition.granularity %> interval
+            <% else %>
+              Each <%= @composition.granularity %> interval
+            <% end %>
+          </option>
+        <% end %>
 
         <%# When there are any comparions %>
         <% if @composition.comparisons&.size > 0 %>
@@ -75,7 +94,13 @@
         <%# gets a lot more complicated, so punting on them for now %>
         <% if @composition.comparisons&.size == 0 %>
           <% if @composition&.groups.size == 1 %>
-            <option value="delta,data-dx-metric,data-dx-group-1-member-descriptor">Each <%= schema_field_label(@composition.groups[0].dimension).pluralize %> over time</option>
+            <option value="delta,data-dx-metric,data-dx-group-1-member-descriptor">
+              <% if @composition.try(:metrics) && @composition.metrics.size > 1 %>
+                Each metric and <%= schema_field_label(@composition.groups[0].dimension).downcase %> 𝚫 over time
+              <% else %>
+                Each <%= schema_field_label(@composition.groups[0].dimension).downcase %> 𝚫 over time
+              <% end %>
+            </option>
           <% end %>
 
           <% if @composition&.groups.size == 2 %>
@@ -86,7 +111,7 @@
       <% end %>
     </select>
 
-    <label for="hi-divisions">Partitions</label>
+    <label for="highlight-chooser-partitions-selector">Partitions</label>
   </div>
 
   <p class="m-3 mt-4 lh-sm">Cell highlighting can help identify trends or outliers in tables. Depending on the data and the type of analysis you're doing, different options for how the colors and gradients are applied can be useful.</p>
