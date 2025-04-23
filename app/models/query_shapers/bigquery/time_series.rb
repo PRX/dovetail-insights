@@ -67,6 +67,16 @@ module QueryShapers
 
         group_bys
       end
+
+      def joins
+        joins = super
+
+        if @composition.rolling?
+          joins << "LEFT JOIN rolling_window_ranges ON RANGE_CONTAINS(rolling_window_range, downloads.timestamp)"
+        end
+
+        joins
+      end
     end
   end
 end
