@@ -49,24 +49,33 @@
         <option value="data-dx-metric">Per metric</option>
       <% end %>
 
+      <%# Partition for each group 1 member. %>
+      <%# Always sensible for time series (since there's always intervals) %>
+      <%# Also sensible for dimensional when there's a group 2 %>
       <% if @composition.try(:groups)&.[](1) || (@composition.is_a?(Compositions::TimeSeriesComposition) && @composition.try(:groups)&.[](0)) %>
-        <option value="data-dx-metric,data-dx-group-1-member-descriptor">Amongst group 1</option>
+        <option value="data-dx-metric,data-dx-group-1-member-descriptor">Amongst each <%= schema_field_label(@composition.groups[0].dimension, @composition.groups[0]).downcase %></option>
       <% end %>
 
+      <%# Partition for each group 2 member, sensible any time there's a group 2 %>
       <% if @composition.try(:groups)&.[](1) %>
-        <option value="data-dx-metric,data-dx-group-2-member-descriptor">Amongst group 2</option>
+        <option value="data-dx-metric,data-dx-group-2-member-descriptor">Amongst each <%= schema_field_label(@composition.groups[1].dimension, @composition.groups[1]).downcase %></option>
       <% end %>
 
+      <%# Time series-only partitions %>
       <% if @composition.is_a? Compositions::TimeSeriesComposition %>
-        <option value="data-dx-metric,data-dx-interval-descriptor">Amongst interval</option>
+        <%# Always sensible to partition by interval %>
+        <option value="data-dx-metric,data-dx-interval-descriptor">Amongst <%= @composition.granularity %> intervals</option>
 
+        <%# When there are any comparions %>
         <% if @composition.comparisons&.size > 0 %>
           <option value="data-dx-metric,data-dx-interval-descriptor,data-dx-comparison-rewind">Amongst interval and comparison</option>
         <% end %>
 
+        <%# It's not impossible to do these highlights when there are comparisons, but visually it %>
+        <%# gets a lot more complicated, so punting on them for now %>
         <% if @composition.comparisons&.size == 0 %>
           <% if @composition&.groups.size == 1 %>
-            <option value="delta,data-dx-metric,data-dx-group-1-member-descriptor">Group 1 over time</option>
+            <option value="delta,data-dx-metric,data-dx-group-1-member-descriptor">Each <%= schema_field_label(@composition.groups[0].dimension).pluralize %> over time</option>
           <% end %>
 
           <% if @composition&.groups.size == 2 %>
@@ -77,6 +86,8 @@
       <% end %>
     </select>
 
-    <label for="hi-divisions">Divisions</label>
+    <label for="hi-divisions">Partitions</label>
   </div>
+
+  <p class="m-3 mt-4 lh-sm">Cell highlighting can help identify trends or outliers in tables. Depending on the data and the type of analysis you're doing, different options for how the colors and gradients are applied can be useful.</p>
 </fieldset>

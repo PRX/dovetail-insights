@@ -2,6 +2,11 @@ module SchemaLabelHelper
   ##
   # Returns the best label to represent a schema property or dimension to the
   # user.
+  #
+  # If only a field name is provided, the label will be localized or an
+  # override of the field name. If a group is also given, the properties of the
+  # group will be incorporated into the label for the dimension, like date
+  # extraction or truncation.
 
   def schema_field_label(field_name, group = nil)
     return "????" unless field_name # TODO
