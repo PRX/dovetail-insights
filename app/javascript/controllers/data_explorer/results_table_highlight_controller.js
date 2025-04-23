@@ -213,7 +213,11 @@ export default class extends Controller {
           // partitionAttrs are ["data-dx-metric", "data-dx-group-1-member-descriptor"],
           // the selector will be:
           // td[data-dx-metric="downloads"][data-dx-group-1-member-descriptor="song exploder"]
-          const selector = `td${combo.map((v, idx) => `[${partitionAttrs[idx]}="${v}"]`).join("")}`;
+          //
+          // Note: The stimulus target selector is included to limit the lookup
+          // to only target cells, but there's no good way to use
+          // querySelectorAll on this.cellTargets, since that's an array.
+          const selector = `td[data-data-explorer--results-table-highlight-target="cell"]${combo.map((v, idx) => `[${partitionAttrs[idx]}="${v}"]`).join("")}`;
           // Find all the cells that match the selector and belong to this
           // partition
           const cellsForPartition = this.tableTarget.querySelectorAll(selector);
