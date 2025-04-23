@@ -1,40 +1,6 @@
 <fieldset data-data-explorer--results-table-highlight-target="chooser">
   <div class="form-floating input-group mb-3">
     <select
-      id="highlight-chooser-scale-selector"
-      class="form-select"
-      data-data-explorer--results-table-highlight-target="scaleSelector"
-      data-action="data-explorer--results-table-highlight#highlight"
-      data-controller="slim-select"
-      data-ss-opt-allow-deselect="false"
-      data-ss-opt-placeholder-text="">
-
-      <option value="log">Log</option>
-      <option value="linear">Linear</option>
-    </select>
-
-    <label for="highlight-chooser-scale-selector">Scale</label>
-  </div>
-
-  <div class="form-floating input-group mb-3">
-    <select
-      id="highlight-chooser-palette-selector"
-      class="form-select"
-      data-data-explorer--results-table-highlight-target="paletteSelector"
-      data-action="data-explorer--results-table-highlight#highlight"
-      data-controller="slim-select"
-      data-ss-opt-allow-deselect="false"
-      data-ss-opt-placeholder-text="">
-
-      <option value="rainbow">Rainbow</option>
-      <option value="monochrome">Monochrome</option>
-    </select>
-
-    <label for="highlight-chooser-palette-selector">Palette</label>
-  </div>
-
-  <div class="form-floating input-group">
-    <select
       id="highlight-chooser-partitions-selector"
       class="form-select"
       data-data-explorer--results-table-highlight-target="partitionsSelector"
@@ -127,5 +93,39 @@
     <label for="highlight-chooser-partitions-selector">Partitions</label>
   </div>
 
-  <p class="m-3 mt-4 lh-sm">Cell highlighting can help identify trends or outliers in tables. Depending on the data and the type of analysis you're doing, different options for how the colors and gradients are applied can be useful.</p>
+  <div class="form-floating input-group mb-3">
+    <select
+      id="highlight-chooser-scale-selector"
+      class="form-select"
+      data-data-explorer--results-table-highlight-target="scaleSelector"
+      data-action="data-explorer--results-table-highlight#highlight"
+      data-controller="slim-select"
+      data-ss-opt-allow-deselect="false"
+      data-ss-opt-placeholder-text="">
+
+      <option value="log">Log</option>
+      <option value="linear">Linear</option>
+    </select>
+
+    <label for="highlight-chooser-scale-selector">Scale</label>
+  </div>
+
+  <div class="form-floating input-group">
+    <select
+      id="highlight-chooser-palette-selector"
+      class="form-select"
+      data-data-explorer--results-table-highlight-target="paletteSelector"
+      data-action="data-explorer--results-table-highlight#highlight"
+      data-controller="slim-select"
+      data-ss-opt-allow-deselect="false"
+      data-ss-opt-placeholder-text="">
+
+      <option value="rainbow">Rainbow</option>
+      <option value="monochrome">Monochrome</option>
+    </select>
+
+    <label for="highlight-chooser-palette-selector">Palette</label>
+  </div>
+
+  <p class="m-3 mt-4 lh-sm">Cell highlighting can help identify trends or outliers in tables. Depending on the data and the type of analysis you're doing, different options for how the colors and gradients are applied can provide different benefits.</p>
 </fieldset>
