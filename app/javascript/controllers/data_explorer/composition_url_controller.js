@@ -256,7 +256,7 @@ export default class extends Controller {
         //
         const selectedMetaCheckboxes = [
           ...groupChooserTarget.querySelectorAll(
-            `*[name="group.${groupIndex}.meta"]:checked`,
+            `div[class="meta-options-for-${dimensionKey}"] *[name="group.${groupIndex}.meta"]:checked`,
           ),
         ];
 
