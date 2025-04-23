@@ -296,6 +296,7 @@ module Compositions
 
     def first_interval_precedes_time_range
       return unless abs_from && granularity
+      return if granularity == :rolling && !window # Can't generate interval descriptors without a window
 
       # Create a dummy Results just to get the interval descriptors from it
       results = Results::TimeSeries.new(self, nil)
@@ -311,6 +312,7 @@ module Compositions
 
     def last_interval_exceeds_time_range
       return unless abs_from && abs_to && granularity
+      return if granularity == :rolling && !window # Can't generate interval descriptors without a window
 
       # Create a dummy Results just to get the interval descriptors from it
       results = Results::TimeSeries.new(self, nil)
