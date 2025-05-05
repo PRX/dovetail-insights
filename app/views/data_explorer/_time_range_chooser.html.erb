@@ -1,0 +1,111 @@
+<div id="time-range-chooser" data-controller="foo">
+  <div id="time-range-chooser-gizmo" class="dropdown">
+    <div class="flex-grow-1">
+      <% if @composition.errors.include?(:from) || @composition.errors.include?(:to) %>
+        Select Date Range
+      <% else %>
+        <span data-bs-title="<%= @composition.abs_from.strftime("%Y-%m-%dT%H:%M:%SZ") %> to <%= @composition.abs_to.strftime("%Y-%m-%dT%H:%M:%SZ") %>" data-bs-toggle="tooltip" data-bs-placement="bottom">
+          <%= RangeDescription.in_words(@composition.from, @composition.to).capitalize %>
+        </span>
+      <% end %>
+    </div>
+
+    <button class="btn btn-primary btn-sm dropdown-toggle <%= "errors" if @composition.errors.include?(:from) || @composition.errors.include?(:to) %>" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+      <span class="material-icons" aria-hidden="true">date_range</span>
+    </button>
+
+    <%# This is the dropdown menu %>
+    <div id="time-range-chooser-dropdown-menu" class="dropdown-menu">
+      <div id="time-range-chooser-dropdown-menu-inner">
+        <div id="time-range-chooser-dropdown-menu-presets">
+          <ul>
+            <% now = Time.now.utc %>
+            <%= time_range_preset_item("now-28/D", "now-1/D", "Last 28 days", now) %>
+            <%= time_range_preset_item("now-28/D", "now", "Last 28 days and today", now) %>
+            <%= time_range_preset_item("now-1/M", "now-1/M", "Last month", now) %>
+            <%= time_range_preset_item("now-1/Y", "now-1/Y", "Last year", now) %>
+            <%= time_range_preset_item("now/Q", "now/Q", "This quarter", now) %>
+            <%= time_range_preset_item("now-1/Q", "now-1/Q", "Last quarter", now) %>
+            <%= time_range_preset_item("now-3/Q", "now-1/Q", "Last 3 quarters", now) %>
+            <%= time_range_preset_item("now/Y", "now", "This year so far", now) %>
+            <%= time_range_preset_item("now/M", "now", "This month so far", now) %>
+            <%= time_range_preset_item("now-1/D", "now-1/D", "Yesterday", now) %>
+            <%= time_range_preset_item("now-1/W", "now-1/W", "Last week (Sun–Sat)", now) %>
+            <%= time_range_preset_item("now-1/X", "now-1/X", "Last week (Mon–Sun)", now) %>
+            <%= time_range_preset_item("now-90/D", "now-1/D", "Last 90 days", now) %>
+            <%= time_range_preset_item("now-4/M", "now-1/M", "Last 4 months", now) %>
+            <%= time_range_preset_item("now-1/W+1D", "now-1/W-1D", "M-F of last week", now) %>
+          </ul>
+        </div>
+
+        <div id="time-range-chooser-dropdown-menu-details">
+          <input id="time-range-chooser-fp-from">
+          <input id="time-range-chooser-fp-to">
+
+          <div class="range-bound-controls">
+            <%= form.label :from, "From" %>
+
+            <fieldset>
+              <% from_val = @composition.from %>
+              <%# If the +from+ date/time is midnight, display only the date part %>
+              <% from_val = from_val.split("T")[0] if from_val&.ends_with?("T00:00:00Z") %>
+              <%= form.text_field :from, name: :from, value: from_val, data: {"data-explorer--composition-url-target": :from} %>
+              <button type="button" class="material-icons calendar-toggle">date_range</button>
+            </fieldset>
+          </div>
+
+          <div class="range-bound-controls">
+            <%= form.label :to, "To" %>
+
+            <fieldset>
+              <% to_val = @composition.to %>
+              <%# If the +to+ date/time is midnight, display only the date part. %>
+              <%# IMPORTANT: This moves the date back 1 day, which is negated %>
+              <%# when the URL is constructed in the stimulus URL controller. %>
+              <%# We do this so end dates look _inclusive_ to users. %>
+              <% to_val = Date.parse(to_val.split("T")[0]).advance(days: -1).strftime("%Y-%m-%d") if to_val&.ends_with?("T00:00:00Z") %>
+              <%= form.text_field :to, name: :to, value: to_val, data: {"data-explorer--composition-url-target": :to} %>
+              <button type="button" class="material-icons calendar-toggle">date_range</button>
+            </fieldset>
+          </div>
+
+          <div id="time-range-chooser-dropdown-menu-relative-help">
+            <p>You've chosen a <strong>relative time range</strong>. Each time you re-run this query, the applied range will reflect the relevant dates and times in relation to when the query is run. <a href="#">Learn more</a></p>
+
+            <p>If you'd rather use specific, static dates you can use the <a class="calendar-toggle" href="#"><span class="material-icons" style="font-size: 0.9rem;">date_range</span> calendar tool</a> to choose dates that won't change over time. Or you can <a href="#">lock in</a> the current dates to convert from relative to static dates.</p>
+          </div>
+
+          <div id="time-range-chooser-dropdown-menu-absolute-help">
+            <p>Please note that the Data Explorer uses the <a href="https://en.wikipedia.org/wiki/Coordinated_Universal_Time"><strong>UTC/GMT time zone</strong></a> for all data and calculations. Dates and times you input will be interpreted as UTC, regardless of your local time zone.</p>
+
+            <p>If, for example, you live in New York and release an episode at 10 PM ET on April 17th, you would have to select April 18th in the Data Explorer to see that episode, since it was released on the 18th in the UTC time zone.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function ordinal(number) {
+      switch (`${number}`.slice(-1)) {
+        case "1":
+          return "st"
+        case "2":
+          return "nd"
+        default:
+          return "th"
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", (event) => {
+      const now = new Date();
+      if (now.getDate() !== now.getUTCDate()) {
+        const el = document.getElementById("time-range-chooser-utc-midnight-warning");
+
+        el.style.display = "block";
+        el.setAttribute("data-bs-title", `Dovetail Insights uses the UTC/GMT time zone for all data and calculations. Please be aware that currently the date in your local time zone and the UTC time zone DO NOT MATCH. So while for you it is currently the ${now.getDate()}${ordinal(now.getDate())}, for Insights it is currently the ${now.getUTCDate()}${ordinal(now.getUTCDate())}.`)
+      }
+    });
+  </script>
+  <p id="time-range-chooser-utc-midnight-warning" data-bs-custom-class="time-range-chooser-utc-midnight-warning-tooltip" data-bs-toggle="tooltip" data-bs-title="Default tooltip" data-bs-placement="right">UTC/GMT Time Zone Warning</p>
+</div>

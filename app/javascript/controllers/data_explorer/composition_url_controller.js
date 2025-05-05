@@ -46,6 +46,23 @@ function lensParamsString() {
   return lensParams.toString();
 }
 
+function normalizeDateLikeString(str) {
+  const dateMatch = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+
+  if (dateMatch) {
+    return `${dateMatch[1]}-${dateMatch[2].padStart(2, "0")}-${dateMatch[3].padStart(2, "0")}T00:00:00Z`;
+  }
+
+  const timeMatch = str.match(
+    /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{2}):(\d{2})Z$/,
+  );
+  if (timeMatch) {
+    return `${timeMatch[1]}-${timeMatch[2].padStart(2, "0")}-${timeMatch[3].padStart(2, "0")}T${timeMatch[4].padStart(2, "0")}:${timeMatch[5]}:${timeMatch[6]}Z`;
+  }
+
+  return undefined;
+}
+
 export default class extends Controller {
   static targets = [
     "lens",
@@ -63,13 +80,40 @@ export default class extends Controller {
   rangeParamsString() {
     const rangeParams = new URLSearchParams();
 
-    const from = this.fromTarget?.value.trim();
+    let from = this.fromTarget?.value.trim();
     if (from) {
+      // If the value looks like a date or date/time, do some basic
+      // normalization, to expand, e.g., 2024-1-1 to 2024-01-01T00:00:00Z
+      if (from.match(/^\d{4}-/)) {
+        from = normalizeDateLikeString(from);
+      }
+
       rangeParams.set("from", from);
     }
 
-    const to = this.toTarget?.value.trim();
+    const rawTo = this.toTarget?.value.trim();
+    let to = this.toTarget?.value.trim();
     if (to) {
+      if (to.match(/^\d{4}-/)) {
+        to = normalizeDateLikeString(to);
+
+        // If the given value is a **date only** with no time part (e.g.,
+        // 2025-1-1 or 2025-01-01), for the range end we want the user to be
+        // able to treat these as _inclusive_, which is different than nearly
+        // every other part of the app, which treats range end as exclusive.
+        // So if we see raw input that is a date only, we need to add a day.
+        // Example:
+        // Raw => 2025-1-9
+        // Normalized => 2025-01-09T00:00:00Z
+        // Adjusted => 2025-01-10T00:00:00Z
+        if (rawTo.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
+          const parsed = new Date(Date.parse(to));
+          // In-place update, move forward 1 day
+          parsed.setUTCDate(parsed.getUTCDate() + 1);
+          // Drop the fractional seconds
+          to = parsed.toISOString().replace(".000Z", "Z");
+        }
+      }
       rangeParams.set("to", to);
     }
 

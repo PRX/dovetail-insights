@@ -1,14 +1,239 @@
-#time-ranger-chooser {
-  ul,
-  p {
+/* Tooltips elements are injected by into an arbitrary place in the DOM, so
+this style is treated as global, even though it's used only in this context */
+.time-range-chooser-toolip {
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.time-range-chooser-utc-midnight-warning-tooltip {
+  font-size: 0.75rem;
+  line-height: 1.3;
+
+  .tooltip-inner {
+    padding: 1lh;
+  }
+}
+
+/* #time-range-chooser is a wrapper for all parts of the chooser */
+#time-range-chooser {
+  #time-range-chooser-utc-midnight-warning {
+    background: color-mix(in srgb, var(--bs-warning), transparent 70%);
+    line-height: 1;
+    padding: 10px;
+    margin: 10px 0 0 0;
+    border: 1px solid var(--bs-warning);
+    border-radius: 4px;
     display: none;
   }
-  &:hover ul,
-  &:hover p {
-    display: block;
+
+  #time-range-chooser-fp-from,
+  #time-range-chooser-fp-to {
+    display: none;
   }
 
-  .field_with_errors {
-    display: inline;
+  /* The gizmo includes the main on-screen controls for the chooser **and** the
+  dropdown menu element, because of how Bootstrap expects dropdowns to be
+  structured. This is the root of the Bootstrap dropdown, and the trigger
+  element is a direct child of the gizo, as is the dropdown-menu element.
+
+  Note that any styles added to the gizmo will cascade to the dropdown, so in
+  general, descendents of the gizmo should be styles fairly specifically. */
+  #time-range-chooser-gizmo {
+    display: flex;
+
+    > button {
+      &.errors {
+        background-color: var(--bs-danger);
+        border-color: var(--bs-danger);
+      }
+    }
+
+    /* This is the Bootstrap dropdown menu. We want to let Bootstrap control
+    most of its style/visibility */
+    #time-range-chooser-dropdown-menu {
+      padding: 0;
+
+      /* To avoid messing with the menu element's styles, we style this inner
+      wrapper instead */
+      #time-range-chooser-dropdown-menu-inner {
+        width: 500px;
+        padding: 0;
+        display: flex;
+        align-items: stretch;
+        margin: 0;
+
+        /* List of presets */
+        #time-range-chooser-dropdown-menu-presets {
+          flex-shrink: 0;
+          border-inline-end: 1px solid var(--bs-border-color);
+
+          ul {
+            margin: 3px 0;
+            list-style: none;
+            padding: 0;
+
+            li {
+              margin: 0;
+              padding: 0;
+              display: block;
+              font-weight: normal;
+              line-height: 1.9em;
+              padding: 0 0 0 0.5lh;
+              font-size: 0.85rem;
+              margin: 0 3px;
+              display: flex;
+              color: var(--bs-link-color);
+              cursor: pointer;
+
+              &:hover {
+                background: var(--bs-gray-200);
+                text-decoration: none;
+
+                .absolute-preset {
+                  visibility: visible;
+                }
+              }
+
+              .relative-preset {
+                flex-grow: 1;
+              }
+
+              .absolute-preset {
+                font-size: 1rem;
+                line-height: 1;
+                margin: 0 4px 0 6px;
+                padding: 2px;
+                visibility: hidden;
+                align-self: center;
+                border-radius: 2px;
+
+                &:hover {
+                  background: var(--bs-link-color);
+                  color: white;
+                }
+              }
+            }
+          }
+        }
+
+        /* Primary controls of the dropdown menu */
+        #time-range-chooser-dropdown-menu-details {
+          padding: 5px 0 0 0;
+
+          #time-range-chooser-dropdown-menu-relative-help,
+          #time-range-chooser-dropdown-menu-absolute-help {
+            display: none;
+          }
+
+          &.has-relative-time {
+            #time-range-chooser-dropdown-menu-relative-help {
+              display: block;
+            }
+          }
+
+          &.has-absolute-time {
+            #time-range-chooser-dropdown-menu-absolute-help {
+              display: block;
+            }
+          }
+
+          p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            padding: 10px 0 0 0;
+            margin: 0 10px;
+
+            a {
+              font-weight: normal;
+            }
+          }
+
+          .range-bound-controls {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 5px 5px 0;
+
+            div.field_with_errors {
+              display: flex;
+            }
+
+            /* Handle sizing of the label, or the div that wraps the label when
+            there's an error */
+            > label,
+            div.field_with_errors:has(label) {
+              flex-basis: 100%;
+            }
+
+            /* Handle styling of the label, regardless of errors */
+            label {
+              display: block;
+              font-size: 0.85rem;
+            }
+
+            div.field_with_errors label {
+              color: var(--bs-danger);
+            }
+
+            fieldset {
+              flex-basis: 100%;
+              display: flex;
+
+              /* Handle horizontal sizing of the input, or the div that wraps
+              the input when there's an error */
+              > input,
+              div.field_with_errors:has(input) {
+                flex-grow: 1;
+
+                input {
+                  width: 100%;
+                }
+              }
+
+              /* Handle styling of the input, regardless of errors */
+              input {
+                font-size: 0.9rem;
+                padding: 3px 5px;
+                line-height: 1;
+                height: 32px;
+                box-sizing: border-box;
+                border: 1px solid #eee;
+                border-radius: 2px;
+
+                &:focus {
+                  outline: none;
+                  border: 2px solid var(--bs-blue);
+                  padding: 2px 4px;
+                }
+              }
+
+              div.field_with_errors input {
+                border: 2px solid var(--bs-danger);
+                padding: 2px 4px;
+              }
+
+              button.calendar-toggle {
+                border: 0;
+                flex-shrink: 0;
+                height: 32px;
+                width: 32px;
+                background: #eee;
+
+                &:hover {
+                  color: #fff;
+                  background: var(--bs-link-color);
+                }
+              }
+            }
+          }
+
+          .date-input-controls {
+            div.field_with_errors,
+            & > input {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
   }
 }

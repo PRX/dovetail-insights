@@ -20,7 +20,7 @@
     <%= render "data_explorer/composition_errors" unless @composition.memo_valid? %>
     <%= render "data_explorer/composition_warnings" if @composition.unsafe? %>
 
-    <%= render partial: "data_explorer/range_chooser", locals: {form: form} %>
+    <%= render partial: "data_explorer/time_range_chooser", locals: {form: form} %>
 
     <%= render "data_explorer/filters_panel" %>
   </div>

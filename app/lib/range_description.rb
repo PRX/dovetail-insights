@@ -132,6 +132,6 @@ class RangeDescription
       return "#{Date::ABBR_MONTHNAMES[from_time.month]} #{from_time.year}—#{Date::ABBR_MONTHNAMES[final_momth.month]} #{final_momth.year}"
     end
 
-    "#{from_time} to #{to_time}"
+    "#{from_time.strftime("%Y-%m-%dT%H:%M:%SZ")} to #{to_time.strftime("%Y-%m-%dT%H:%M:%SZ")}"
   end
 end

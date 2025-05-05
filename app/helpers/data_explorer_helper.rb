@@ -29,4 +29,18 @@ module DataExplorerHelper
       value
     end
   end
+
+  def time_range_preset_item(rel_from, rel_to, label, now)
+    abs_from_str = Relatime.rel2abs(rel_from, :front, now).strftime("%Y-%m-%dT%H:%M:%SZ")
+    abs_to_str = Relatime.rel2abs(rel_to, :back, now).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    tag.li do
+      tag.div(class: "relative-preset", data: {"dx-range-from" => rel_from, "dx-range-to" => rel_to, "action" => "click->foo#loadPreset"}) do
+        label
+      end +
+        tag.div(class: "absolute-preset material-icons", data: {"bs-toggle" => "tooltip", "bs-custom-class" => "time-range-chooser-toolip", "bs-placement" => "bottom", "bs-delay" => '{"show":333,"hide":0}', "bs-title" => "Use static dates", "dx-range-from" => abs_from_str, "dx-range-to" => abs_to_str, "action" => "click->foo#loadPreset"}) do
+          "date_range"
+        end
+    end
+  end
 end
