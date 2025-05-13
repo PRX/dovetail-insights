@@ -9,8 +9,10 @@ class RangeDescription
       relatime_in_words(from, to)
     elsif Relatime::EXPRESSION_REGEXP.match?(from)
       # Only from is relatime
+      "tktk"
     elsif Relatime::EXPRESSION_REGEXP.match?(to)
       # Only to is relatime
+      "tktk"
     else
       timestamps_in_words(from, to)
     end
