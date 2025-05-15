@@ -33,6 +33,9 @@ export default class extends Controller {
       mode: "range",
       plugins: [new RangePlugin({ input: toFpEl })],
       positionElement: this.element.querySelector("input[name=from]"),
+      onOpen: (selectedDates, dateStr, instance) => {
+        instance.clear();
+      },
       onChange: (selectedDates, dateStr, instance) => {
         fromEl.value = "";
         toEl.value = "";
