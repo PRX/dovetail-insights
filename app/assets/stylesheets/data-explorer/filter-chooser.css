@@ -1,3 +1,13 @@
+/* Tooltips elements are injected by into an arbitrary place in the DOM, so
+this style is treated as global, even though it's used only in this context */
+.filter-chooser-operator-tooltip {
+  line-height: 1.2;
+
+  .tooltip-inner {
+    padding: 8px 3px;
+  }
+}
+
 /*  By default, these cards are hidden. They are only displayed once the filter
 has been selected by the user. */
 .filter-chooser.card {
