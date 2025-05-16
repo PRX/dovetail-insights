@@ -23,7 +23,6 @@ module Ranging
     validates_each :from, :to do |record, attr, value|
       if value
         if value.match Relatime::EXPRESSION_REGEXP
-        elsif value.match?(/^\d{4}-[01]\d-[0-3]\d$/)
         elsif value.match?(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ$/)
         elsif value.match?(/^\d/)
           # If the input starts with any digit, treat it as a date or time. If we
@@ -120,8 +119,6 @@ module Ranging
 
     if string.match Relatime::EXPRESSION_REGEXP
       Relatime.rel2abs(string, position, now)
-    elsif string.match?(/^\d{4}-[01]\d-[0-3]\d$/)
-      DateTime.parse(string)
     elsif string.match?(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\dZ$/)
       DateTime.parse(string)
     end
