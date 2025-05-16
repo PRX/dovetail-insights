@@ -1,6 +1,57 @@
-<label for="filter.<%= dim_key %>.from">From:</label>
-<input autocomplete="off" class="gte" type="text" placeholder="42" <%= html_attributes(id: "filter.#{dim_key}.gte", name: "filter.#{dim_key}.gte", value: to_duration_shorthand(filter&.gte)) %>>
+<%
+  # If both ends of the range can be expressed in the same shorthand unit (day,
+  # month, etc., or no unit), then we want to display just the integer value in
+  # the input fields, and also display the unit <select> with the chosen unit.
+  #
+  # If the units don't match, then the <select> should not be displayed, and
+  # the input fields should display the full shorthand value.
 
-<br>
-<label for="filter.<%= dim_key %>.to">To:</label>
-<input autocomplete="off" class="lt" type="text" placeholder="1066" <%= html_attributes(id: "filter.#{dim_key}.lt", name: "filter.#{dim_key}.lt", value: to_duration_shorthand(filter&.lt)) %>>
+  # By default, the <select> should be displayed.
+  display_units_select = true
+
+  gte_display = ""
+  lt_display = ""
+
+  sh_unit = "s" # Use +seconds+ by default
+
+  sh_unit = "D" if !filter&.gte && !filter&.lt # Use +days+ as a default when no values are set
+
+  if filter&.gte && filter.lt && to_duration_shorthand(filter.gte).match?(/[YWDhm]$/) && to_duration_shorthand(filter.lt).match(/[YWDhm]$/) && to_duration_shorthand(filter.gte).match(/([YWDhm])$/)[1] != to_duration_shorthand(filter.lt).match(/([YWDhm])$/)[1]
+    # If both bounds are set, and both have shorthand units, and those units
+    # don't match, the shorthand values should be displayed in their entirety
+    # and the <select> should not be displayed. This allows the UI to handle
+    # arbitrary ranges that may not be supported by selecting a single unit
+    # for both values.
+    display_units_select = false
+
+    gte_display = to_duration_shorthand(filter.gte)
+    lt_display = to_duration_shorthand(filter.lt)
+  else
+    # Otherwise, we can assume that both values have the same unit, or both
+    # bounds weren't set. Either way, look for the the any unit we can find
+    # use that as the unit in the <select>
+    sh_unit = to_duration_shorthand(filter.gte).match(/([YWDhm])$/)[1] if filter&.gte && to_duration_shorthand(filter.gte).match?(/[YWDhm]$/)
+    sh_unit = to_duration_shorthand(filter.lt).match(/([YWDhm])$/)[1] if filter&.lt && to_duration_shorthand(filter.lt).match?(/[YWDhm]$/)
+
+    # When the <select> is displayed, we only want to show the interger part of
+    # each value without any shorthand units
+    gte_display = to_duration_shorthand(filter.gte).match(/([0-9]+)/)[1] if filter&.gte
+    lt_display = to_duration_shorthand(filter.lt).match(/([0-9]+)/)[1] if filter&.lt
+  end
+%>
+
+Between
+<input style="width: 3em;" autocomplete="off" class="gte" type="text" placeholder="42" <%= html_attributes(id: "filter.#{dim_key}.gte", name: "filter.#{dim_key}.gte", value: gte_display) %>>
+and
+<input style="width: 3em;" autocomplete="off" class="lt" type="text" placeholder="1066" <%= html_attributes(id: "filter.#{dim_key}.lt", name: "filter.#{dim_key}.lt", value: lt_display) %>>
+
+<% if display_units_select %>
+  <select name="<%= "filter.#{dim_key}.unit" %>">
+    <option value="" <%= select_eq sh_unit == "s" %>>seconds</option>
+    <option value="m" <%= select_eq sh_unit == "m" %>>minutes</option>
+    <option value="h" <%= select_eq sh_unit == "h" %>>hours</option>
+    <option value="D" <%= select_eq sh_unit == "D" %>>days</option>
+    <option value="W" <%= select_eq sh_unit == "W" %>>weeks</option>
+    <option value="Y" <%= select_eq sh_unit == "Y" %>>years</option>
+  </select>
+<% end %>

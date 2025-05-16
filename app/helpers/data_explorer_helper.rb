@@ -5,6 +5,8 @@ module DataExplorerHelper
   # unit of time, like 1 year or 10 years, returns a shorthand string for that
   # value.
   #
+  # This always returns a string.
+  #
   # For example, if the +value+ is +86400+, which is 1 day, this would return
   # +1D+. If the +value+ is +2_419_200+ (28 days), it returns +28D+.
   #
@@ -26,7 +28,7 @@ module DataExplorerHelper
     elsif value % 60 == 0
       "#{value / 60}m"
     else
-      value
+      value.to_s
     end
   end
 

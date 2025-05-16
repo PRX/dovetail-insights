@@ -186,18 +186,43 @@ export default class extends Controller {
       // Filters for dimensions with a Duration type take two values, a "gte"
       // and a "lt". Each gets its own URL parameter when provided by the user.
       if (filterChooser.dataset.dimensionType === "Duration") {
+        // By default, don't assume any shorthand unit (i.e., seconds)
+        let unit = "";
+
+        // If the unit <select> is present, use its value as the unit
+        const unitEl = filterChooser.querySelector(
+          `*[name="filter.${dimensionKey}.unit"]`,
+        );
+        if (unitEl?.value) {
+          unit = unitEl.value;
+        }
+
         const gteEl = filterChooser.querySelector(
           `*[name="filter.${dimensionKey}.gte"]`,
         );
         if (gteEl?.value) {
-          filtersParams.set(gteEl.name, gteEl.value);
+          // If the value is a shorthand value, always use that, otherwise
+          // inherit the unit from the <select>
+          if (gteEl.value.match(/^[0-9]+[YWDhm]$/)) {
+            filtersParams.set(gteEl.name, gteEl.value);
+          } else {
+            const valueWithUnit = `${gteEl.value}${unit}`;
+            filtersParams.set(gteEl.name, valueWithUnit);
+          }
         }
 
         const ltEl = filterChooser.querySelector(
           `*[name="filter.${dimensionKey}.lt"]`,
         );
         if (ltEl?.value) {
-          filtersParams.set(ltEl.name, ltEl.value);
+          // If the value is a shorthand value, always use that, otherwise
+          // inherit the unit from the <select>
+          if (ltEl.value.match(/^[0-9]+[YWDhm]$/)) {
+            filtersParams.set(ltEl.name, ltEl.value);
+          } else {
+            const valueWithUnit = `${ltEl.value}${unit}`;
+            filtersParams.set(ltEl.name, valueWithUnit);
+          }
         }
       }
 
