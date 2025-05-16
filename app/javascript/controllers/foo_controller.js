@@ -107,10 +107,9 @@ export default class extends Controller {
   async makeStatic(event) {
     event.preventDefault();
 
-    await inputToStatic(
-      this.element.querySelector("input[name='from']"),
-      "front",
-    );
-    await inputToStatic(this.element.querySelector("input[name='to']"), "back");
+    await Promise.all([
+      inputToStatic(this.element.querySelector("input[name='from']"), "front"),
+      inputToStatic(this.element.querySelector("input[name='to']"), "back"),
+    ]);
   }
 }
