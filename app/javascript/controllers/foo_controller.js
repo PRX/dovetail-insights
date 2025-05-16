@@ -21,6 +21,23 @@ function updateHelp(ctx) {
   });
 }
 
+async function inputToStatic(el, position) {
+  const reg =
+    /^now(?:(?:([-+][0-9]+)[mhDWXMQY]?)?\/([mhDWXMQY]))?((?:[+-][0-9]+[smhDM])+)?$/;
+
+  if (el?.value.match(reg)) {
+    const res = await fetch(
+      `/relatime/to_abs?exp=${el.value}&pos=${position}`,
+      {
+        method: "GET",
+      },
+    );
+
+    const abs = await res.text();
+    el.value = abs;
+  }
+}
+
 export default class extends Controller {
   connect() {
     const fromFpEl = document.getElementById("time-range-chooser-fp-from");
@@ -85,5 +102,15 @@ export default class extends Controller {
     this.element.querySelector("input[name='to']").value = newTo;
 
     updateHelp(this);
+  }
+
+  async makeStatic(event) {
+    event.preventDefault();
+
+    await inputToStatic(
+      this.element.querySelector("input[name='from']"),
+      "front",
+    );
+    await inputToStatic(this.element.querySelector("input[name='to']"), "back");
   }
 }
