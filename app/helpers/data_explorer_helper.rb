@@ -16,7 +16,7 @@ module DataExplorerHelper
     return nil if value.blank?
 
     if value == 0
-      0
+      0.to_s
     elsif value % (86400 * 365) == 0
       "#{value / (86400 * 365)}Y"
     elsif value % (86400 * 7) == 0 && value > 86400 * 28
