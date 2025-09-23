@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.4.5"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.2"
+gem "rails", "~> 8.0.3"
 # A PostgreSQL client library for Ruby [https://github.com/ged/ruby-pg]
 gem "pg", "~> 1.6"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
