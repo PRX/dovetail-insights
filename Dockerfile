@@ -4,7 +4,7 @@
 # This Dockerfile is designed for production, not development.
 
 # Make sure RUBY_VERSION matches the Ruby version in .tool-versions
-ARG RUBY_VERSION=3.4.6
+ARG RUBY_VERSION=3.4.7
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
