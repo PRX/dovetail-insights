@@ -86,7 +86,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
-    administrate (1.0.0.beta3)
+    administrate (1.0.0)
       actionpack (>= 6.0, < 9.0)
       actionview (>= 6.0, < 9.0)
       activerecord (>= 6.0, < 9.0)
@@ -314,7 +314,7 @@ GEM
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1)
-    rack (3.2.3)
+    rack (3.2.4)
     rack-mini-profiler (4.0.1)
       rack (>= 1.2.0)
     rack-session (2.1.1)
@@ -475,7 +475,7 @@ GEM
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.1.0)
-    uri (1.0.4)
+    uri (1.1.1)
     useragent (0.16.11)
     web-console (4.2.1)
       actionview (>= 6.0.0)
@@ -510,7 +510,7 @@ PLATFORMS
 DEPENDENCIES
   active_link_to
   activerecord-session_store
-  administrate (~> 1.0.0.beta3)
+  administrate (~> 1.0.0)
   better_html
   bootsnap
   brakeman

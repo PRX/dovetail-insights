@@ -51,7 +51,7 @@ gem "google-cloud-bigquery"
 gem "prx_auth-rails"
 
 # A Rails engine that helps you put together a super-flexible admin dashboard [https://github.com/thoughtbot/administrate]
-gem "administrate", "~> 1.0.0.beta3"
+gem "administrate", "~> 1.0.0"
 
 # CSV Reading and Writing [https://github.com/ruby/csv]
 gem "csv"
