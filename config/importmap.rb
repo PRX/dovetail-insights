@@ -19,7 +19,7 @@ pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 # Local modules
 pin_all_from "app/javascript/controllers", under: "controllers"
 
-pin "slim-select", to: "https://unpkg.com/slim-select@latest/dist/slimselect.es.js"
+pin "slim-select", to: "https://ga.jspm.io/npm:slim-select@2.13.1/dist/slimselect.es.js"
 pin "bootstrap", to: "https://ga.jspm.io/npm:bootstrap@5.3.3/dist/js/bootstrap.esm.js"
 pin "@popperjs/core", to: "https://ga.jspm.io/npm:@popperjs/core@2.11.8/lib/index.js"
 pin "flatpickr", to: "https://ga.jspm.io/npm:flatpickr@4.6.13/dist/esm/index.js"
