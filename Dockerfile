@@ -41,7 +41,7 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
     curl https://bun.sh/install | bash -s -- bun-v${BUN_VERSION}
 
 # Install application gems
-COPY Gemfile Gemfile.lock ./
+COPY Gemfile Gemfile.lock .tool-versions ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
