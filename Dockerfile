@@ -57,6 +57,8 @@ COPY . .
 
 RUN bun install
 
+RUN wget https://raw.githubusercontent.com/PRX/prx-podagent/main/db/agents.lock.yml -O vendor/agents.lock.yml -q
+
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
