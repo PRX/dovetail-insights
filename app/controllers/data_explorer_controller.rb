@@ -1,5 +1,7 @@
 class DataExplorerController < ApplicationController
   before_action :load_composition
+  before_action :check_clickhouse, only: %i[bookmarks] unless Rails.env.production?
+
   rate_limit to: 6, within: 1.minute, if: -> { @composition.memo_valid? }, with: -> { render "errors/rate_limit", layout: "plain", status: :too_many_requests } unless Rails.env.development?
 
   def index
@@ -41,5 +43,13 @@ class DataExplorerController < ApplicationController
     @composition.user = current_user
 
     @composition
+  end
+
+  def check_clickhouse
+    unless clickhouse_connected?
+      render partial: "errors/clickhouse_error", locals: {
+        error_message: "not_connected"
+      }
+    end
   end
 end
