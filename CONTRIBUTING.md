@@ -86,6 +86,16 @@ CLICKHOUSE_HOST=123.456.789
 CLICKHOUSE_PORT=8123
 ```
 
+Clickhouse rollup data on Agents uses labels from the PRX PodAgent, which should be downloaded locally:
+
+```
+wget https://raw.githubusercontent.com/PRX/prx-podagent/main/db/agents.lock.yml -O vendor/agents.lock.yml -q
+```
+or
+```
+curl -o vendor/agents.lock.yml https://raw.githubusercontent.com/PRX/prx-podagent/main/db/agents.lock.yml -s
+```
+
 ### Running the Application
 
 Once your environment has been setup, you should be able to start the Rails server and load the site in a browser:
