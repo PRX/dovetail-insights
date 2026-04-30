@@ -19,9 +19,20 @@ default_pg: &default_pg
   username: <%= ENV.fetch("POSTGRES_USER", "insights-user") %>
   password: <%= ENV.fetch("POSTGRES_PASSWORD", "insights-pass") %>
 
+clickhouse: &clickhouse
+  adapter: clickhouse
+  database: <%= ENV.fetch("CLICKHOUSE_DATABASE", "") %>
+  username: <%= ENV.fetch("CLICKHOUSE_USER", "") %>
+  password: <%= ENV.fetch("CLICKHOUSE_PASSWORD", "") %>
+  host: <%= ENV.fetch("CLICKHOUSE_HOST", "127.0.0.1") %>
+  port: <%= ENV.fetch("CLICKHOUSE_PORT", "8123") %>
+  replica: true # don't try to run migrations here
+
 development:
   <<: *default_sqlite
   database: storage/development.sqlite3
+  clickhouse:
+    <<: *clickhouse
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -45,6 +56,8 @@ staging:
     <<: *default_pg
     migrations_paths: db/cable_migrate
     database: <%= ENV.fetch("POSTGRES_DATABASE", "insights") %>_cable
+  clickhouse:
+    <<: *clickhouse
 
 production:
   primary:
@@ -61,3 +74,5 @@ production:
     <<: *default_pg
     migrations_paths: db/cable_migrate
     database: <%= ENV.fetch("POSTGRES_DATABASE", "insights") %>_cable
+  clickhouse:
+    <<: *clickhouse

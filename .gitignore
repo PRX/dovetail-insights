@@ -30,6 +30,9 @@
 !/tmp/storage/
 !/tmp/storage/.keep
 
+# Ignore the vendored podagent stuff
+vendor/agents.lock.yml
+
 /public/assets
 
 # Ignore master key for decrypting credentials and more.

@@ -69,6 +69,33 @@ These steps assume you have followed PRX's [Local Development Environment guide]
 
     By default, development uses SQLite databases, so no additional database server configuration is necessary.
 
+### Clickhouse Setup
+
+To view or develop charts, you'll need access to a Clickhouse database with rollup data corresponding
+to whichever Postgres stag/prod backup you used.
+
+Running a Clickhouse server with those rollups rollups locally is more the purview of the
+[castlehouse repo](https://github.com/PRX/castlehouse). If you don't want to run locally, you can connect
+to the staging/prod EC2 Clickhouse server by setting a few ENVs:
+
+```
+CLICKHOUSE_DATABASE=the-dbname
+CLICKHOUSE_USER=the-username
+CLICKHOUSE_PASSWORD=the-password
+CLICKHOUSE_HOST=123.456.789
+CLICKHOUSE_PORT=8123
+```
+
+Clickhouse rollup data on Agents uses labels from the PRX PodAgent, which should be downloaded locally:
+
+```
+wget https://raw.githubusercontent.com/PRX/prx-podagent/main/db/agents.lock.yml -O vendor/agents.lock.yml -q
+```
+or
+```
+curl -o vendor/agents.lock.yml https://raw.githubusercontent.com/PRX/prx-podagent/main/db/agents.lock.yml -s
+```
+
 ### Running the Application
 
 Once your environment has been setup, you should be able to start the Rails server and load the site in a browser:

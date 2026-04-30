@@ -68,6 +68,9 @@ gem "newrelic_rpm"
 # Rails view helper to manage "active" state of a link [https://github.com/comfy/active_link_to]
 gem "active_link_to"
 
+gem "clickhouse-activerecord"
+gem "countries"
+
 group :development, :test do
   # Use sqlite3 as the database for Active Record
   gem "sqlite3", ">= 2.1"

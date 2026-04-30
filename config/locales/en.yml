@@ -38,3 +38,7 @@ en:
           gb: "GiB"
           tb: "TiB"
           pb: "PiB"
+  errors:
+    clickhouse_error:
+      error_message:
+        not_connected: Unable to connect to the data server
