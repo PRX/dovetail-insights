@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/PRX/dovetail-insights#readme",
   "devDependencies": {
-    "eslint": "^8",
+    "eslint": "^10",
     "eslint-config-airbnb-base": "*",
     "eslint-config-prettier": "*",
     "eslint-plugin-import": "*",
@@ -34,14 +34,14 @@
     "@hotwired/stimulus": "*",
     "@hotwired/turbo-rails": "*",
     "@popperjs/core": "^2.11.8",
-    "autoprefixer": "^10.4.20",
-    "bootstrap": "^5.3.3",
-    "bootstrap-icons": "^1.11.3",
-    "nodemon": "^3.1.9",
-    "postcss": "^8.5.23",
-    "postcss-cli": "^11.0.0",
-    "sass": "^1.85.1",
-    "slim-select": "^2.10.0"
+    "autoprefixer": "^10.5.4",
+    "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1",
+    "nodemon": "^3.1.14",
+    "postcss": "^8.5.26",
+    "postcss-cli": "^11.0.1",
+    "sass": "^1.103.1",
+    "slim-select": "^4.2.0"
   },
   "scripts": {
     "build:css:compile": "sass ./app/assets/stylesheets/application.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
