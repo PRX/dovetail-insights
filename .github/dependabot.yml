@@ -5,10 +5,10 @@ updates:
     cooldown:
       default-days: 10
     schedule:
-      interval: daily
+      interval: weekly
     open-pull-requests-limit: 10
     groups:
-      all-budler:
+      all-bundler:
         patterns:
           - "*"
   - package-ecosystem: npm
@@ -25,7 +25,7 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
     cooldown:
       default-days: 4
     open-pull-requests-limit: 10
