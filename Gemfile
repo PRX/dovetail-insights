@@ -5,7 +5,7 @@ ruby file: ".tool-versions"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.4"
 # A PostgreSQL client library for Ruby [https://github.com/ged/ruby-pg]
-gem "pg", "~> 1.6"
+gem "pg", "~> 1.7"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use the Puma web server [https://github.com/puma/puma]
